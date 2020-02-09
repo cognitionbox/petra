@@ -1,6 +1,8 @@
-# README #
+# petra-core #
 
-## Petra Core ##
+[![CircleCI](https://circleci.com/gh/circleci/circleci-docs.svg?style=svg)](https://github.com/cognitionbox/petra-core)
+
+## Overview ##
 
 ### What is Petra? ###
 
