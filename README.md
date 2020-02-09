@@ -1,6 +1,6 @@
 # petra-core #
 
-[![CircleCI](https://circleci.com/gh/circleci/circleci-docs.svg?style=svg)](https://github.com/cognitionbox/petra-core)
+[![CircleCI](https://circleci.com/gh/circleci/circleci-docs.svg?style=shield)](https://github.com/cognitionbox/petra-core)
 
 ## Overview ##
 
