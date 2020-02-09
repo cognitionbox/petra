@@ -2,6 +2,8 @@
 
 [![CircleCI](https://circleci.com/gh/circleci/circleci-docs.svg?style=shield)](https://github.com/cognitionbox/petra-core)
 
+[![codecov](https://codecov.io/gh/cognitionbox/petra-core/branch/master/graph/badge.svg)](https://codecov.io/gh/cognitionbox/petra-core)
+
 ## Overview ##
 
 ### What is Petra? ###
