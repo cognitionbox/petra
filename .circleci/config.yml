@@ -40,4 +40,4 @@ jobs:
       # run tests!
       - run: mvn integration-test
       - store_artifacts:
-          path:  target
+          path:  target/site
