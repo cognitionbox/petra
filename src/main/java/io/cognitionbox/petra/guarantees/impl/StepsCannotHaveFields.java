@@ -24,6 +24,8 @@ import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.PGraph;
 import io.cognitionbox.petra.lang.RGraph;
 
+import java.lang.reflect.Field;
+
 public class StepsCannotHaveFields implements StepCheck {
 
         @Override
@@ -32,6 +34,11 @@ public class StepsCannotHaveFields implements StepCheck {
                     step.getStepClazz().equals(RGraph.class) ||
                     step.getStepClazz().equals(PGraph.class)) {
                 return true;
+            }
+            if (step.getStepClazz().getDeclaredFields().length == 1){
+                for (Field f : step.getStepClazz().getDeclaredFields()){
+                    return f.getName().equals("$jacocoData");
+                }
             }
             return step.getStepClazz().getDeclaredFields().length == 0;
         }

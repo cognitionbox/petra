@@ -50,8 +50,8 @@ public class Example24Test extends BaseExecutionModesTest {
             pre(readConsume(TwoIntegerLists.class, x->true));
             func(x->{
                 IToIntFunction<Integer> mapper = i->i.intValue();
-                int sumA = x.pstream().mapToInt(mapper).sum();
-                int sumB = x.numbers.pstream().mapToInt(mapper).sum();
+                int sumA = x.stream().mapToInt(mapper).sum();
+                int sumB = x.numbers.stream().mapToInt(mapper).sum();
                 return sumA+sumB;
             });
             post(returns(Integer.class, x->true));

@@ -198,22 +198,8 @@ public class PList<T> extends Identifyable implements IPList<T>, PCollection {
   }
 
   @Override
-  public Stream<T> stream() {
-    return pstream().getBackingStream();
-  }
-
-  @Override
-  public Stream<T> parallelStream() {
-    return pstream().getBackingStream();
-  }
-
-  @Override
   public void forEach(Consumer<? super T> action) {
     backingList.forEach(action);
   }
 
-  @Override
-  public PStream<T> pstream() {
-    return new PStream(Petra.listStream(getBackingList()));
-  }
 }

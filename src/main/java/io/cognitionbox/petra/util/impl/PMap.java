@@ -170,9 +170,4 @@ public class PMap<K,V> extends Identifyable implements IPMap<K,V>, Serializable,
       BiFunction<? super V, ? super V, ? extends V> remappingFunction) {
     return map.merge(key, value, remappingFunction);
   }
-
-  @Override
-  public PStream<Entry<K, V>> pstream() {
-    return new PStream<>(Petra.mapStream(getMap()));
-  }
 }

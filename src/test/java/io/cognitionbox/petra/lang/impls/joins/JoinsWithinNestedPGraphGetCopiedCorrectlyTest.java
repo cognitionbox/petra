@@ -78,8 +78,8 @@ public class JoinsWithinNestedPGraphGetCopiedCorrectlyTest extends BaseExecution
 
   public static class MultiStepsCreatedForMultipleMatchesWithNesting extends PGraph<@Extract IntList,OutIntList> {
     {
-      pre(readConsume(IntList.class, x->x.size()==6 && x.pstream().mapToInt(i->i).sum()==6));
-      post(returns(OutIntList.class, x->x.size()==6  && x.pstream().mapToInt(i->i).sum()==12));
+      pre(readConsume(IntList.class, x->x.size()==6 && x.stream().mapToInt(i->i).sum()==6));
+      post(returns(OutIntList.class, x->x.size()==6  && x.stream().mapToInt(i->i).sum()==12));
       step(new MultiplyOneByNesting());
       joinSome(new MultiStepsCreatedForMultipleMatchesWithNestingPureJoin());
     }
@@ -89,7 +89,7 @@ public class JoinsWithinNestedPGraphGetCopiedCorrectlyTest extends BaseExecution
    {
       pre(readConsume(Integer.class, x->x==2));
       func(x->new OutIntList(x));
-      post(returns(OutIntList.class, x->x.size()==6 && x.pstream().mapToInt(i->i).sum()==12));
+      post(returns(OutIntList.class, x->x.size()==6 && x.stream().mapToInt(i->i).sum()==12));
     }
   }
 

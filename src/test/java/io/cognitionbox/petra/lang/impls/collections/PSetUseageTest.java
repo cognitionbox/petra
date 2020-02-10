@@ -62,8 +62,8 @@ public class PSetUseageTest extends BaseExecutionModesTest {
       pre(readConsume(TwoIntegerSets.class, a->true));
       func(x->{
         IToIntFunction<Integer> mapper = i->i.intValue();
-        int sumA = x.pstream().mapToInt(mapper).sum();
-        int sumB = x.numbers.pstream().mapToInt(mapper).sum();
+        int sumA = x.stream().mapToInt(mapper).sum();
+        int sumB = x.numbers.stream().mapToInt(mapper).sum();
         return sumA+sumB;
       });
       post(Petra.returns(Integer.class, a->true));

@@ -18,8 +18,5 @@
  */
 package io.cognitionbox.petra.util;
 
-import io.cognitionbox.petra.util.impl.PStream;
-
 public interface PCollection<T> {
-    PStream<T> pstream();
 }

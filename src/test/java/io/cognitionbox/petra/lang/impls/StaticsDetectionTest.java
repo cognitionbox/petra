@@ -48,7 +48,6 @@ public class StaticsDetectionTest extends BaseExecutionModesTest {
               "value=" + value +
               '}';
     }
-
     public A(int value) {
       this.value = value;
     }
@@ -70,15 +69,12 @@ public class StaticsDetectionTest extends BaseExecutionModesTest {
       post(returns(A.class, a->true));
       step(AtoA.class);
     }
-
   }
 
 
   @Test(expected = AssertionError.class)
   public void testStaticsDetection() {
-
-    io.cognitionbox.petra.lang.PGraphComputer<A, A> lc = getGraphComputer();
-    A result = lc.computeWithInput(new g(), new A(1));
+    A result = (A) getGraphComputer().computeWithInput(new g(), new A(1));
   }
 
 }

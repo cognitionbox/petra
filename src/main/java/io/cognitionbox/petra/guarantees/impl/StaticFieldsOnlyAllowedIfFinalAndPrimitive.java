@@ -28,7 +28,6 @@ import java.lang.reflect.Modifier;
 public class StaticFieldsOnlyAllowedIfFinalAndPrimitive implements StepCheck {
         @Override
         public boolean test(IStep<?, ?> step) {
-            //Package stepPackage = step.getStepClazz().getPackage();
             if (step.p() == null) {
                 return true;
             }
@@ -60,25 +59,10 @@ public class StaticFieldsOnlyAllowedIfFinalAndPrimitive implements StepCheck {
                                     String.class.isAssignableFrom(f.getType()) ||
                                     Boolean.class.isAssignableFrom(f.getType()) ||
                                     Number.class.isAssignableFrom(f.getType()));
-//                    boolean isPrivate = Modifier.isPrivate(f.getModifiers());
-//                    boolean typeHasAccessibleStaticMethodReturningStaticFieldType =
-//                            ReflectUtils.getAllMethodsAccessibleFromObject(type)
-//                                    .stream()
-//                                    .filter(m->Modifier.isStatic(m.getModifiers()))
-//                                    .filter(m->m.getReturnType().equals(f.getType()))
-//                                    .filter(m->Modifier.isPublic(m.getModifiers()) ||
-//                                                Modifier.isProtected(m.getModifiers()) ||
-//                                                 !Modifier.isPrivate(m.getModifiers()))
-//                                    .findAny().isPresent();
-
-                    //boolean isPublic = Modifier.isPublic(f.getModifiers());
-                    //boolean isProtected = Modifier.isProtected(f.getModifiers());
-                    //boolean isDefault = !isPrivate && !isProtected && !isPublic;
-                    //boolean isInSamePackageAsStep = f.getType().getPackage().equals(step.getStepClazz().getPackage());
-                    if (finalAndPrimtive) {// || (isPrivate && !typeHasAccessibleStaticMethodReturningStaticFieldType)){
+                    if (finalAndPrimtive || f.getName().equals("$jacocoData")) {
                         // then ok
                     } else {
-                        return f.getName().equals("$jacocoData");
+                        return false;
                     }
                 }
                 checkTypeRecursively(f.getType());

@@ -492,7 +492,7 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
                                                   Guard<? super R> predicate, Collection<IToken> toUse, RGraph toWrite, List<Class<? extends Exception>> throwsRandomly) {
         Guard[] Guards = new Guard[1];
         Guards[0] = a;
-        List<List<IToken>> listOfMatches = Petra.list();
+        List<List<IToken>> listOfMatches = new PList();
         populateListOfMatchesAndRemoveFromCurrentStates(join, index, Guards, listOfMatches, toUse);
         if ((!joinAll && listOfMatches.stream().flatMap(l->l.stream()).findAny().isPresent()) || (joinAll && listOfMatches.stream().flatMap(l->l.stream()).count()==toUse.size())){
             List<IToken> one = listOfMatches.get(0);
@@ -556,7 +556,7 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
         Guard[] Guards = new Guard[2];
         Guards[0] = a;
         Guards[1] = b;
-        List<List<IToken>> listOfMatches = Petra.list();
+        List<List<IToken>> listOfMatches = new PList();
         populateListOfMatchesAndRemoveFromCurrentStates(join, index, Guards, listOfMatches, toUse);
         if ((!joinAll && listOfMatches.stream().flatMap(l->l.stream()).findAny().isPresent()) || (joinAll && listOfMatches.stream().flatMap(l->l.stream()).count()==toUse.size())){
             Pair<PList<IToken>, PList<IToken>> pair = Pair.with((PList<IToken>) listOfMatches.get(0), (PList<IToken>) listOfMatches.get(1));
@@ -624,7 +624,7 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
         Guards[0] = a;
         Guards[1] = b;
         Guards[2] = c;
-        List<List<IToken>> listOfMatches = Petra.list();
+        List<List<IToken>> listOfMatches = new PList();
         populateListOfMatchesAndRemoveFromCurrentStates(join, index, Guards, listOfMatches, toUse);
         if ((!joinAll && listOfMatches.stream().flatMap(l->l.stream()).findAny().isPresent()) || (joinAll && listOfMatches.stream().flatMap(l->l.stream()).count()==toUse.size())){
             Triplet<PList<IToken>, PList<IToken>, PList<IToken>> triplet = Triplet.with((PList<IToken>) listOfMatches.get(0), (PList<IToken>) listOfMatches.get(1), (PList<IToken>) listOfMatches.get(2));

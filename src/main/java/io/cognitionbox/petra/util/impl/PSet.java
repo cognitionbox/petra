@@ -140,16 +140,6 @@ public class PSet<T> extends Identifyable implements IPSet<T>, Serializable , PC
   }
 
   @Override
-  public Stream<T> stream() {
-    return pstream().getBackingStream();
-  }
-
-  @Override
-  public Stream<T> parallelStream() {
-    return pstream().getBackingStream();
-  }
-
-  @Override
   public void forEach(Consumer<? super T> action) {
     set.forEach(action);
   }
@@ -157,10 +147,5 @@ public class PSet<T> extends Identifyable implements IPSet<T>, Serializable , PC
   @Override
   public String toString(){
     return set.toString();
-  }
-
-  @Override
-  public PStream<T> pstream() {
-    return new PStream<>(Petra.setStream(getSet()));
   }
 }

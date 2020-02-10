@@ -44,7 +44,6 @@ import java.util.stream.Stream;
 public class Petra {
     private static final Logger LOG = LoggerFactory.getLogger(Petra.class);
     public static List EMPTY = new ArrayList<>();
-    public static NullType NULL = new NullType();
 
     public static <T> T logInfo(Object toPrint, T toPassThrough) {
         LOG.info(toPrint.toString());
@@ -54,14 +53,6 @@ public class Petra {
     public static <T> T println(Object toPrint, T toPassThrough) {
         System.out.println(toPrint);
         return toPassThrough;
-    }
-
-    public static <T> T optional(T value) {
-        return value != null ? value : null;
-    }
-
-    public static <T> T optional(T value, IPredicate<T> predicate) {
-        return predicate.test(value) ? value : null;
     }
 
     public static Class<? extends Throwable>[] throwsRandom(Class<? extends Throwable>... clazzes) {
@@ -158,44 +149,6 @@ public class Petra {
         return new PJoin3(a, b, c, function, r);
     }
 
-//    public static <T> Guard<T> readConsume(Class<T> eventClazz) {
-//        return readConsume(eventClazz, v -> v!=null);
-//    }
-
-    public static <A, B, C, T extends Triplet<List<A>, List<B>, List<C>>> Guard<T> tripleList(
-            Class<T> clazz,
-            IPredicate<A> a,
-            IPredicate<B> b,
-            IPredicate<C> c) {
-        return readConsume(clazz, v -> v.getValue0().stream().allMatch(a) &&
-                v.getValue1().stream().allMatch(b) &&
-                v.getValue2().stream().allMatch(c));
-    }
-
-    public static <A, T extends List<A>> Guard<T> list(
-            Class<T> clazz,
-            IPredicate<A> a) {
-        return readConsume(clazz, v -> v.stream().allMatch(a));
-    }
-
-    public static <A, B, T extends Pair<List<A>, List<B>>> Guard<T> listPair(
-            Class<T> clazz,
-            IPredicate<A> a,
-            IPredicate<B> b) {
-        return readConsume(clazz, v -> v.getValue0().stream().allMatch(a) &&
-                v.getValue1().stream().allMatch(b));
-    }
-
-    public static <A, B, C, T extends Triplet<List<A>, List<B>, List<C>>> Guard<T> listTriple(
-            Class<T> clazz,
-            IPredicate<A> a,
-            IPredicate<B> b,
-            IPredicate<C> c) {
-        return readConsume(clazz, v -> v.getValue0().stream().allMatch(a) &&
-                v.getValue1().stream().allMatch(b) &&
-                v.getValue2().stream().allMatch(c));
-    }
-
     public static <T> Guard<T> False(Class<T> eventClazz) {
         return readConsume(eventClazz, v -> false);
     }
@@ -248,57 +201,6 @@ public class Petra {
         return getFactory().createStreamFromSet(set);
     }
 
-    public static <T> List<T> list() {
-        return new PList<>();
-        // (List<T>) create(null,()->getFactory().createList(UUID.randomUUID().toString()));
-    }
-
-    public static Set set() {
-        return new PSet();
-        //(Set) create(null,()->getFactory().createSet(UUID.randomUUID().toString()));
-    }
-
-    public static Map map() {
-        return new PMap();
-        //(Map) create(null,()->getFactory().createMap(UUID.randomUUID().toString()));
-    }
-
-    public static <T> List<T> list(ISupplier<List<T>> supplier) {
-        return (List<T>) create(supplier, () -> getFactory().createList(UUID.randomUUID().toString()));
-    }
-
-    public static Queue queue(ISupplier<Queue> supplier) {
-        return (Queue) create(supplier, () -> getFactory().createQueue(UUID.randomUUID().toString()));
-    }
-
-    public static Set set(ISupplier<Set> supplier) {
-        return (Set) create(supplier, () -> getFactory().createSet(UUID.randomUUID().toString()));
-    }
-
-    public static Map map(ISupplier<Map> supplier) {
-        return (Map) create(supplier, () -> getFactory().createMap(UUID.randomUUID().toString()));
-    }
-
-//    public static <T> Guard<T> readConsume(IPredicate predicate) {
-//        return new Guard<>(Object.class, predicate);
-//    }
-
-    // link ptype useages in the same graph
-
-    // use weakerThan, strongerThan relationships instead of connectives below
-    // its more light weight for setting relationships than can be used for
-    // reachability checking
-
-//    public static <T,S extends T>  PTypeAND<T> and(Guard<T>... types) {
-//        return new PTypeAND<T>(x -> {
-//            return Arrays.asList(types).stream().allMatch(p->p.test(x));
-//        });
-//    }
-
-//    public static <T>  PTypeNOT<T> not(Guard<T> Guard) {
-//        return new PTypeNOT<T>(x-> Guard.negate().test((T) x));
-//    }
-
 //    public static <T,C extends Ref<T>> C someRef(T readConsume, Class<C> clazz) {
 //        return (C) getFactory().createRef(readConsume, UUID.randomUUID().toString());
 //    }
@@ -315,66 +217,4 @@ public class Petra {
         return ref(null);
     }
 
-    public static class NullType implements Serializable {
-        private NullType() {
-        }
-    }
-
-    //    @Extract
-    public static class T2<A, B> extends Tuple {
-        private A a;
-        private B b;
-
-        public T2(A a, B b) {
-            super(a, b);
-            this.a = a;
-            this.b = b;
-        }
-
-        public A get1() {
-            return (A) get(0);
-        }
-
-        public B get2() {
-            return (B) get(1);
-        }
-    }
-
-    public static class T3<A, B, C> extends T2<A, B> {
-        private C c;
-
-        public T3(A a, B b, C c) {
-            super(a, b);
-            this.c = c;
-        }
-
-        public A get3() {
-            return (A) get(0);
-        }
-    }
-
-    public static class Tuple implements Iterable<Object>, Serializable {
-
-        private List<Object> values;
-
-        public Tuple(Object... values) {
-            this.values = Arrays.asList(values);
-        }
-
-        public Object get(int index) {
-            if (index >= this.values.size()) {
-                return null;
-            }
-            return this.values.get(index);
-        }
-
-        //final public <T> T getDotOutput(Class<T> clazz, int index) {
-        //    return (T) getDotOutput(index);
-        //}
-
-        @Override
-        public Iterator<Object> iterator() {
-            return values.iterator();
-        }
-    }
 }

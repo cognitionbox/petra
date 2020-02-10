@@ -64,8 +64,8 @@ public class PMapUseageTest extends BaseExecutionModesTest {
       pre(readConsume(TwoIntegerMap.class, x->true));
       func(x->{
         IToIntFunction<Map.Entry<Integer,Integer>> mapper = i->i.getValue().intValue();
-        int sumA = x.pstream().mapToInt(mapper).sum();
-        int sumB = x.numbers.pstream().mapToInt(mapper).sum();
+        int sumA = x.entrySet().stream().mapToInt(mapper).sum();
+        int sumB = x.numbers.entrySet().stream().mapToInt(mapper).sum();
         return sumA+sumB;
       });
       post(Petra.returns(Integer.class, x->true));
