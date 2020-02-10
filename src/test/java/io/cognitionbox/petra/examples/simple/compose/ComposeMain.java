@@ -51,8 +51,7 @@ public class ComposeMain extends BaseExecutionModesTest {
 
     @Test
     public void test(){
-        System.setProperty("mode", "PAR");
-        Void result = new PGraphComputer<A, Void>().computeWithInput(new DependancyGraph(),new A());
+        Void result = (Void) getGraphComputer().computeWithInput(new DependancyGraph(),new A());
         System.out.println(result);
     }
 }

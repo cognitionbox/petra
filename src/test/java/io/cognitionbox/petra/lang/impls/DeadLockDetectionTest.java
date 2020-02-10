@@ -95,10 +95,9 @@ public class DeadLockDetectionTest extends BaseExecutionModesTest {
   @Test
   public void testDeadDetection() {
 
-    RGraphComputer.getConfig().setDeadLockRecovery(true);
-    RGraphComputer.getConfig().setDefensiveCopyAllInputsExceptForEffectedInputs(true);
-    io.cognitionbox.petra.lang.PGraphComputer<A, A> lc = getGraphComputer();
-    Object res = lc.computeWithInput(new g(), new A(1));
+    getGraphComputer().getConfig().setDeadLockRecovery(true);
+    getGraphComputer().getConfig().setDefensiveCopyAllInputsExceptForEffectedInputs(true);
+    Object res = getGraphComputer().computeWithInput(new g(), new A(1));
     assertThat(res).isInstanceOf(GraphException.class);
     TimeoutException to = (TimeoutException) ((GraphException)res).getCauses()[0].getCause();
   }

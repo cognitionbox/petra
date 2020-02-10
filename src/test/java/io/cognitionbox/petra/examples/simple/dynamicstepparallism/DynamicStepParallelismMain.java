@@ -51,11 +51,6 @@ public class DynamicStepParallelismMain extends BaseExecutionModesTest {
      */
     @Test
     public void test(){
-
-        System.setProperty("mode", "PAR");
-        System.setProperty("optimizeMode","NONE");
-
-        Void result = new PGraphComputer<X, Void>().computeWithInput(new PrintAGraph(),new X());
-
+        Void result = (Void) getGraphComputer().computeWithInput(new PrintAGraph(),new X());
     }
 }

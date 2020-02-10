@@ -43,7 +43,7 @@ public class LoopMain extends BaseExecutionModesTest {
      */
     @Test
     public void test(){
-        A output = new PGraphComputer<A, A>().computeWithInput(new AtoA(),new A());
+        A output = (A) getGraphComputer().computeWithInput(new AtoA(),new A());
         System.out.println("OUTPUT: "+output.value);
         assertThat(output.value).isEqualTo(10);
     }

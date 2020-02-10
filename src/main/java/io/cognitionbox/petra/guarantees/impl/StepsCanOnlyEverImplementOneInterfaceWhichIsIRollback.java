@@ -19,6 +19,7 @@
 package io.cognitionbox.petra.guarantees.impl;
 
 import io.cognitionbox.petra.guarantees.StepCheck;
+import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.PGraph;
 import io.cognitionbox.petra.lang.RGraph;
 import io.cognitionbox.petra.core.IRollback;
@@ -28,7 +29,8 @@ public class StepsCanOnlyEverImplementOneInterfaceWhichIsIRollback implements St
 
         @Override
         public boolean test(IStep<?, ?> step) {
-            if (step.getStepClazz().equals(RGraph.class) ||
+            if (step.getStepClazz().equals(PEdge.class) ||
+                    step.getStepClazz().equals(RGraph.class) ||
                     step.getStepClazz().equals(PGraph.class)) {
                 return true;
             }

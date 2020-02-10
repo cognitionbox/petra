@@ -91,9 +91,9 @@ public class VoidPGraphTerminates extends BaseExecutionModesTest {
 
     @Test
     public void terminatesWithVOID() {
-        RGraphComputer.getConfig().setConstructionGuaranteeChecks(false);
+        getGraphComputer().getConfig().setConstructionGuaranteeChecks(false);
         Person person = new Person("Aran",32);
-        Object result = PGraphComputer.computeWithInput(new ProcessPerson(),person);
+        Object result = getGraphComputer().computeWithInput(new ProcessPerson(),person);
         assertThat(result).isInstanceOf(Void.class);
     }
 

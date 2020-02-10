@@ -52,12 +52,10 @@ public class TradingSystem extends BaseExecutionModesTest {
      */
    @Test
    public void test() {
-       RGraphComputer.getConfig()
+       getGraphComputer().getConfig()
                .enableStatesLogging()
                         .setConstructionGuaranteeChecks(true)
                         .setStrictModeExtraConstructionGuarantee(true);
-
-        PGraphComputer<State,State> lc = new PGraphComputer();
 
         Feeds feeds = new Feeds();
         feeds.add(new RandomFeed(InstrumentId.DAX));
@@ -69,7 +67,7 @@ public class TradingSystem extends BaseExecutionModesTest {
         state.addTrader(new RandomTrader(TraderId.C, InstrumentId.FTSE));
         state.addTrader(new RandomTrader(TraderId.D, InstrumentId.DAX));
 
-        State output = lc.computeWithInput(new MainLoop(), state);
+        State output = (State) getGraphComputer().computeWithInput(new MainLoop(), state);
 
         assertThat(output.currentExp().get()).isEqualTo(200);
     }

@@ -50,9 +50,6 @@ public class ExtractionMain extends BaseExecutionModesTest {
      */
     @Test
     public void test(){
-        System.setProperty("mode", "PAR");
-        System.setProperty("optimizeMode","NONE");
-
-        Void result = new PGraphComputer<AB, Void>().computeWithInput(new ExtractAB(),new AB(new A(),new B()));
+       Void result = (Void) getGraphComputer().computeWithInput(new ExtractAB(),new AB(new A(),new B()));
     }
 }

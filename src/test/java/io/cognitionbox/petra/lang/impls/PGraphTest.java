@@ -156,8 +156,7 @@ public class PGraphTest extends BaseExecutionModesTest {
   @Test
   public void testMultiStep() {
 
-
-    RGraphComputer.getConfig().setIsReachabilityChecksEnabled(false);
+    getGraphComputer().getConfig().setIsReachabilityChecksEnabled(false);
     MixedSet mixedSet = new MixedSet();
     mixedSet.addAll(Arrays.asList(0,"A"));
     io.cognitionbox.petra.lang.PGraphComputer<MixedSet, PSet> lc = getGraphComputer();

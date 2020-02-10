@@ -41,10 +41,7 @@ public class HelloWorldMain extends BaseExecutionModesTest {
      */
     @Test
     public void test(){
-        System.setProperty("mode", "PAR");
-        System.setProperty("optimizeMode","NONE");
-
-        A output = new PGraphComputer<A, A>().computeWithInput(new AtoAGraph(),new A(""));
+        A output = (A) getGraphComputer().computeWithInput(new AtoAGraph(),new A(""));
         System.out.println("OUTPUT: "+output.value);
         assertThat(output.value).isEqualTo("hello world.");
     }

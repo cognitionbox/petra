@@ -47,7 +47,7 @@ public class AutoRetryMain extends BaseExecutionModesTest {
      */
     @Test
     public void test(){
-        AB_Result result = new PGraphComputer<AB, AB_Result>()
+        AB_Result result = (AB_Result) getGraphComputer()
                 .computeWithInput(new ABtoAB(),new AB(new A(),new B()));
 
         assertThat(result.a.value).isEqualTo(10);

@@ -38,11 +38,7 @@ public class FibMain extends BaseExecutionModesTest {
 
     @Test
     public void test() {
-        RGraphComputer.getConfig().setConstructionGuaranteeChecks(false);
-        RGraphComputer.getConfig().setStrictModeExtraConstructionGuarantee(false);
-
-        io.cognitionbox.petra.lang.PGraphComputer<Integer, IntList> lc = new PGraphComputer();
-        IntList res = lc.computeWithInput(new Fibonacci(), 8);
+        IntList res = (IntList) getGraphComputer().computeWithInput(new Fibonacci(), 8);
         System.out.println(res.get(0));
         assertThat(res.get(0)).isEqualTo(21);
     }

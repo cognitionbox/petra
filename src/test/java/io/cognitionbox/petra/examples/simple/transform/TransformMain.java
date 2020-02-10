@@ -39,10 +39,7 @@ public class TransformMain extends BaseExecutionModesTest {
      */
     @Test
     public void test(){
-        System.setProperty("mode", "PAR");
-        System.setProperty("optimizeMode","NONE");
-
-        B output = new PGraphComputer<A, B>().computeWithInput(new AtoBGraph(),new A());
+        B output = (B) getGraphComputer().computeWithInput(new AtoBGraph(),new A());
         System.out.println("OUTPUT: "+output.getClass().getSimpleName());
         assertThat(output).isInstanceOf(B.class);
     }

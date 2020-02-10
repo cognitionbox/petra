@@ -78,7 +78,7 @@ public class StaticFieldsOnlyAllowedIfFinalAndPrimitive implements StepCheck {
                     if (finalAndPrimtive) {// || (isPrivate && !typeHasAccessibleStaticMethodReturningStaticFieldType)){
                         // then ok
                     } else {
-                        return false;
+                        return f.getName().equals("$jacocoData");
                     }
                 }
                 checkTypeRecursively(f.getType());

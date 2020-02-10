@@ -92,11 +92,11 @@ public class DeadLockRecoveryTest extends BaseExecutionModesTest {
   @Test
   public void testDeadLockRecovery() {
 
-    RGraphComputer.getConfig().setDeadLockRecovery(true);
-    ((PetraTestConfig) RGraphComputer.getConfig()).disableExceptionsPassthrough();
+    getGraphComputer().getConfig().setDeadLockRecovery(true);
+    ((PetraTestConfig) getGraphComputer().getConfig()).disableExceptionsPassthrough();
     io.cognitionbox.petra.lang.PGraphComputer<A, A> lc = getGraphComputer();
     g g = new g();
-    A result = lc.computeWithInput(g, new A(1));
+    A result = (A) getGraphComputer().computeWithInput(g, new A(1));
   }
 
   public static Object Lock1 = new Object();
