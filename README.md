@@ -58,6 +58,18 @@ http://mlwiki.org/index.php/Workflow_Nets
 [Petra Whitepaper v1.06](doc/Petra%20Whitepaper%20v1.06.pdf), 
 which can be found in the doc folder of this repo.
 
+### License ###
+```petra-core``` has been released under ```LGPL v3``` which means it can be used 
+commercially for free and without having to release the source code which uses it.
+Only changes to the ```petra-core``` must be made available as open-source.
+This is so that everyone can benefit from improvements to the core system as we believe
+Petra is a new fundamental technology that will have a big impact on the way we develop
+software systems.
+
+LGPL is commonly used to release open-source libraries, 
+please read the LGPL v3 license for more details:
+[LGPL v3](https://www.gnu.org/licenses/lgpl-3.0.en.html)
+
 ### What is this repository for? ###
 
 This repo contains the source code for the reference implementation of Petra.
