@@ -1,6 +1,6 @@
 # petra-core #
 
-[![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0) [![CircleCI](https://circleci.com/gh/circleci/circleci-docs.svg?style=shield)](https://github.com/cognitionbox/petra-core) [![codecov](https://codecov.io/gh/cognitionbox/petra-core/branch/master/graph/badge.svg)](https://codecov.io/gh/cognitionbox/petra-core) [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/cognitionbox/petra-core)
+[![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0) [![CircleCI](https://circleci.com/gh/circleci/circleci-docs.svg?style=shield)](https://circleci.com/gh/cognitionbox) [![codecov](https://codecov.io/gh/cognitionbox/petra-core/branch/master/graph/badge.svg)](https://codecov.io/gh/cognitionbox/petra-core) [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/cognitionbox/petra-core)
 
 ## Overview ##
 
