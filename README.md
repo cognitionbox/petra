@@ -23,6 +23,13 @@ programming errors, whilst being a practical tool for industry.
  
 Petra's reference implementation is a general purpose embedded Java 8 DSL 
 (Domain Specific Language), with built in automatic software verification features.
+The embedded DSL has been designed in a way that makes it feel like a native language.
+Most embedded DSLs in Java use method chaining, however Petra uses a function sequence pattern
+for better readability. Method chaining will be supported in future versions as it is useful
+for dynamically / programmatically building up sentences. This would be useful in an AI
+system that needs to write and verify it's own code. However for initial use cases the function
+sequence pattern will be more than enough.
+
 Petra aims to be purely functional and Petra programs are constructed in a declarative manor.
 Petra has parallel and distributed programming built into its core and with little work
 a program can be executed in sequential, parallel or distributed modes, 
