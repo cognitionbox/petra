@@ -61,7 +61,7 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
     private List<IJoin> joinsTypes = new ArrayList<>();
     private List<IBiConsumer<Collection<IToken>, RGraph>> joins =
             new ArrayList<>();
-    private List lastStates;
+    private Set lastStates;
     Place place;
     private boolean logImplementationDetails = false;
     private AtomicLong iterationId = new AtomicLong(0);
@@ -108,6 +108,7 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
         currentIteration = 0;
         while (true) {
             try {
+                Lg();
                 O out = iteration();
                 if (out!=null){
                     return out;
@@ -423,19 +424,18 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
     }
 
     private void Lg() {
-        List newStates = null;
+        Set newStates = null;
         if (RGraphComputer.getConfig().isStatesLoggingEnabled()) {
-            newStates = new ArrayList<>(this.getPlace());
-            if (lastStates == null || !lastStates.toString().equals(newStates.toString())) { // logs only changed states
-                List copy = new ArrayList<>(this.getPlace());
-                System.out.println(RGraphComputer.getConfig().getMode() + " " + this.toString() + " size:" + copy.size() + " DELTA -> " + copy);
+            newStates = new HashSet(this.getPlace());
+            if (lastStates == null || !lastStates.toString().equals(newStates.toString())) { // logs only if state changes
+                LOG.info(RGraphComputer.getConfig().getMode() + " " + " " + this.getPartitionKey() + ":" + iterationId.get() + " thread=" + Thread.currentThread().getId() + " size=" + newStates.size() + " -> " + newStates);
             }
         }
         this.lastStates = newStates;
     }
 
     private void Lg_ALL_STATES(String desc) {
-        if (RGraphComputer.getConfig().isStatesLoggingEnabled()) {
+        if (RGraphComputer.getConfig().isAllStatesLoggingEnabled()) {
             List copy = this.getPlace().stream().map(p -> p.getValue()).collect(Collectors.toList());
             String stepId = "";
             if (logImplementationDetails) {

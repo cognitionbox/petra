@@ -60,6 +60,8 @@ public interface IPetraConfig {
 
     public IPetraConfig enableStatesLogging();
 
+    public IPetraConfig enableAllStatesLogging();
+
     public boolean isConstructionGuaranteeChecks();
 
     public IPetraConfig setConstructionGuaranteeChecks(boolean constructionGuaranteeChecks);
@@ -69,6 +71,8 @@ public interface IPetraConfig {
     public IPetraConfig setStrictModeExtraConstructionGuarantee(boolean strictModeExtraConstructionGuarantee);
 
     public boolean isStatesLoggingEnabled();
+
+    public boolean isAllStatesLoggingEnabled();
 
     public boolean isEnableUserCodeDeployment();
 

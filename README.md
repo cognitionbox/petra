@@ -152,7 +152,7 @@ import io.cognitionbox.petra.examples.simple.common.A;
 
 public class PetraExample {
     public static void main(String[] args){
-        
+
         // logs progression of tokens in places
         PGraphComputer.getConfig().enableStatesLogging();
         
