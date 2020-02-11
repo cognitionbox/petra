@@ -44,4 +44,17 @@ public class Token<E> extends Identifyable implements IToken<E>{
     public Token(E value){
         this.value = value;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof IToken){
+            return this.getUniqueId().equals(((IToken) obj).getUniqueId());
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getUniqueId().hashCode();
+    }
 }

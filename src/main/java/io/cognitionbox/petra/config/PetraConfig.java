@@ -86,6 +86,7 @@ public class PetraConfig implements IPetraConfig {
     protected long maxIterations = 10;
     private boolean enableUserCodeDeployment = false;
     private volatile boolean isStatesLoggingEnabled = false;
+    private volatile boolean isAllStatesLoggingEnabled = false;
     private long sleepPeriod = 0;
     private boolean deadLockRecovery = false;
     private boolean isReachabilityChecksEnabled = true;
@@ -205,6 +206,12 @@ public class PetraConfig implements IPetraConfig {
         return this;
     }
 
+    @Override
+    public IPetraConfig enableAllStatesLogging() {
+        isAllStatesLoggingEnabled = true;
+        return this;
+    }
+
     public boolean isConstructionGuaranteeChecks() {
         return constructionGuaranteeChecks;
     }
@@ -225,6 +232,11 @@ public class PetraConfig implements IPetraConfig {
 
     public boolean isStatesLoggingEnabled() {
         return isStatesLoggingEnabled;
+    }
+
+    @Override
+    public boolean isAllStatesLoggingEnabled() {
+        return isAllStatesLoggingEnabled;
     }
 
     public boolean isEnableUserCodeDeployment() {
