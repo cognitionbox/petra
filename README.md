@@ -152,8 +152,9 @@ import io.cognitionbox.petra.examples.simple.common.A;
 
 public class PetraExample {
     public static void main(String[] args){
-        System.setProperty("mode", "PAR"); // set the execution mode, SEQ, PAR or experimental DIS
-        PetraConfig.enableStatesLogging(); // set any other config
+        
+        // logs progression of tokens in places
+        PGraphComputer.getConfig().enableStatesLogging();
         
         // The line below kicks of a Petra graph named DependancyGraph which takes A as input and
         // returns Void as output.
