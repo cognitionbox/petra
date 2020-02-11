@@ -92,7 +92,7 @@ public class PetraConfig implements IPetraConfig {
     private boolean debugModeEnabled = false;
     private boolean constructionGuaranteeChecks = true;
     private boolean strictModeExtraConstructionGuarantee = false;
-    private ExecMode execMode = ExecMode.DIS;
+    private ExecMode execMode = ExecMode.PAR;
 
     private volatile IPetraComponentsFactory sequentialModeFactory;
     private volatile IPetraComponentsFactory parallelModeFactory;

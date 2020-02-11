@@ -53,7 +53,7 @@ public class RGraphComputer<I extends D, O extends D, D> implements Serializable
     RGraphComputer.config = config;
   }
 
-  private static volatile IPetraConfig config;
+  private static volatile IPetraConfig config = new PetraConfig();
 
   public static ExecutorService getWorkerExecutor() {
     return workerExecutor;
