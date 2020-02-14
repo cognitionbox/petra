@@ -74,18 +74,6 @@ please read the LGPL v3 license for more details:
 
 This repo contains the source code for the reference implementation of Petra.
 
-The Petra system has two key components:
-
-1. Petra, a concise and formal embedded DSL for executing computations.
-
-2. Exhaust, a runtime verification system that leverages intelligent fuzzing
-which provides an extra layer of verification on top of Petra.
-
-Access to Exhaust will be coming soon.
-  
-Visit www.cognitionbox.io for information.
-
-
 ### How do I get set up? ###
 
 Simply clone the repo and navigate to the project's root directory then do
