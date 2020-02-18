@@ -48,13 +48,13 @@
     <dependencies>
         <dependency>
             <groupId>io.cognitionbox.petra</groupId>
-            <artifactId>CONFIDENTIAL-petra-core</artifactId>
+            <artifactId>petra-core</artifactId>
             <version>pre-alpha</version>
         </dependency>
         <dependency>
             <groupId>io.cognitionbox.petra</groupId>
             <artifactId>petra-hazelcast</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>pre-alpha</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.hazelcast/hazelcast -->
         <dependency>
