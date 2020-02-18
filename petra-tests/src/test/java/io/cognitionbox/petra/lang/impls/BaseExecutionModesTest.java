@@ -1,25 +1,48 @@
-/**
- * Copyright 2016-2020 Aran Hakki
+/*
+ ********************************************************************************************************
+ * Copyright © 2016-2020 Cognition Box Ltd. - All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This file is part of the "Petra" system. "Petra" is owned by:
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * Cognition Box Ltd. (10194162)
+ * 9 Grovelands Road,
+ * Palmers Green,
+ * London, N13 4RJ
+ * England.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * "Petra" is Proprietary and Confidential.
+ * Unauthorized copying of "Petra" files, via any medium is strictly prohibited.
+ *
+ * "Petra" can not be copied and/or distributed without the express
+ * permission of Cognition Box Ltd.
+ *
+ * "Petra" includes trade secrets of Cognition Box Ltd.
+ * In order to protect "Petra", You shall not decompile, reverse engineer, decrypt,
+ * extract or disassemble "Petra" or otherwise reduce or attempt to reduce any software
+ * in "Petra" to source code form. You shall ensure, both during and
+ * (if you still have possession of "Petra") after the performance of this Agreement,
+ * that (i) persons who are not bound by a confidentiality agreement consistent with this Agreement
+ * shall not have access to "Petra" and (ii) persons who are so bound are put on written notice that
+ * "Petra" contains trade secrets, owned by and proprietary to Cognition Box Ltd.
+ *
+ * "Petra" is written by Aran Hakki <aran@cognitionbox.io>
+ ********************************************************************************************************
  */
 package io.cognitionbox.petra.lang.impls;
 
+import com.hazelcast.config.Config;
+import com.hazelcast.config.RingbufferConfig;
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
+import io.cognitionbox.petra.config.ExecMode;
+import io.cognitionbox.petra.config.IPetraConfig;
+import io.cognitionbox.petra.config.PetraHazelcastConfig;
+import io.cognitionbox.petra.factory.PetraHazelcastComponentsFactory;
 import io.cognitionbox.petra.factory.PetraParallelComponentsFactory;
 import io.cognitionbox.petra.factory.PetraSequentialComponentsFactory;
 import io.cognitionbox.petra.lang.PGraphComputer;
 import io.cognitionbox.petra.lang.RGraphComputer;
-import io.cognitionbox.petra.config.ExecMode;
+import io.cognitionbox.petra.lang.config.PetraHazelcastTestConfig;
 import io.cognitionbox.petra.lang.config.PetraTestConfig;
 import org.junit.After;
 import org.junit.Before;
@@ -46,8 +69,12 @@ public class BaseExecutionModesTest extends BaseTest {
   @Parameterized.Parameters
   public static Collection executionModes() {
     return Arrays.asList(new Object[][] {
-            {ExecMode.SEQ},
-            {ExecMode.PAR}
+        {ExecMode.SEQ}
+        ,
+        {ExecMode.PAR}
+        ,
+
+        {ExecMode.DIS}
     });
   }
 
@@ -57,24 +84,37 @@ public class BaseExecutionModesTest extends BaseTest {
     return PGraphComputer;
   }
 
-  protected io.cognitionbox.petra.lang.PGraphComputer PGraphComputer;
-  //private HazelcastInstance instance;
+  protected PGraphComputer PGraphComputer;
+  private HazelcastInstance instance;
   @Before
   public void setup(){
     super.setup();
-    PetraTestConfig testConfig = new PetraTestConfig();
-    testConfig
-            .allowExceptionsPassthrough()
-            .setMode(execMode)
-            //.setHazelcastServerMode(HazelcastServerMode.LOCAL).
-            .enableStatesLogging()
-            .setIsReachabilityChecksEnabled(true)
-            .setConstructionGuaranteeChecks(true)
-            .setDefensiveCopyAllInputsExceptForEffectedInputs(false)
-            .setStrictModeExtraConstructionGuarantee(false)
-            .setSequentialModeFactory(new PetraSequentialComponentsFactory())
-            .setParallelModeFactory(new PetraParallelComponentsFactory());
+    IPetraConfig testConfig =
+            new PetraHazelcastTestConfig()
+                    .allowExceptionsPassthrough()
+                    .setMode(execMode)
+                    //.setHazelcastServerMode(HazelcastServerMode.LOCAL).
+                    .enableStatesLogging()
+                    .setIsReachabilityChecksEnabled(true)
+                    .setConstructionGuaranteeChecks(true)
+                    .setDefensiveCopyAllInputsExceptForEffectedInputs(false)
+                    .setStrictModeExtraConstructionGuarantee(false)
+                    .setSequentialModeFactory(new PetraSequentialComponentsFactory())
+                    .setParallelModeFactory(new PetraParallelComponentsFactory())
+                    .setDistributedModeFactory(new PetraHazelcastComponentsFactory());
     RGraphComputer.setConfig(testConfig);
+    if (execMode.isDIS()){
+      Config config = new Config();
+      RingbufferConfig rbConfig1 = new RingbufferConfig("tasks")
+              .setCapacity(10000)
+              .setTimeToLiveSeconds(30);
+      RingbufferConfig rbConfig2 = new RingbufferConfig("iterationTasks")
+              .setCapacity(10000)
+              .setTimeToLiveSeconds(30);
+      config.addRingBufferConfig(rbConfig1);
+      config.addRingBufferConfig(rbConfig2);
+      instance = Hazelcast.newHazelcastInstance(config);
+    }
     PGraphComputer = new PGraphComputer();
   }
 
@@ -82,10 +122,10 @@ public class BaseExecutionModesTest extends BaseTest {
   public void tearDown(){
     PGraphComputer.shutdown();
     PGraphComputer = null;
-//    if (instance!=null){
-//      instance.shutdown();
-//      //instance.getCluster().shutdown();
-//    }
+    if (instance!=null){
+      instance.shutdown();
+      //instance.getCluster().shutdown();
+    }
   }
 
   private void waitForXmillis(long x){

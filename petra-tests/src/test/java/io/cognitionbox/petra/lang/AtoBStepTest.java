@@ -23,7 +23,6 @@ import org.junit.runners.Parameterized;
 
 import java.util.function.Supplier;
 
-@Ignore
 @RunWith(Parameterized.class)
 public class AtoBStepTest extends StepTest<Aok,Bok>{
     public AtoBStepTest(ExecMode execMode) {

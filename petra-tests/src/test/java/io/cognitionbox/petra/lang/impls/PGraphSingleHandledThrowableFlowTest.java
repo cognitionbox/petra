@@ -28,7 +28,6 @@ import static io.cognitionbox.petra.util.Petra.readConsume;
 import static io.cognitionbox.petra.util.Petra.returns;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Ignore
 @RunWith(Parameterized.class)
 public class PGraphSingleHandledThrowableFlowTest extends BaseExecutionModesTest {
 

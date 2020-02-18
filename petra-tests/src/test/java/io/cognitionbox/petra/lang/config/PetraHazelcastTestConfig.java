@@ -30,28 +30,77 @@
  */
 package io.cognitionbox.petra.lang.config;
 
-import io.cognitionbox.petra.config.PetraConfig;
+import com.hazelcast.client.config.ClientConfig;
+import com.hazelcast.core.HazelcastInstance;
+import io.cognitionbox.petra.config.*;
+import io.cognitionbox.petra.factory.IPetraComponentsFactory;
 
-public class PetraTestConfig extends PetraConfig implements IPetraTestConfig {
+public class PetraHazelcastTestConfig extends PetraConfig implements IPetraHazelcastConfig, IPetraTestConfig {
 
+    private IPetraTestConfig petraTestConfig = new PetraTestConfig();
+    private IPetraHazelcastConfig petraHazelcastConfig = new PetraHazelcastConfig();
+
+    @Override
+    public boolean isExceptionsPassthrough() {
+        return petraTestConfig.isExceptionsPassthrough();
+    }
+
+    @Override
+    public boolean isTestMode() {
+        return petraTestConfig.isTestMode();
+    }
+
+    @Override
+    public long getMaxIterations() {
+        return petraTestConfig.getMaxIterations();
+    }
+
+    @Override
     public IPetraTestConfig disableExceptionsPassthrough() {
-        this.exceptionsPassthrough = false;
-        return this;
+        return petraTestConfig.disableExceptionsPassthrough();
     }
 
+    @Override
     public IPetraTestConfig allowExceptionsPassthrough() {
-        exceptionsPassthrough = true;
+        petraTestConfig.allowExceptionsPassthrough();
         return this;
     }
 
+    @Override
     public IPetraTestConfig enableTestMode() {
-        testMode = true;
+        petraTestConfig.enableTestMode();
         return this;
     }
 
+    @Override
     public IPetraTestConfig setMaxIterations(long maxIterations) {
-        this.maxIterations = maxIterations;
+        petraTestConfig.setMaxIterations(maxIterations);
         return this;
     }
 
+    @Override
+    public HazelcastServerMode getHazelcastServerMode() {
+        return petraHazelcastConfig.getHazelcastServerMode();
+    }
+
+    @Override
+    public IPetraHazelcastConfig setHazelcastServerMode(HazelcastServerMode hazelcastServerMode) {
+        petraHazelcastConfig.setHazelcastServerMode(hazelcastServerMode);
+        return this;
+    }
+
+    @Override
+    public void initClient() {
+        petraHazelcastConfig.initClient();
+    }
+
+    @Override
+    public ClientConfig getHazelcastClientConfig() {
+        return petraHazelcastConfig.getHazelcastClientConfig();
+    }
+
+    @Override
+    public HazelcastInstance getHazelcastClient() {
+        return petraHazelcastConfig.getHazelcastClient();
+    }
 }
