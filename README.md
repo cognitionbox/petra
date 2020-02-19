@@ -1,6 +1,6 @@
 # petra #
 
-[![CircleCI](https://circleci.com/gh/circleci/circleci-docs.svg?style=shield)](https://circleci.com/gh/cognitionbox) [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/cognitionbox/petra-core)
+[![Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-brightgreen?style=shield)](https://www.apache.org/licenses/LICENSE-2.0) [![CircleCI](https://circleci.com/gh/circleci/circleci-docs.svg?style=shield)](https://circleci.com/gh/cognitionbox) [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=shield)](https://github.com/cognitionbox/petra)
 
 ## Overview ##
 
