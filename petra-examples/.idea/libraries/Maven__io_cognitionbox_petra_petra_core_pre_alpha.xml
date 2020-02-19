@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: io.cognitionbox.petra:petra-core:pre-alpha">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/io/cognitionbox/petra/petra-core/pre-alpha/petra-core-pre-alpha.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/io/cognitionbox/petra/petra-core/pre-alpha/petra-core-pre-alpha-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/io/cognitionbox/petra/petra-core/pre-alpha/petra-core-pre-alpha-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

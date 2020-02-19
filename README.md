@@ -1,6 +1,6 @@
-# petra-core #
+# petra #
 
-[![CircleCI](https://circleci.com/gh/circleci/circleci-docs.svg?style=shield)](https://circleci.com/gh/cognitionbox) [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/cognitionbox/petra-core)
+[![Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-brightgreen?style=shield)](https://www.apache.org/licenses/LICENSE-2.0) [![CircleCI](https://circleci.com/gh/circleci/circleci-docs.svg?style=shield)](https://circleci.com/gh/cognitionbox) [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=shield)](https://github.com/cognitionbox/petra)
 
 ## Overview ##
 
@@ -58,28 +58,56 @@ http://mlwiki.org/index.php/Workflow_Nets
 [Petra Whitepaper v1.06](doc/Petra%20Whitepaper%20v1.06.pdf), 
 which can be found in the doc folder of this repo.
 
-### License ###
-```petra-core``` has been released under ```LGPL v3``` which means it can be used 
-commercially for free and without having to release the source code which uses it.
-Only changes to the ```petra-core``` must be made available as open-source.
-This is so that everyone can benefit from improvements to the core system as we believe
-Petra is a new fundamental technology that will have a big impact on the way we develop
-software systems.
-
-LGPL is commonly used to release open-source libraries, 
-please read the LGPL v3 license for more details:
-[LGPL v3](https://www.gnu.org/licenses/lgpl-3.0.en.html)
-
 ### What is this repository for? ###
 
-This repo contains the source code for the reference implementation of Petra.
+This repo contains the following projects: 
+
+#### petra-core ####
+Java source code for the reference implementation of Petra.
+
+#### petra-examples ####
+Simple examples for using Petra with Java.
+
+#### petra-hazelcast ####
+Java implementation for the Hazelcast IMDG implementation of the Petra components
+factory ```IPetraComponentsFactory```. This enables Petra to be executed using
+distributed objects using Hazelcast's in-memory data grid technology.
+ 
+#### petra-hazelcast-jet ####
+Java implementation for the Hazelcast JET implementation of the Petra components
+factory ```IPetraComponentsFactory```. This enables Petra to be executed using
+distributed objects using Hazelcast's in-memory data grid technology and 
+Jet streaming technology. Jet can process large distributed data structures with
+lower latency.
+
+#### petra-kotlin ####
+A tiny Kotlin library to make it even easier to use Kotlin with Petra.
+
+#### petra-tests ####
+Tests for all execution modes of Petra. ```SEQ```, ```PAR``` and ```DIS``` modes
+(Sequential, Parallel and Distributed modes).
 
 ### How do I get set up? ###
 
 Simply clone the repo and navigate to the project's root directory then do
-```mvn clean install``` to build and install the jar to your local maven repo.
+```mvn clean install``` to build and install the project jars to your local maven repo.
 
-Then you can include the Petra Core dependancy in your projects:
+This will build the projects in the order as defined by parent pom file (see below)
+
+```
+<modules>
+    <module>petra-core</module>
+    <module>petra-examples</module>
+    <module>petra-kotlin</module>
+    <module>petra-hazelcast</module>
+    <module>petra-hazelcast-jet</module>
+    <module>petra-tests</module>
+</modules>
+```
+
+Then you can include the ```petra-core```, ```petra-hazelcast``` and/or
+ ```petra-kotlin``` dependencies in your projects (see below).
+```petra-hazelcast-jet``` needs some more development before its ready.
 
 ```
 <dependency>
@@ -89,12 +117,25 @@ Then you can include the Petra Core dependancy in your projects:
 </dependency>
 ```
 
+```
+<dependency>
+	<groupId>io.cognitionbox.petra</groupId>
+	<artifactId>petra-hazelcast</artifactId>
+	<version>pre-alpha</version>
+</dependency>
+```
+
+```
+<dependency>
+	<groupId>io.cognitionbox.petra</groupId>
+	<artifactId>petra-kotlin</artifactId>
+	<version>pre-alpha</version>
+</dependency>
+```
+
 Please look at the tests within the examples package to start understanding Petra.
 ```petra-core``` includes support for sequential and parallel execution modes, 
 however Petra has been constructed in a way that will allow for distributed mode implementations.
-
-```petra-enterprise``` will be released in the future to provide distributed execution support out the box
-on Hazelcast/JET and Hazelcast Cloud.
 
 ### Petra's Programming Paradigm ###
 
