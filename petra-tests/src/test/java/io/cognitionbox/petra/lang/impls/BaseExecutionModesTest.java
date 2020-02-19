@@ -72,9 +72,8 @@ public class BaseExecutionModesTest extends BaseTest {
         {ExecMode.SEQ}
         ,
         {ExecMode.PAR}
-        ,
-
-        {ExecMode.DIS}
+//        ,
+//        {ExecMode.DIS}
     });
   }
 
