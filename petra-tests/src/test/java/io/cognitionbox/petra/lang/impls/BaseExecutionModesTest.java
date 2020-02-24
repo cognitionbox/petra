@@ -72,8 +72,8 @@ public class BaseExecutionModesTest extends BaseTest {
         {ExecMode.SEQ}
         ,
         {ExecMode.PAR}
-//        ,
-//        {ExecMode.DIS}
+        ,
+        {ExecMode.DIS}
     });
   }
 
@@ -122,6 +122,11 @@ public class BaseExecutionModesTest extends BaseTest {
     PGraphComputer.shutdown();
     PGraphComputer = null;
     if (instance!=null){
+//      if (RGraphComputer.getConfig() instanceof PetraHazelcastTestConfig){
+//        PetraHazelcastTestConfig c = (PetraHazelcastTestConfig) RGraphComputer.getConfig();
+//        c.getHazelcastClient().shutdown();
+//        while(c.getHazelcastClient().getClientService().get)
+//      }
       instance.shutdown();
       //instance.getCluster().shutdown();
     }
