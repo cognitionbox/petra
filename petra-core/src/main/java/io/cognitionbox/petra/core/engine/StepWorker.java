@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.concurrent.Callable;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class StepWorker implements Callable<Boolean>, Serializable {
     private static final long serialVersionUID = 3L;
@@ -29,20 +30,21 @@ public class StepWorker implements Callable<Boolean>, Serializable {
 
     @Override
     public Boolean call() throws Exception {
-        long seq = 0;
+        final AtomicLong seq = new AtomicLong(0);
         IRingbuffer<Serializable> tasks = RGraphComputer.getTaskQueue();
         int count = 0;
         while(true){//count<10){
-            if (seq<=tasks.tailSequence()){
-                Serializable read = tasks.readOne(seq);
+            if (seq.get()<=tasks.tailSequence()){
+                Serializable read = tasks.readOne(seq.get());
                 if (read instanceof StepCallable){
                     if (read!=null && !((StepCallable) read).isDone()){
                         try {
+
                             ((ThreadPoolExecutor) RGraphComputer.getWorkerExecutor())
                                     .setRejectedExecutionHandler(new RejectedExecutionHandler() {
                                         @Override
                                         public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-                                            RGraphComputer.getTaskQueue().add(read);
+                                            seq.decrementAndGet();
                                         }
                                     });
                             RGraphComputer.getWorkerExecutor().submit(((StepCallable) read)); // .get() to see errors
@@ -51,9 +53,9 @@ public class StepWorker implements Callable<Boolean>, Serializable {
                         }
                     }
                 }
-                seq++;
-                if (seq>=tasks.capacity()){
-                    seq = 0;
+                seq.incrementAndGet();
+                if (seq.get()>=tasks.capacity()){
+                    seq.set(0);
                 }
             } else {
                 Thread.sleep(20);
