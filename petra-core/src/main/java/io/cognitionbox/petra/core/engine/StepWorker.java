@@ -31,6 +31,13 @@ public class StepWorker implements Callable<Boolean>, Serializable {
     @Override
     public Boolean call() throws Exception {
         final AtomicLong seq = new AtomicLong(0);
+        ((ThreadPoolExecutor) RGraphComputer.getWorkerExecutor())
+                .setRejectedExecutionHandler(new RejectedExecutionHandler() {
+                    @Override
+                    public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+                        seq.decrementAndGet();
+                    }
+                });
         IRingbuffer<Serializable> tasks = RGraphComputer.getTaskQueue();
         int count = 0;
         while(true){//count<10){
@@ -39,14 +46,6 @@ public class StepWorker implements Callable<Boolean>, Serializable {
                 if (read instanceof StepCallable){
                     if (read!=null && !((StepCallable) read).isDone()){
                         try {
-
-                            ((ThreadPoolExecutor) RGraphComputer.getWorkerExecutor())
-                                    .setRejectedExecutionHandler(new RejectedExecutionHandler() {
-                                        @Override
-                                        public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-                                            seq.decrementAndGet();
-                                        }
-                                    });
                             RGraphComputer.getWorkerExecutor().submit(((StepCallable) read)); // .get() to see errors
                         } catch (Exception e) {
                             e.printStackTrace();
