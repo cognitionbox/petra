@@ -38,9 +38,9 @@ Petra's distributed mode uses Hazelcast and is currently an experimental feature
 
 Petra's type system resembles a type of abstract rewriting system, more specifically a Ground rewriting system, 
 which is a term rewriting system that has only non-variable terms. 
-Ground rewriting systems have decidable termination i.e. they always terminate. This is very useful for
-writing provable program specifications which useful properties including termination, reachability and
-the presence of cycles can be tested for.
+Ground rewriting systems have decidable termination i.e. it is always possible to get a yes/no answer for
+whether or not a ground rewriting system terminates. This is very useful for writing provable program specifications 
+which useful properties including termination, reachability and the presence of cycles can be tested for.
 
 Petra's rewriting system has yet to be defined formally, however the evaluation of the rewrite rules 
 are captured in the Java reference implementation of Petra in this repo within the ```GraphOutputCannotBeReachedFromInput``` 
