@@ -36,11 +36,22 @@ a program can be executed in sequential, parallel or distributed modes,
 whilst maintaining consistent semantics.
 Petra's distributed mode uses Hazelcast and is currently an experimental feature.
 
-Petra's language resembles a modification to Lindenmayer systems (L-Systems).
-L-Systems were introduced and developed in 1968 by Aristid Lindenmayer, 
-a Hungarian theoretical biologist. The Petra L-System is described in a paper titled:
-["Petra, A modification of Lindenmayer systems (L-systems) enabling modularity, for applications in parallel and distributed software v1.3.1"](doc/Petra,%20A%20modification%20of%20Lindenmayer%20systems%20(L-systems)%20enabling%20modularity,%20for%20applications%20in%20parallel%20and%20distributed%20software%20v1.3.1.pdf)
-, which can be found in the doc folder of this repo.
+Petra's type system resembles a type of abstract rewriting system, more specifically a Ground rewriting system, 
+which is a term rewriting system that has only non-variable terms. 
+Ground rewriting systems have decidable termination i.e. they always terminate. This is very useful for
+writing provable program specifications which useful properties including termination, reachability and
+the presence of cycles can be tested for.
+
+Petra's rewriting system has yet to be defined formally, however the evaluation of the rewrite rules 
+are captured in the Java reference implementation of Petra in this repo within the ```GraphOutputCannotBeReachedFromInput``` 
+class (located under the ```io.cognitionbox.petra.guarantees.impls``` package) 
+which tests a Petra program for reachability.
+
+In order to get a feel for abstract rewrite systems take a look at Lindenmayer systems 
+([L-systems](https://en.wikipedia.org/wiki/L-system)), which is a simple type of string rewriting system. L-systems were introduced and developed in 1968 by 
+Aristid Lindenmayer, a Hungarian theoretical biologist and botanist at the University of Utrecht. 
+Lindenmayer used L-systems to describe the behaviour of plant cells and to model the growth processes 
+of plant development.
 
 Petra's execution model resembles a unique extension to Workflow-nets (a type of Petri-net that have desirable safety properties).
 More specifically Petra can be described as a ```Read/Write/Consume, Extractable Object-orientated, Dynamic, Coloured, Workflow-net with Regular Iteration```.
@@ -53,10 +64,6 @@ http://mlwiki.org/index.php/Petri_Nets
 
 ### Workflow-nets ###
 http://mlwiki.org/index.php/Workflow_Nets
-
-### Petra Whitepaper ###
-[Petra Whitepaper v1.06](doc/Petra%20Whitepaper%20v1.06.pdf), 
-which can be found in the doc folder of this repo.
 
 ### What is this repository for? ###
 
