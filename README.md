@@ -6,14 +6,22 @@
 
 ### What is Petra? ###
 
-In simple terms Petra is a language that extends Java 8.
+In simple terms Petra is a concise language that extends Java 8.
 It achieves this through a general purpose DSL coded in Java 8.
 
 Petra = Automatic Parallelization + 
             State programming made easy + 
                 Visualization of Flows +
-                    Software Verification
-
+                    Software Verification             
+                  
+Below is an example visualization of a Petra defined program.
+This visualization can only be generated if Petra's type system verifies that the program passes a
+strict set of safety properties. These visualizations will always be in sync with the program as 
+they are generated directly from the developers code.   
+                
+![Alt text](https://g.gravizo.com/svg?digraph%20Petra%20{rankdir=%22LR%22;start%20[shape=circle,%20style=filled,%20fillcolor=green];start-%3EX;stop%20[shape=doubleoctagon,%20style=filled,%20fillcolor=red];Y-%3Estop;X%20[style=filled,%20fillcolor=blue%20fontcolor=white];Y%20[style=filled,%20fillcolor=blue%20fontcolor=white];XtoY%20[shape=rect%20style=filled,%20fillcolor=orange];PreA%20[style=filled,%20fillcolor=blue%20fontcolor=white];PostA%20[style=filled,%20fillcolor=blue%20fontcolor=white];AtoA%20[shape=rect%20style=filled,%20fillcolor=orange];PreB%20[style=filled,%20fillcolor=blue%20fontcolor=white];PostB%20[style=filled,%20fillcolor=blue%20fontcolor=white];BtoB%20[shape=rect%20style=filled,%20fillcolor=orange];X-%3EXtoY%20[label=PRE];XtoY-%3EY%20[label=POST];X-%3EB%20[label=extract];B%20[style=filled,%20fillcolor=blue%20fontcolor=white];X-%3EA%20[label=extract];A%20[style=filled,%20fillcolor=blue%20fontcolor=white];PreA-%3EAtoA%20[label=PRE];AtoA-%3EPostA%20[label=POST];PreB-%3EBtoB%20[label=PRE];BtoB-%3EPostB%20[label=POST];PostA-%3EXtoY_join_0%20[label=PRE];XtoY_join_0-%3EY%20[label=POST];XtoY_join_0%20[shape=rect%20style=filled,%20fillcolor=orange%20fontcolor=black];PostB-%3EXtoY_join_0%20[label=PRE];A-%3EPostA%20[label=assignable];A-%3EPreA%20[label=assignable];B-%3EPostB%20[label=assignable];B-%3EPreB%20[label=assignable];XtoY-%3EAtoA%20[style=dotted,%20label=owns];XtoY-%3EBtoB%20[style=dotted,%20label=owns];XtoY_join_0%20[shape=rect%20style=filled,%20fillcolor=orange%20fontcolor=black];XtoY-%3EXtoY_join_0%20[style=dotted,%20label=owns];})
+                    
+                    
 The aim of Petra is to provide a modern programming paradigm, 
 a concise language and tooling to meet today's complex software needs. 
 Petra has verification in mind at it has been designed from the ground up to 
