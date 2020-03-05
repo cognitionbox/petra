@@ -54,7 +54,7 @@ Lindenmayer used L-systems to describe the behaviour of plant cells and to model
 of plant development.
 
 Petra's execution model resembles a unique extension to Workflow-nets (a type of Petri-net that have desirable safety properties).
-More specifically Petra can be described as a ```Read/Write/Consume, Extractable Object-orientated, Dynamic, Coloured, Workflow-net with Regular Iteration```.
+More specifically Petra can be described as a ```Read/Write/Consume, Recursively Extractable Object-orientated, Dynamic, Coloured, Workflow-net with Regular Iteration```.
 
 Petri-nets were invented by Carl Adam Petri in 1939, for the purpose of describing chemical processes.
 A basic description of Petri-net and Workflow-net mechanics is provided below.
