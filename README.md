@@ -108,6 +108,10 @@ Petra worker nodes can run on any Java 8 environment. When Petra worker nodes st
 There can only be one master node, all other nodes will be workers. 
 The master node owns the root level Petra iteration loop. If the master goes down one of the other worker nodes
 will try to become the master in order to own and execute the root iteration loop.
+When an Petra application starts the root iteration loop causes tasks to be added to Petra's task ring buffer.
+All nodes are able to process tasks from the ring buffer. During processing of a task more tasks can be added to the ring buffer.
+Tasks are never removed from the ring buffer but they are marked as complete once successfully completed.
+
 Below is a simple diagram showing the distributed deployment architecture. 
 
 ![Alt text](https://g.gravizo.com/svg?digraph%20PetraArchitecture%20{rankdir=LR;%22Petra%20worker%20node%201%20(Master)%22-%3E%22Hazelcast%20IMDG%20/%20JET%20cluster%22%22Petra%20worker%20node%202%22-%3E%22Hazelcast%20IMDG%20/%20JET%20cluster%22%22Petra%20worker%20node%203%22-%3E%22Hazelcast%20IMDG%20/%20JET%20cluster%22%22Petra%20worker%20node%20n%20...%22-%3E%22Hazelcast%20IMDG%20/%20JET%20cluster%22})
