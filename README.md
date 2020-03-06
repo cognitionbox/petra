@@ -42,7 +42,6 @@ Petra aims to be purely functional and Petra programs are constructed in a decla
 Petra has parallel and distributed programming built into its core and with little work
 a program can be executed in sequential, parallel or distributed modes, 
 whilst maintaining consistent semantics.
-Petra's distributed mode uses Hazelcast and is currently an experimental feature.
 
 Petra's type system resembles a type of abstract rewriting system, more specifically a Ground rewriting system, 
 which is a term rewriting system that has only non-variable terms. 
@@ -101,6 +100,18 @@ A tiny Kotlin library to make it even easier to use Kotlin with Petra.
 #### petra-tests ####
 Tests for all execution modes of Petra. ```SEQ```, ```PAR``` and ```DIS``` modes
 (Sequential, Parallel and Distributed modes).
+
+### Distributed Deployment Architecture ###
+
+Petra can be deployed against any Hazelcast cluster hosted on-site or on in the cloud or directly on Hazelcast Cloud for convenience.
+Petra worker nodes can run on any Java 8 environment. When Petra worker nodes start they compete to become the master node.
+There can only be one master node, all other nodes will be workers. 
+The master node owns the root level Petra iteration loop. If the master goes down one of the other worker nodes
+will try to become the master in order to own and execute the root iteration loop.
+Below is a simple diagram showing the distributed deployment architecture. 
+
+![Alt text](https://g.gravizo.com/svg?digraph%20PetraArchitecture%20{rankdir=LR;%22Petra%20worker%20node%201%20(Master)%22-%3E%22Hazelcast%20IMDG%20/%20JET%20cluster%22%22Petra%20worker%20node%202%22-%3E%22Hazelcast%20IMDG%20/%20JET%20cluster%22%22Petra%20worker%20node%203%22-%3E%22Hazelcast%20IMDG%20/%20JET%20cluster%22%22Petra%20worker%20node%20n%20...%22-%3E%22Hazelcast%20IMDG%20/%20JET%20cluster%22})
+     
 
 ### How do I get set up? ###
 
