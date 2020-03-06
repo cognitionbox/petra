@@ -534,6 +534,12 @@ improve the convenience of using Kotlin with Petra.
 
 The idea of Petra was originally thought up by Aran Hakki in 2011.
 Since then he has been researching and developing the system.
+
+Aran originally read MEng Systems Engineering at Warwick University 
+and has been a software engineer for about 10 years now.
+He will be starting a PhD in Computer Science in May 2020 and the 
+main research topics will be those surrounding the Petra programming system.
+
 If you are interested in this project and believe you could benefit 
 from this technology please get in touch.
 
