@@ -96,7 +96,7 @@ public class BaseExecutionModesTest extends BaseTest {
                     .enableStatesLogging()
                     .setIsReachabilityChecksEnabled(true)
                     .setConstructionGuaranteeChecks(true)
-                    .setDefensiveCopyAllInputsExceptForEffectedInputs(false)
+                    .setDefensiveCopyAllInputsExceptForEffectedInputs(true)
                     .setStrictModeExtraConstructionGuarantee(false)
                     .setSequentialModeFactory(new PetraSequentialComponentsFactory())
                     .setParallelModeFactory(new PetraParallelComponentsFactory())

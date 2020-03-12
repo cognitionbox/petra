@@ -131,7 +131,11 @@ public class PEdge<I, O> extends AbstractStep<I, O> implements Serializable {
             } else {
                 synchronized (this) { // memory-barrier to ensure all updates are visible before and after func is applied.
                     if (!isEffect() && RGraphComputer.getConfig().isDefensiveCopyAllInputsExceptForEffectedInputs()) {
-                        res = (O) function.apply(copyer.copy(input));
+                        I copy = copyer.copy(input);
+                        RefSetNullifier nullifier = new RefSetNullifier();
+                        nullifier.nullifyAllSettersOfRefsInObject(copy,true);
+                        res = (O) function.apply(copy);
+                        nullifier.nullifyAllSettersOfRefsInObject(copy,false);
                     } else {
                         res = (O) function.apply(input);
                     }

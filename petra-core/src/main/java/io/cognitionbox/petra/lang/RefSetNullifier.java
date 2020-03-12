@@ -26,7 +26,10 @@ public class RefSetNullifier {
         for (Field f : fields){
             try {
                 Ref r = null;
+                boolean acc = f.isAccessible();
+                f.setAccessible(true);
                 if (trueForNullifyFalseForRevert){
+
                     r = (Ref) f.get(o);
                     map.put(f,r); // need to store original ref values against fields, e.g. in a Map
                     f.set(o,ref(r.get())); // will be set with new ref of same value
@@ -35,8 +38,11 @@ public class RefSetNullifier {
                     r = map.get(f);
                     f.set(o,r); // add original ref back in
                 }
+                f.setAccessible(acc);
                 // recursive step to
-                nullifyAllSettersOfRefsInObject(r.get(),trueForNullifyFalseForRevert);
+                if (r.get()!=null){ // refs value might be null hence we don't need to recurse it
+                    nullifyAllSettersOfRefsInObject(r.get(),trueForNullifyFalseForRevert);
+                }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }

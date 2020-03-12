@@ -203,11 +203,16 @@ public class Guard<E> implements IPredicate<E> {
                     if (RGraphComputer.getConfig().isDefensiveCopyAllInputsExceptForEffectedInputs()){
                     try {
                         xToUse = copyer.copy(x);
+                        RefSetNullifier nullifier = new RefSetNullifier();
+                        nullifier.nullifyAllSettersOfRefsInObject(xToUse,true);
+                        boolean res = this.predicate.test(xToUse);
+                        nullifier.nullifyAllSettersOfRefsInObject(xToUse,false);
+                        return res;
                     } catch (Exception e){
                         return false;
                     }
                 }
-                return this.predicate.test(x);
+                return this.predicate.test(xToUse);
             } catch (Exception e){
                 throw new TypeEvalException(e);
             } finally {
