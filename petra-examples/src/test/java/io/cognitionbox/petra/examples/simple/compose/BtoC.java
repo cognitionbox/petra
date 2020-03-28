@@ -21,15 +21,16 @@ package io.cognitionbox.petra.examples.simple.compose;
 import io.cognitionbox.petra.examples.simple.common.B;
 import io.cognitionbox.petra.examples.simple.common.C;
 import io.cognitionbox.petra.lang.PEdge;
+import io.cognitionbox.petra.util.Petra;
 
-import static io.cognitionbox.petra.util.Petra.readConsume;
-import static io.cognitionbox.petra.util.Petra.returns;
+import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rt;
 
 
 public class BtoC extends PEdge<B, C> {
     {
-       pre(readConsume(B.class,b->true));
+       pre(rc(B.class, b->true));
        func(b->new C());
-       post(returns(C.class, c->true));
+       post(Petra.rt(C.class, c->true));
     }
 }

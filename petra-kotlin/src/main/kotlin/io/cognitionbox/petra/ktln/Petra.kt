@@ -25,19 +25,19 @@ import kotlin.reflect.KClass
 
 object Petra {
 
-    fun <T:Any> readOnly(eventClazz: KClass<T>, predicate: (T) -> Boolean): GuardRead<T> {
+    fun <T:Any> ro(eventClazz: KClass<T>, predicate: (T) -> Boolean): GuardRead<T> {
         return GuardRead(eventClazz.java, predicate)
     }
 
-    fun <T:Any> readWrite(eventClazz: KClass<T>, predicate: (T) -> Boolean): GuardWrite<T> {
+    fun <T:Any> rw(eventClazz: KClass<T>, predicate: (T) -> Boolean): GuardWrite<T> {
         return GuardWrite(eventClazz.java, predicate)
     }
 
-    fun <T:Any> readConsume(eventClazz: KClass<T>, predicate: (T) -> Boolean): GuardConsume<T> {
+    fun <T:Any> rc(eventClazz: KClass<T>, predicate: (T) -> Boolean): GuardConsume<T> {
         return GuardConsume(eventClazz.java, predicate)
     }
 
-    fun <T:Any> returns(eventClazz: KClass<T>, predicate: (T) -> Boolean): GuardReturn<T> {
+    fun <T:Any> rt(eventClazz: KClass<T>, predicate: (T) -> Boolean): GuardReturn<T> {
         return GuardReturn(eventClazz.java, predicate)
     }
 

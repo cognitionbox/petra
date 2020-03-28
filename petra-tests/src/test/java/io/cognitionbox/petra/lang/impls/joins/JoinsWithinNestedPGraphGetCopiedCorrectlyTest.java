@@ -22,10 +22,9 @@ import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.PGraph;
 import io.cognitionbox.petra.lang.PJoin;
-import io.cognitionbox.petra.util.impl.PList;
 import io.cognitionbox.petra.util.Petra;
+import io.cognitionbox.petra.util.impl.PList;
 import org.assertj.core.api.Assertions;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -34,8 +33,8 @@ import java.util.Arrays;
 import java.util.Collection;
 
 
-import static io.cognitionbox.petra.util.Petra.readConsume;
-import static io.cognitionbox.petra.util.Petra.returns;
+import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rt;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
@@ -74,8 +73,8 @@ public class JoinsWithinNestedPGraphGetCopiedCorrectlyTest extends BaseExecution
 
   public static class MultiStepsCreatedForMultipleMatchesWithNesting extends PGraph<@Extract IntList,OutIntList> {
     {
-      pre(readConsume(IntList.class, x->x.size()==6 && x.stream().mapToInt(i->i).sum()==6));
-      post(returns(OutIntList.class, x->x.size()==6  && x.stream().mapToInt(i->i).sum()==12));
+      pre(rc(IntList.class, x->x.size()==6 && x.stream().mapToInt(i->i).sum()==6));
+      post(Petra.rt(OutIntList.class, x->x.size()==6  && x.stream().mapToInt(i->i).sum()==12));
       step(new MultiplyOneByNesting());
       joinSome(new MultiStepsCreatedForMultipleMatchesWithNestingPureJoin());
     }
@@ -83,9 +82,9 @@ public class JoinsWithinNestedPGraphGetCopiedCorrectlyTest extends BaseExecution
 
   public static class MultiStepsCreatedForMultipleMatchesWithNestingPureJoin extends PJoin<Integer,OutIntList> {
    {
-      pre(readConsume(Integer.class, x->x==2));
+      pre(rc(Integer.class, x->x==2));
       func(x->new OutIntList(x));
-      post(returns(OutIntList.class, x->x.size()==6 && x.stream().mapToInt(i->i).sum()==12));
+      post(Petra.rt(OutIntList.class, x->x.size()==6 && x.stream().mapToInt(i->i).sum()==12));
     }
   }
 
@@ -94,18 +93,18 @@ public class JoinsWithinNestedPGraphGetCopiedCorrectlyTest extends BaseExecution
   class X implements X1, X2 {}
   public static class Tmp extends PJoin<X,X> {
     {
-      pre(readConsume(X1.class, a->true));
+      pre(rc(X1.class, a->true));
       func(x->{
         return x.get(0);
       });
-      post(returns(X2.class, a->true));
+      post(Petra.rt(X2.class, a->true));
     }
   }
 
   public static class MultiplyOneBy2 extends PEdge<Integer,IntList> {
     {
-      pre(readConsume(Integer.class, x->x==1));
-      post(returns(IntList.class, x->x.size()==2));
+      pre(rc(Integer.class, x->x==1));
+      post(Petra.rt(IntList.class, x->x.size()==2));
       func(x->{
         IntList list = new IntList();
         for (int i=0;i<2;i++){
@@ -118,8 +117,8 @@ public class JoinsWithinNestedPGraphGetCopiedCorrectlyTest extends BaseExecution
 
   public static class MultiplyOneByNesting extends PGraph<Integer,Integer> {
    {
-      pre(readConsume(Integer.class, x->x==1));
-      post(returns(Integer.class, x->x==2));
+      pre(rc(Integer.class, x->x==1));
+      post(Petra.rt(Integer.class, x->x==2));
       step(new MultiplyOneBy2());
       joinSome(new MultiplyOneByNestingPureJoin());
     }
@@ -127,11 +126,11 @@ public class JoinsWithinNestedPGraphGetCopiedCorrectlyTest extends BaseExecution
 
   public static class MultiplyOneByNestingPureJoin extends PJoin<Integer,Integer> {
     {
-      pre(readConsume(Integer.class, x->x==0));
+      pre(rc(Integer.class, x->x==0));
       func(x->{
         return x.size();
       });
-      post(returns(Integer.class, a->true));
+      post(Petra.rt(Integer.class, a->true));
     }
   }
 

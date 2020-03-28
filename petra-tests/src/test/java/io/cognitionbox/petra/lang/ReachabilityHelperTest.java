@@ -24,8 +24,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import static io.cognitionbox.petra.util.Petra.readConsume;
-import static io.cognitionbox.petra.util.Petra.returns;
+import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rt;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
@@ -79,27 +79,27 @@ public class ReachabilityHelperTest extends BaseExecutionModesTest {
 
     public static class XtoYPJoin extends PJoin2<C,String,C> {
         {
-            preA(readConsume(C.class, x->true));
-            preB(readConsume(String.class, x->true));
+            preA(rc(C.class, x->true));
+            preB(rc(String.class, x->true));
             func((y, s)->new C("Aran"));
-            post(Petra.returns(C.class, x->true));
+            post(Petra.rt(C.class, x->true));
         }
     }
 
     public static class XtoYPEdge extends PEdge<A,C> {
         {
-            pre(readConsume(A.class, x->true));
+            pre(rc(A.class, x->true));
             func(x->new C("Aran"));
-            post(Petra.returns(C.class, x->true));
+            post(Petra.rt(C.class, x->true));
         }
     }
 
     public static class XtoY extends PGraph<A,C> {
         {
-            pre(readConsume(A.class, x->true));
+            pre(rc(A.class, x->true));
             step(new XtoYPEdge());
             joinSome(new XtoYPJoin());
-            post(Petra.returns(C.class, x->true));
+            post(Petra.rt(C.class, x->true));
         }
     }
 

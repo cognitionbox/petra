@@ -19,13 +19,12 @@ import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.PGraph;
 import io.cognitionbox.petra.util.Petra;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import static io.cognitionbox.petra.util.Petra.readConsume;
-import static io.cognitionbox.petra.util.Petra.returns;
+import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rt;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
@@ -54,40 +53,40 @@ public class PGraphSingleHandledThrowableFlowTest extends BaseExecutionModesTest
 
   public static class MainLoop extends PGraph<Integer,Integer> {
     {
-      pre(readConsume(Integer.class, x->x==0));
-      post(returns(Integer.class, x->x==3));
+      pre(rc(Integer.class, x->x==0));
+      post(Petra.rt(Integer.class, x->x==3));
       step(new Nesting());
     }
   }
 
   public static class Nesting extends PGraph<Integer,Integer> {
     {
-      pre(readConsume(Integer.class, x -> x == 0));
-      post(returns(Integer.class, x->x==1 || x==3));
+      pre(rc(Integer.class, x -> x == 0));
+      post(Petra.rt(Integer.class, x->x==1 || x==3));
       step(new PlusOne());
     }
   }
 
   public static class MainLoopWithDirectStepHandledThrowable extends PGraph<Integer,Integer> {
     {
-      pre(readConsume(Integer.class, x->x==0));
-      post(returns(Integer.class, x->x==3));
+      pre(rc(Integer.class, x->x==0));
+      post(Petra.rt(Integer.class, x->x==3));
       step(new NestingWithDirectStepHandledThrowable());
     }
   }
 
   public static class NestingWithDirectStepHandledThrowable extends PGraph<Integer,Integer> {
     {
-      pre(readConsume(Integer.class, x -> x == 0));
-      post(returns(Integer.class, x -> x == 3));
+      pre(rc(Integer.class, x -> x == 0));
+      post(Petra.rt(Integer.class, x -> x == 3));
       step(new PlusOne());
     }
   }
 
   public static class PlusOne extends PEdge<Integer,Integer> {
    {
-      pre(readConsume(Integer.class, x->x==0));
-      post(returns(Integer.class, x->x==1 || x==3));
+      pre(rc(Integer.class, x->x==0));
+      post(Petra.rt(Integer.class, x->x==1 || x==3));
       func(x->{
         try {
           int y = 1/0;

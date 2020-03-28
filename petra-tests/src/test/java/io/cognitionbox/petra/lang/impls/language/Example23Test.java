@@ -27,8 +27,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import static io.cognitionbox.petra.util.Petra.readConsume;
-import static io.cognitionbox.petra.util.Petra.returns;
+import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rt;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
@@ -40,31 +40,31 @@ public class Example23Test extends BaseExecutionModesTest {
 
     public static class PEdgeAtoB extends PEdge<A, B> {
         {
-            pre(readConsume(A.class, a->a.getValue().equals("A")));
+            pre(rc(A.class, a->a.getValue().equals("A")));
             func(a->new B("B"));
-            post(returns(B.class, b->b.getValue().equals("B")));
+            post(Petra.rt(B.class, b->b.getValue().equals("B")));
         }
     }
     public static class PEdgeBtoC extends PEdge<B, C> {
         {
-            pre(readConsume(B.class, b->b.getValue().equals("B")));
+            pre(rc(B.class, b->b.getValue().equals("B")));
             func(b->new C("C"));
-            post(returns(C.class, c->c.getValue().equals("C")));
+            post(Petra.rt(C.class, c->c.getValue().equals("C")));
         }
     }
     public static class PGraphAtoB extends PGraph<A,B> {
         {
-            pre(readConsume(A.class, a->a.getValue().equals("A")));
+            pre(rc(A.class, a->a.getValue().equals("A")));
             step(new PEdgeAtoB());
-            post(returns(B.class, b->b.getValue().equals("B")));
+            post(Petra.rt(B.class, b->b.getValue().equals("B")));
         }
     }
     public static class PGraphAtoC extends PGraph<A,C> {
         {
-            pre(readConsume(A.class, a->a.getValue().equals("A")));
+            pre(rc(A.class, a->a.getValue().equals("A")));
             step(new PEdgeBtoC());
             step(new PGraphAtoB());
-            post(returns(C.class, c->c.getValue().equals("C")));
+            post(Petra.rt(C.class, c->c.getValue().equals("C")));
         }
     }
 

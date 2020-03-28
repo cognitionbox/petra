@@ -22,14 +22,15 @@ import io.cognitionbox.petra.core.IRollback;
 import io.cognitionbox.petra.examples.simple.common.B;
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.annotations.Feedback;
+import io.cognitionbox.petra.util.Petra;
 
-import static io.cognitionbox.petra.util.Petra.readWrite;
-import static io.cognitionbox.petra.util.Petra.returns;
+import static io.cognitionbox.petra.util.Petra.rw;
+import static io.cognitionbox.petra.util.Petra.rt;
 
 @Feedback
 public class IncrementB extends PEdge<B, B> implements IRollback<B> {
     {
-       pre(readWrite(B.class, a->a.value<10));
+       pre(rw(B.class, a->a.value<10));
        func(b->{
             if (Math.random()>=0.5){
                 throw new IllegalStateException();
@@ -38,7 +39,7 @@ public class IncrementB extends PEdge<B, B> implements IRollback<B> {
             System.out.println("B="+b.value);
             return b;
         });
-        post(returns(B.class,b->b.value==10));
+        post(Petra.rt(B.class, b->b.value==10));
     }
 
     @Override

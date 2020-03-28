@@ -24,15 +24,16 @@ import io.cognitionbox.petra.examples.simple.common.D;
 import io.cognitionbox.petra.examples.simple.common.E;
 import io.cognitionbox.petra.examples.simple.common.F;
 import io.cognitionbox.petra.lang.PEdge;
+import io.cognitionbox.petra.util.Petra;
 
-import static io.cognitionbox.petra.util.Petra.readConsume;
-import static io.cognitionbox.petra.util.Petra.returns;
+import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rt;
 
 
 public class CtoD extends PEdge<C, D> {
     {
-       pre(readConsume(C.class, c->true));
+       pre(rc(C.class, c->true));
        func(c->new D(new E(),new F()));
-       post(returns(D.class, d->true));
+       post(Petra.rt(D.class, d->true));
     }
 }

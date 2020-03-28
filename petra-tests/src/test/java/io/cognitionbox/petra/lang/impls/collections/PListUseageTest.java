@@ -27,8 +27,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 
-import static io.cognitionbox.petra.util.Petra.readConsume;
-import static io.cognitionbox.petra.util.Petra.returns;
+import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rt;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
@@ -56,21 +56,21 @@ public class PListUseageTest extends BaseExecutionModesTest {
 
   public static class SumTwoIntegerLists extends PEdge<TwoIntegerLists,Integer> {
     SumTwoIntegerLists(){
-      pre(readConsume(TwoIntegerLists.class, x->true));
+      pre(rc(TwoIntegerLists.class, x->true));
       func(x->{
         IToIntFunction<Integer> mapper = i->i.intValue();
         int sumA = x.stream().mapToInt(mapper).sum();
         int sumB = x.numbers.stream().mapToInt(mapper).sum();
         return sumA+sumB;
       });
-      post(Petra.returns(Integer.class, x->true));
+      post(Petra.rt(Integer.class, x->true));
     }
   }
 
   public static class SingleStep extends PGraph<TwoIntegerLists,Integer> {
     SingleStep(){
-      pre(readConsume(TwoIntegerLists.class, x->true));
-      post(Petra.returns(Integer.class, x->true));
+      pre(rc(TwoIntegerLists.class, x->true));
+      post(Petra.rt(Integer.class, x->true));
       step(new SumTwoIntegerLists());
     };
   }

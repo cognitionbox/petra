@@ -21,15 +21,16 @@ package io.cognitionbox.petra.examples.simple.join;
 import io.cognitionbox.petra.examples.simple.common.AB;
 import io.cognitionbox.petra.examples.simple.common.AB_Result;
 import io.cognitionbox.petra.lang.PGraph;
+import io.cognitionbox.petra.util.Petra;
 
-import static io.cognitionbox.petra.util.Petra.readConsume;
-import static io.cognitionbox.petra.util.Petra.returns;
+import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rt;
 
 
 public class ABtoAB extends PGraph<AB, AB_Result> {
     {
-       pre(readConsume(AB.class,x->true));
+       pre(rc(AB.class, x->true));
        joinSome(new ABtoABjoin());
-       post(returns(AB_Result.class, x->true));
+       post(Petra.rt(AB_Result.class, x->true));
     }
 }

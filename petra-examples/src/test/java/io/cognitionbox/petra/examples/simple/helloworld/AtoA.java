@@ -20,15 +20,16 @@ package io.cognitionbox.petra.examples.simple.helloworld;
 
 
 import io.cognitionbox.petra.lang.PEdge;
+import io.cognitionbox.petra.util.Petra;
 
-import static io.cognitionbox.petra.util.Petra.readConsume;
-import static io.cognitionbox.petra.util.Petra.returns;
+import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rt;
 
 
 public class AtoA extends PEdge<A, A> {
     {
-       pre(readConsume(A.class, a->a.value.equals("")));
+       pre(rc(A.class, a->a.value.equals("")));
        func(a->new A("hello world."));
-       post(returns(A.class, a->a.value.equals("hello world.")));
+       post(Petra.rt(A.class, a->a.value.equals("hello world.")));
     }
 }

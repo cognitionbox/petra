@@ -23,12 +23,12 @@ import io.cognitionbox.petra.examples.simple.extraction.PrintA;
 import io.cognitionbox.petra.lang.PGraph;
 import io.cognitionbox.petra.lang.Void;
 
-import static io.cognitionbox.petra.util.Petra.readConsume;
+import static io.cognitionbox.petra.util.Petra.rc;
 
 
 public class PrintAGraph extends PGraph<X, Void> {
     {
-       pre(readConsume(X.class,x->true));
+       pre(rc(X.class, x->true));
        step(new PrintA());
        postVoid();
     }

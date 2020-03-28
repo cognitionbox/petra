@@ -23,12 +23,12 @@ import io.cognitionbox.petra.examples.simple.common.A;
 import io.cognitionbox.petra.lang.PGraph;
 import io.cognitionbox.petra.lang.Void;
 
-import static io.cognitionbox.petra.util.Petra.readConsume;
+import static io.cognitionbox.petra.util.Petra.rc;
 
 
 public class DependancyGraph extends PGraph<A, Void> {
     {
-       pre(readConsume(A.class,a->true));
+       pre(rc(A.class, a->true));
        step(new AtoC());
        step(new PrintF());
        step(new CtoD());

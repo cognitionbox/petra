@@ -23,8 +23,8 @@ import static io.cognitionbox.petra.util.Petra.*;
 
 public class Fibonacci extends PGraph<Integer, IntList> {
     {
-        pre(readConsume(Integer.class, a->true));
-        step(anonymous(readConsume(Integer.class, x->true), i->{
+        pre(rc(Integer.class, a->true));
+        step(anonymous(rc(Integer.class, x->true), i->{
             IntList il = null;
             if (i<2){
                 il = new IntList();
@@ -35,12 +35,12 @@ public class Fibonacci extends PGraph<Integer, IntList> {
                 il.add(i-2);
             }
             return il;
-        }, returns(IntList.class, x->true)));
-        joinAll(anonymousJ1(readConsume(IntList.class, i->i.size()==1), i->{
+        }, rt(IntList.class, x->true)));
+        joinAll(anonymousJ1(rc(IntList.class, i->i.size()==1), i->{
             IntList il = new IntList();
             il.add(i.stream().flatMap(x->x.stream()).mapToInt(y->y).sum());
             return il;
-        }, returns(IntList.class, i->true)));
-        post(returns(IntList.class, i->i.size()==1));
+        }, rt(IntList.class, i->true)));
+        post(rt(IntList.class, i->i.size()==1));
     }
 }

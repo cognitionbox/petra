@@ -24,12 +24,12 @@ import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.Void;
 
 import static io.cognitionbox.petra.lang.Void.vd;
-import static io.cognitionbox.petra.util.Petra.readConsume;
+import static io.cognitionbox.petra.util.Petra.rc;
 
 
 public class PrintA extends PEdge<A, Void> {
     {
-       pre(readConsume(A.class, a->true));
+       pre(rc(A.class, a->true));
        func(a->{
            System.out.println(a.getClass().getSimpleName());
            return vd;

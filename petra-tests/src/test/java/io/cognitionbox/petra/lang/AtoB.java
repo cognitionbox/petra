@@ -17,13 +17,13 @@ package io.cognitionbox.petra.lang;
 
 import io.cognitionbox.petra.util.Petra;
 
-import static io.cognitionbox.petra.util.Petra.readConsume;
-import static io.cognitionbox.petra.util.Petra.returns;
+import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rt;
 
 public class AtoB extends PEdge<Aok,Bok> {
     public AtoB(){
-        pre(readConsume(Aok.class, a->a.matches()));
+        pre(rc(Aok.class, a->a.matches()));
         func(a->new B());
-        post(Petra.returns(Bok.class, b->b.matches()));
+        post(Petra.rt(Bok.class, b->b.matches()));
     }
 }

@@ -31,8 +31,8 @@ import org.junit.runners.Parameterized;
 import java.util.Arrays;
 
 
-import static io.cognitionbox.petra.util.Petra.readConsume;
-import static io.cognitionbox.petra.util.Petra.returns;
+import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rt;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
@@ -51,35 +51,35 @@ public class ExtractAnnotationTest extends BaseExecutionModesTest {
 
   public static class JoinAllWithExtract extends PGraph<IntListWithExtract, String> {
     {
-      pre(readConsume(IntListWithExtract.class, x->true));
-      post(Petra.returns(String.class, x->true)); // must use equals instead of == due to serialization
+      pre(rc(IntListWithExtract.class, x->true));
+      post(Petra.rt(String.class, x->true)); // must use equals instead of == due to serialization
     }
   }
 
 
   public static class StepIntListWithExtract extends PEdge<IntListWithExtract, String> {
     {
-      pre(readConsume(IntListWithExtract.class, x->true));
+      pre(rc(IntListWithExtract.class, x->true));
       func(x->"done");
-      post(Petra.returns(String.class, x->true));
+      post(Petra.rt(String.class, x->true));
     }
   }
 
 
   public static class JoinAllWithNoExtract extends PGraph<IntListWithNoExtract, String> {
     {
-      pre(readConsume(IntListWithNoExtract.class, x->true));
+      pre(rc(IntListWithNoExtract.class, x->true));
       step(new StepIntListWithNoExtract());
-      post(Petra.returns(String.class, x->true)); // must use equals instead of == due to serialization
+      post(Petra.rt(String.class, x->true)); // must use equals instead of == due to serialization
     }
   }
 
 
   public static class StepIntListWithNoExtract extends PEdge<IntListWithNoExtract, String> {
     {
-      pre(readConsume(IntListWithNoExtract.class, x->true));
+      pre(rc(IntListWithNoExtract.class, x->true));
       func(x->"done");
-      post(Petra.returns(String.class, x->true));
+      post(Petra.rt(String.class, x->true));
     }
   }
 
@@ -96,9 +96,9 @@ public class ExtractAnnotationTest extends BaseExecutionModesTest {
 
   public static class TestWithAnnotationPureJoin extends PJoin<Integer,String> {
     {
-      pre(readConsume(Integer.class, x->true));
+      pre(rc(Integer.class, x->true));
       func(x->"done");
-      post(Petra.returns(String.class, x->x.equals("done")));
+      post(Petra.rt(String.class, x->x.equals("done")));
     }
   }
 
@@ -113,9 +113,9 @@ public class ExtractAnnotationTest extends BaseExecutionModesTest {
 
   public static class TestWithNoAnnotationPureJoin extends PJoin<Integer,String> {
     {
-      pre(readConsume(Integer.class, x->true));
+      pre(rc(Integer.class, x->true));
       func(x->"done");
-      post(Petra.returns(String.class, x->x.equals("done")));
+      post(Petra.rt(String.class, x->x.equals("done")));
     }
   }
 

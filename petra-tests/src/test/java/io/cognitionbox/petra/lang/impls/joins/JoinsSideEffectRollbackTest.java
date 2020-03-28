@@ -31,8 +31,8 @@ import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
-import static io.cognitionbox.petra.util.Petra.readConsume;
-import static io.cognitionbox.petra.util.Petra.returns;
+import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rt;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
@@ -45,10 +45,10 @@ public class JoinsSideEffectRollbackTest extends BaseExecutionModesTest {
     1 2 3 4 5 6 7
 
     joinSome, looks to match one state per predicate, collect these matches to a list, and transform
-    readConsume 3, readConsume 5, readConsume 6 -> 3,5,6
+    rc 3, rc 5, rc 6 -> 3,5,6
 
     joinAll, filters all states into a list, transforms list
-    readConsume even -> 2,4,6
+    rc even -> 2,4,6
    */
 
   @Extract
@@ -77,15 +77,15 @@ public class JoinsSideEffectRollbackTest extends BaseExecutionModesTest {
 
   public static class Join1JoinEdge extends PGraph<IntList,String> {
     {
-      pre(readConsume(IntList.class, x->true));
-      post(Petra.returns(String.class, x->x.equals("ok")));
+      pre(rc(IntList.class, x->true));
+      post(Petra.rt(String.class, x->x.equals("ok")));
       joinSome(new PureJoinOne());
     }
   }
 
   public static class PureJoinOne extends PJoin<AtomicInteger,String> {
     {
-      pre(readConsume(AtomicInteger.class, x->true));
+      pre(rc(AtomicInteger.class, x->true));
       func(x->{
         x.forEach(i->i.set(i.get()+1));
         if (true){
@@ -93,7 +93,7 @@ public class JoinsSideEffectRollbackTest extends BaseExecutionModesTest {
         }
         return "ok";
       });
-      post(Petra.returns(String.class, x->x.equals("ok")));
+      post(Petra.rt(String.class, x->x.equals("ok")));
     }
   }
 }

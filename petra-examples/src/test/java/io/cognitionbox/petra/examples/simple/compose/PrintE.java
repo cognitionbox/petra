@@ -24,17 +24,17 @@ import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.Void;
 
 import static io.cognitionbox.petra.lang.Void.vd;
-import static io.cognitionbox.petra.util.Petra.readConsume;
-import static io.cognitionbox.petra.util.Petra.returns;
+import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rt;
 
 
 public class PrintE extends PEdge<E, Void> {
     {
-       pre(readConsume(E.class, e->true));
+       pre(rc(E.class, e->true));
        func(e->{
             e.printMe();
             return vd;
        });
-       post(returns(Void.class));
+       post(rt(Void.class));
     }
 }

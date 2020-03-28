@@ -40,7 +40,7 @@ public class ParallelLoopMain extends BaseExecutionModesTest {
      * This is like the LoopMain example but we have two steps doing the same thing.
      * Each operating on a separate object, thus Petra automatically parallelizes these steps.
      * Instead of returning the result we swallow through use of the optional() function.
-     * When the condition of the option is met it returns the actual value, else it will return null,
+     * When the condition of the option is met it rt the actual value, else it will return null,
      * which will be safely swallowed in Petra.
      */
     @Test

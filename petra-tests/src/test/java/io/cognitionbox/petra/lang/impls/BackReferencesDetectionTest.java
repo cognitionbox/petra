@@ -26,8 +26,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import static io.cognitionbox.petra.util.Petra.readConsume;
-import static io.cognitionbox.petra.util.Petra.returns;
+import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rt;
 
 
 @RunWith(Parameterized.class)
@@ -35,7 +35,7 @@ public class BackReferencesDetectionTest extends BaseExecutionModesTest {
   // will help to ensure race conditions and deadlocks are impossible
   // this is currently achieved via the stack overflow exception when recursively deconstructing
   // if there is a back reference there will be a circular reference back to the parent when
-  // deconstructing, there might be readConsume other cases missed.
+  // deconstructing, there might be rc other cases missed.
 
   public BackReferencesDetectionTest(ExecMode execMode) {
     super(execMode);
@@ -91,16 +91,16 @@ public class BackReferencesDetectionTest extends BaseExecutionModesTest {
 
   public static class AtoA extends PEdge<A,A> {
     {
-      pre(readConsume(A.class, x->true));
+      pre(rc(A.class, x->true));
       func(a->new A(222));
-      post(Petra.returns(A.class, x->true));
+      post(Petra.rt(A.class, x->true));
     }
   }
 
   public static class g extends PGraph<A,A> {
     {
-      pre(readConsume(A.class, x->true));
-      post(Petra.returns(A.class, x->true));
+      pre(rc(A.class, x->true));
+      post(Petra.rt(A.class, x->true));
       step(AtoA.class);
     }
   }

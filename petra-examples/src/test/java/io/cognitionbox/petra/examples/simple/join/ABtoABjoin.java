@@ -22,20 +22,21 @@ import io.cognitionbox.petra.examples.simple.common.A;
 import io.cognitionbox.petra.examples.simple.common.AB_Result;
 import io.cognitionbox.petra.examples.simple.common.B;
 import io.cognitionbox.petra.lang.PJoin2;
+import io.cognitionbox.petra.util.Petra;
 
-import static io.cognitionbox.petra.util.Petra.readConsume;
-import static io.cognitionbox.petra.util.Petra.returns;
+import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rt;
 
 
 public class ABtoABjoin extends PJoin2<A, B, AB_Result> {
     {
-       preA(readConsume(A.class, x->true));
-       preB(readConsume(B.class, x->true));
+       preA(rc(A.class, x->true));
+       preB(rc(B.class, x->true));
        func((as, bs)->{
             A a = as.get(0);
             B b = bs.get(0);
             return new AB_Result(a,b);
        });
-       post(returns(AB_Result.class, x->true));
+       post(Petra.rt(AB_Result.class, x->true));
     }
 }

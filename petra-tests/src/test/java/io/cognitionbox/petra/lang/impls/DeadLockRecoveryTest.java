@@ -33,7 +33,6 @@ package io.cognitionbox.petra.lang.impls;
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.lang.RGraphComputer;
 import io.cognitionbox.petra.lang.config.IPetraTestConfig;
-import io.cognitionbox.petra.lang.config.PetraTestConfig;
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.PGraph;
 import io.cognitionbox.petra.util.Petra;
@@ -44,8 +43,8 @@ import org.junit.runners.Parameterized;
 import java.io.Serializable;
 
 
-import static io.cognitionbox.petra.util.Petra.readConsume;
-import static io.cognitionbox.petra.util.Petra.returns;
+import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rt;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
@@ -72,7 +71,7 @@ public class DeadLockRecoveryTest extends BaseExecutionModesTest {
 
   public static class AtoA extends PEdge<A,A> {
     {
-      pre(readConsume(A.class, a->a.value==1));
+      pre(rc(A.class, a->a.value==1));
       func(a->{
         if (Math.random()>0.2){
           ThreadDemo1 T1 = new ThreadDemo1();
@@ -88,14 +87,14 @@ public class DeadLockRecoveryTest extends BaseExecutionModesTest {
         }
         return new A(222);
       });
-      post(Petra.returns(A.class, a->a.value==222));
+      post(Petra.rt(A.class, a->a.value==222));
     }
   }
 
   public static class g extends PGraph<A,A> {
     {
-      pre(readConsume(A.class, a->a.value==1));
-      post(Petra.returns(A.class, a->a.value==222));
+      pre(rc(A.class, a->a.value==1));
+      post(Petra.rt(A.class, a->a.value==222));
       step(AtoA.class);
     }
   }

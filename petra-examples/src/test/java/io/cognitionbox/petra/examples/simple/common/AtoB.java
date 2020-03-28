@@ -19,17 +19,18 @@
 package io.cognitionbox.petra.examples.simple.common;
 
 import io.cognitionbox.petra.lang.PEdge;
+import io.cognitionbox.petra.util.Petra;
 
-import static io.cognitionbox.petra.util.Petra.readConsume;
-import static io.cognitionbox.petra.util.Petra.returns;
+import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rt;
 
 
 public class AtoB extends PEdge<A, B> {
     {
-       pre(readConsume(A.class, a->true));
+       pre(rc(A.class, a->true));
        func(a->{
             return new B();
        });
-       post(returns(B.class,b->true));
+       post(Petra.rt(B.class, b->true));
     }
 }

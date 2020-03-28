@@ -29,8 +29,8 @@ import org.junit.runners.Parameterized;
 import java.util.Map;
 
 
-import static io.cognitionbox.petra.util.Petra.readConsume;
-import static io.cognitionbox.petra.util.Petra.returns;
+import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rt;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
@@ -58,21 +58,21 @@ public class PMapUseageTest extends BaseExecutionModesTest {
 
   public static class SumTwoIntegerMap extends PEdge<TwoIntegerMap,Integer> {
     SumTwoIntegerMap(){
-      pre(readConsume(TwoIntegerMap.class, x->true));
+      pre(rc(TwoIntegerMap.class, x->true));
       func(x->{
         IToIntFunction<Map.Entry<Integer,Integer>> mapper = i->i.getValue().intValue();
         int sumA = x.entrySet().stream().mapToInt(mapper).sum();
         int sumB = x.numbers.entrySet().stream().mapToInt(mapper).sum();
         return sumA+sumB;
       });
-      post(Petra.returns(Integer.class, x->true));
+      post(Petra.rt(Integer.class, x->true));
     }
   }
 
   public static class SingleStep extends PGraph<TwoIntegerMap,Integer> {
     SingleStep(){
-      pre(readConsume(TwoIntegerMap.class, x->true));
-      post(Petra.returns(Integer.class, x->true));
+      pre(rc(TwoIntegerMap.class, x->true));
+      post(Petra.rt(Integer.class, x->true));
       step(new SumTwoIntegerMap());
     };
   }

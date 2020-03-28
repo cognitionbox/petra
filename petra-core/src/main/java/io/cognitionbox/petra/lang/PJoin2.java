@@ -46,7 +46,7 @@ public class PJoin2<A,B,R> extends AbstractJoin2<A,B,R> implements IJoin2<A, B, 
 //        this.b = new Guard(b,predicate);
 //    }
 
-//    protected void post(returns(Class<? super R> r, IPredicate<? super R> predicate) {
+//    protected void post(rt(Class<? super R> r, IPredicate<? super R> predicate) {
 //        this.r = new Guard(r,predicate);
 //    }
 

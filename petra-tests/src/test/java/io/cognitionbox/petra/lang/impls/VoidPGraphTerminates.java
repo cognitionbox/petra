@@ -36,7 +36,6 @@ import io.cognitionbox.petra.lang.annotations.Extract;
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.PGraph;
-import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -44,7 +43,7 @@ import org.junit.runners.Parameterized;
 
 import java.io.Serializable;
 
-import static io.cognitionbox.petra.util.Petra.readConsume;
+import static io.cognitionbox.petra.util.Petra.rc;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 
@@ -80,7 +79,7 @@ public class VoidPGraphTerminates extends BaseExecutionModesTest {
 
     public static class PrintAge extends PEdge<Integer, Void> {
         {
-            pre(readConsume(Integer.class, x->true));
+            pre(rc(Integer.class, x->true));
             func(x->{System.out.println("age="+x);return Void.vd;});
             postVoid();
         }
@@ -88,7 +87,7 @@ public class VoidPGraphTerminates extends BaseExecutionModesTest {
 
     public static class PrintName extends PEdge<String, Void> {
         {
-            pre(readConsume(String.class, x->true));
+            pre(rc(String.class, x->true));
             func(x->{System.out.println("name="+x);return Void.vd;});
             postVoid();
         }
@@ -97,7 +96,7 @@ public class VoidPGraphTerminates extends BaseExecutionModesTest {
     // how to terminate with a void someRef…? Need to check this in the code
     public static class ProcessPerson extends PGraph<Person, Void> {
         {
-            pre(readConsume(Person.class, x->true));
+            pre(rc(Person.class, x->true));
             step(new PrintAge());
             step(new PrintName());
             postVoid();

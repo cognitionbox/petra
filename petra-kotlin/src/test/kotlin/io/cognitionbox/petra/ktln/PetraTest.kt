@@ -18,8 +18,8 @@ package io.cognitionbox.petra.ktln
 import io.cognitionbox.petra.factory.PetraParallelComponentsFactory
 import io.cognitionbox.petra.ktln.Petra.anonymous
 import io.cognitionbox.petra.ktln.Petra.anonymousJ1
-import io.cognitionbox.petra.ktln.Petra.readConsume
-import io.cognitionbox.petra.ktln.Petra.returns
+import io.cognitionbox.petra.ktln.Petra.rc
+import io.cognitionbox.petra.ktln.Petra.rt
 import io.cognitionbox.petra.lang.*
 import io.cognitionbox.petra.lang.annotations.Extract
 import io.cognitionbox.petra.util.impl.PList
@@ -39,8 +39,8 @@ class PetraTest{
 
         class Fibonacci : PGraph<Int, IntList>() {
             init {
-                pre(readConsume(Int::class) { a -> true })
-                step(anonymous(Petra.readConsume(Int::class, { x -> true }), { i: Int ->
+                pre(rc(Int::class) { a -> true })
+                step(anonymous(Petra.rc(Int::class, { x -> true }), { i: Int ->
                     var il: IntList? = null
                     if (i < 2) {
                         il = IntList()
@@ -51,13 +51,13 @@ class PetraTest{
                         il.add(i - 2)
                     }
                     il
-                }, returns(IntList::class, { x -> true })))
-                joinAll(anonymousJ1(Petra.readConsume(IntList::class, { i -> i.size === 1 }), { i ->
+                }, rt(IntList::class, { x -> true })))
+                joinAll(anonymousJ1(Petra.rc(IntList::class, { i -> i.size === 1 }), { i ->
                     val il = IntList()
                     il.add(i.stream().flatMap({ x -> x.stream() }).mapToInt({ y -> y }).sum())
                     il
-                }, returns(IntList::class, { i -> true })))
-                post(returns(IntList::class, { i -> i.size === 1 }))
+                }, rt(IntList::class, { i -> true })))
+                post(rt(IntList::class, { i -> i.size === 1 }))
             }
         }
 
@@ -78,7 +78,7 @@ class PetraTest{
 
         class FibSplit : PEdge<Int, IntList>() {
             init {
-                pre(readConsume(Int::class, { i -> true }))
+                pre(rc(Int::class, { i -> true }))
                 func { i ->
                     if (i < 2) {
                         val il = IntList()
@@ -91,29 +91,29 @@ class PetraTest{
                         il;
                     }
                 }
-                post(returns(IntList::class, { il -> il.size === 2 }))
-                post(returns(IntList::class, { il -> il.size === 1 }))
+                post(rt(IntList::class, { il -> il.size === 2 }))
+                post(rt(IntList::class, { il -> il.size === 1 }))
             }
         }
 
         class FibJoin : PJoin<IntList, IntList>() {
             init {
-                pre(readConsume(IntList::class, { i -> i.size === 1 }))
+                pre(rc(IntList::class, { i -> i.size === 1 }))
                 func { i ->
                     val il = IntList()
                     il.add(i.stream().flatMap<Int> { x -> x.stream() }.mapToInt { y -> y }.sum())
                     il
                 }
-                post(returns(IntList::class, { i -> true }))
+                post(rt(IntList::class, { i -> true }))
             }
         }
 
         class Fibonacci : PGraph<Int, IntList>() {
             init {
-                pre(readConsume(Int::class, { i -> true }))
+                pre(rc(Int::class, { i -> true }))
                 step(FibSplit())
                 joinAll(FibJoin())
-                post(returns(IntList::class, { i -> i.size === 1 }))
+                post(rt(IntList::class, { i -> i.size === 1 }))
             }
         }
 

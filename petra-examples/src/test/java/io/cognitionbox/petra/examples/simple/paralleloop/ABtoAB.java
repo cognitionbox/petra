@@ -23,17 +23,18 @@ import io.cognitionbox.petra.examples.simple.common.AB_Result;
 import io.cognitionbox.petra.examples.simple.common.IncrementA;
 import io.cognitionbox.petra.examples.simple.common.IncrementB;
 import io.cognitionbox.petra.lang.PGraph;
+import io.cognitionbox.petra.util.Petra;
 
-import static io.cognitionbox.petra.util.Petra.readConsume;
-import static io.cognitionbox.petra.util.Petra.returns;
+import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rt;
 
 
 public class ABtoAB extends PGraph<AB, AB_Result> {
     {
-        pre(readConsume(AB.class, x->true));
+        pre(rc(AB.class, x->true));
         step(new IncrementA());
         step(new IncrementB());
         joinSome(new ParallelLoopJoin());
-        post(returns(AB_Result.class, x->x.a.value==10 && x.b.value==10));
+        post(Petra.rt(AB_Result.class, x->x.a.value==10 && x.b.value==10));
     }
 }

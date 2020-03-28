@@ -22,21 +22,22 @@ import io.cognitionbox.petra.examples.simple.common.A;
 import io.cognitionbox.petra.examples.simple.common.AB_Result;
 import io.cognitionbox.petra.examples.simple.common.B;
 import io.cognitionbox.petra.lang.PJoin2;
+import io.cognitionbox.petra.util.Petra;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static io.cognitionbox.petra.util.Petra.readConsume;
-import static io.cognitionbox.petra.util.Petra.returns;
+import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rt;
 
 
 public class ParallelLoopJoin extends PJoin2<A, B, AB_Result> {
     static final Logger LOG = LoggerFactory.getLogger(ParallelLoopJoin.class);
     {
-       preA(readConsume(A.class, a->a.value==10));
-       preB(readConsume(B.class, b->b.value==10));
+       preA(rc(A.class, a->a.value==10));
+       preB(rc(B.class, b->b.value==10));
        func((a, b)->{
             return new AB_Result(a.get(0),b.get(0));
        });
-       post(returns(AB_Result.class, x->x.a.value==10 && x.b.value==10));
+       post(Petra.rt(AB_Result.class, x->x.a.value==10 && x.b.value==10));
     }
 }

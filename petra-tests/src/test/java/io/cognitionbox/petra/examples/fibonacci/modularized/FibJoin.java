@@ -19,17 +19,17 @@ import io.cognitionbox.petra.examples.fibonacci.IntList;
 import io.cognitionbox.petra.lang.PJoin;
 import io.cognitionbox.petra.util.Petra;
 
-import static io.cognitionbox.petra.util.Petra.readConsume;
-import static io.cognitionbox.petra.util.Petra.returns;
+import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rt;
 
 public class FibJoin extends PJoin<IntList,IntList> {
     {
-        pre(readConsume(IntList.class, i->i.size()==1));
+        pre(rc(IntList.class, i->i.size()==1));
         func(i->{
             IntList il = new IntList();
             il.add(i.stream().flatMap(x->x.stream()).mapToInt(y->y).sum());
             return il;
         });
-        post(Petra.returns(IntList.class, i->true));
+        post(Petra.rt(IntList.class, i->true));
     }
 }

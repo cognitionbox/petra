@@ -22,17 +22,18 @@ import io.cognitionbox.petra.examples.tradingsystem.objects.Trader;
 import io.cognitionbox.petra.examples.tradingsystem.objects.TraderTick;
 import io.cognitionbox.petra.examples.tradingsystem.steps.TraderTickOk;
 import io.cognitionbox.petra.lang.PEdge;
+import io.cognitionbox.petra.util.Petra;
 
-import static io.cognitionbox.petra.util.Petra.readConsume;
-import static io.cognitionbox.petra.util.Petra.returns;
+import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rt;
 
 
 public class SourceTraderTick extends PEdge<Trader, TraderTick> {
     {
-       pre(readConsume(TraderOk.class, x->x.traderOk()));
+       pre(rc(TraderOk.class, x->x.traderOk()));
        func(t->{
            return new TraderTick(t, t.getFeed().sourceTick());
        });
-       post(returns(TraderTickOk.class, x->x.traderTickOk()));
+       post(Petra.rt(TraderTickOk.class, x->x.traderTickOk()));
     }
 }

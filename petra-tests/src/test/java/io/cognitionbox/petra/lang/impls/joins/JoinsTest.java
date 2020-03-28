@@ -44,10 +44,10 @@ public class JoinsTest extends BaseExecutionModesTest {
     1 2 3 4 5 6 7
 
     joinSome, looks to match one state per predicate, collect these matches to a list, and transform
-    readConsume 3, readConsume 5, readConsume 6 -> 3,5,6
+    rc 3, rc 5, rc 6 -> 3,5,6
 
     joinAll, filters all states into a list, transforms list
-    readConsume even -> 2,4,6
+    rc even -> 2,4,6
    */
 
   private static IntSet IntSet_1234(){
@@ -124,66 +124,66 @@ public class JoinsTest extends BaseExecutionModesTest {
 
   public static class JoinUnity extends PGraph<@Extract IntSet,OutIntSet> {
     JoinUnity(){
-      pre(readConsume(IntSet.class, s->s.equals(IntSet_1234())));
-      post(returns(OutIntSet.class, x->x.size()==4));
+      pre(rc(IntSet.class, s->s.equals(IntSet_1234())));
+      post(rt(OutIntSet.class, x->x.size()==4));
       joinSome(new JoinUnityPureJoin());
     }
   }
 
   public static class JoinUnityPureJoin extends PJoin<Integer,OutIntSet> {
     JoinUnityPureJoin(){
-      pre(readConsume(Integer.class, x->true));
+      pre(rc(Integer.class, x->true));
       func(x->new OutIntSet(x));
-      post(returns(OutIntSet.class, x->x.size()==4));
+      post(rt(OutIntSet.class, x->x.size()==4));
     }
   }
 
   public static class Join1JoinEdge extends PGraph<@Extract IntSet,OutIntSet> {
     Join1JoinEdge(){
-      pre(readConsume(IntSet.class, s->s.equals(IntSet_1234())));
-      post(returns(OutIntSet.class, x->x.size()==4));
+      pre(rc(IntSet.class, s->s.equals(IntSet_1234())));
+      post(rt(OutIntSet.class, x->x.size()==4));
       joinSome(new PureJoinOne());
     }
   }
 
   public static class PureJoinOne extends PJoin<Integer,OutIntSet> {
     public PureJoinOne(){
-      pre(readConsume(Integer.class, x->true));
+      pre(rc(Integer.class, x->true));
       func(x->new OutIntSet(x));
-      post(returns(OutIntSet.class, x->x.size()==4));
+      post(rt(OutIntSet.class, x->x.size()==4));
     }
   }
 
   public static class Join2JoinEdge extends PGraph<@Extract IntSet,OutIntSet> {
     Join2JoinEdge(){
-      pre(readConsume(IntSet.class, s->s.equals(IntSet_1234())));
-      post(returns(OutIntSet.class, x->x.size()==2));
+      pre(rc(IntSet.class, s->s.equals(IntSet_1234())));
+      post(rt(OutIntSet.class, x->x.size()==2));
       joinSome(new PureJoinTwo());
     }
   }
 
   public static class PureJoinTwo extends PJoin2<Integer,Integer,OutIntSet> {
     public PureJoinTwo(){
-      preA(readConsume(Integer.class, x->x%2==0));
-      preB(readConsume(Integer.class, x->x%2!=0));
+      preA(rc(Integer.class, x->x%2==0));
+      preB(rc(Integer.class, x->x%2!=0));
       func((a, b)->new OutIntSet(a));
-      post(returns(OutIntSet.class, x->x.size()==2));
+      post(rt(OutIntSet.class, x->x.size()==2));
     }
   }
 
   public static class Join3JoinEdge extends PGraph<@Extract IntSet,OutIntSet> {
     Join3JoinEdge(){
-      pre(readConsume(IntSet.class, s->s.equals(IntSet_1234())));
-      post(returns(OutIntSet.class, x->x.size()==4));
+      pre(rc(IntSet.class, s->s.equals(IntSet_1234())));
+      post(rt(OutIntSet.class, x->x.size()==4));
       joinSome(new PureJoinThree());
     }
   }
 
   public static class PureJoinThree extends PJoin3<Integer,Integer,Integer,OutIntSet> {
     public PureJoinThree(){
-      preA(readConsume(Integer.class, x->x%2==0));
-      preB(readConsume(Integer.class, x->x==1));
-      preC(readConsume(Integer.class, x->x==3));
+      preA(rc(Integer.class, x->x%2==0));
+      preB(rc(Integer.class, x->x==1));
+      preC(rc(Integer.class, x->x==3));
       func((a, b, c)->{
         OutIntSet set = new OutIntSet();
         set.addAll(a);
@@ -191,14 +191,14 @@ public class JoinsTest extends BaseExecutionModesTest {
         set.addAll(c);
         return set;
       });
-      post(returns(OutIntSet.class, x->x.size()==4));
+      post(rt(OutIntSet.class, x->x.size()==4));
     }
   }
 
   public static class SuccessfulDependantMultiJoin extends PGraph<@Extract IntSet,IntList> {
     SuccessfulDependantMultiJoin(){
-      pre(readConsume(IntSet.class, s->s.equals(IntSet_1234())));
-      post(returns(IntList.class, x->x.size()==1));
+      pre(rc(IntSet.class, s->s.equals(IntSet_1234())));
+      post(rt(IntList.class, x->x.size()==1));
       joinSome(new SuccessfulDependantMultiPureJoin1());
       joinSome(new SuccessfulDependantMultiPureJoin2());
     }
@@ -206,24 +206,24 @@ public class JoinsTest extends BaseExecutionModesTest {
 
   public static class SuccessfulDependantMultiPureJoin1 extends PJoin<Integer,Integer> {
     SuccessfulDependantMultiPureJoin1(){
-      pre(readConsume(Integer.class, x->x!=7));
+      pre(rc(Integer.class, x->x!=7));
       func(x->7);
-      post(returns(Integer.class, x->x==7));
+      post(rt(Integer.class, x->x==7));
     }
   }
 
   public static class SuccessfulDependantMultiPureJoin2 extends PJoin<Integer,IntList> {
     SuccessfulDependantMultiPureJoin2(){
-      pre(readConsume(Integer.class, x->x==7));
+      pre(rc(Integer.class, x->x==7));
       func(x->new IntList(x));
-      post(returns(IntList.class, x->x.size()==1));
+      post(rt(IntList.class, x->x.size()==1));
     }
   }
 
   public static class SuccessfulDependantMultiJoinWithConsumption extends PGraph<@Extract IntSet,OutIntSet> {
     SuccessfulDependantMultiJoinWithConsumption(){
-      pre(readConsume(IntSet.class, s->s.equals(IntSet_1234())));
-      post(returns(OutIntSet.class, x->x.size()==2));
+      pre(rc(IntSet.class, s->s.equals(IntSet_1234())));
+      post(rt(OutIntSet.class, x->x.size()==2));
       joinSome(new SuccessfulDependantMultiJoinWithConsumptionPureJoin1());
       joinSome(new SuccessfulDependantMultiJoinWithConsumptionPureJoin2());
     }
@@ -231,15 +231,15 @@ public class JoinsTest extends BaseExecutionModesTest {
 
   public static class SuccessfulDependantMultiJoinWithConsumptionPureJoin1 extends PJoin<Integer,OutIntSet> {
     SuccessfulDependantMultiJoinWithConsumptionPureJoin1(){
-      pre(readConsume(Integer.class, x->x%2==0));
+      pre(rc(Integer.class, x->x%2==0));
       func(x->new OutIntSet(x));
-      post(returns(OutIntSet.class, x->x.size()==2));
+      post(rt(OutIntSet.class, x->x.size()==2));
     }
   }
 
   public static class SuccessfulDependantMultiJoinWithConsumptionPureJoin2 extends PJoin<Integer, Void> {
     SuccessfulDependantMultiJoinWithConsumptionPureJoin2(){
-      pre(readConsume(Integer.class, x->x%2!=0));
+      pre(rc(Integer.class, x->x%2!=0));
       func(x->null);
       postVoid();
     }

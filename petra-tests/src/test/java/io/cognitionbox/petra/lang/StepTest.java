@@ -35,8 +35,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 
-import static io.cognitionbox.petra.util.Petra.readConsume;
-import static io.cognitionbox.petra.util.Petra.returns;
+import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rt;
 import static junit.framework.TestCase.assertTrue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -63,9 +63,9 @@ public abstract class StepTest<I,O> extends BaseExecutionModesTest {
 
     public static class EdgePGraph extends PGraph<Object,Object> {
         EdgePGraph(PEdge PEdge){
-            pre(readConsume(Object.class, x->true));
+            pre(rc(Object.class, x->true));
             step(PEdge);
-            post(Petra.returns(Object.class, x->true));
+            post(Petra.rt(Object.class, x->true));
         }
     }
 

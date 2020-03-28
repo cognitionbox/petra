@@ -22,15 +22,16 @@ import io.cognitionbox.petra.examples.simple.common.A;
 import io.cognitionbox.petra.examples.simple.common.AtoB;
 import io.cognitionbox.petra.examples.simple.common.B;
 import io.cognitionbox.petra.lang.PGraph;
+import io.cognitionbox.petra.util.Petra;
 
-import static io.cognitionbox.petra.util.Petra.readConsume;
-import static io.cognitionbox.petra.util.Petra.returns;
+import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rt;
 
 
 public class AtoBGraph extends PGraph<A, B> {
     {
-        pre(readConsume(A.class, x->true));
+        pre(rc(A.class, x->true));
         step(new AtoB());
-        post(returns(B.class, x->true));
+        post(Petra.rt(B.class, x->true));
     }
 }

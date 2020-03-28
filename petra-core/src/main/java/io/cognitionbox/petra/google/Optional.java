@@ -67,7 +67,7 @@ public abstract class Optional<T> implements Serializable {
     return reference;
   }
   /**
-   * Returns an {@code Optional} instance with no contained reference.
+   * rt an {@code Optional} instance with no contained reference.
    *
    * <p><b>Comparison to {@code java.util.Optional}:</b> this method is equivalent to Java 8's
    * {@code Optional.empty}.
@@ -77,7 +77,7 @@ public abstract class Optional<T> implements Serializable {
   }
 
   /**
-   * Returns an {@code Optional} instance containing the given non-null reference. To have {@code
+   * rt an {@code Optional} instance containing the given non-null reference. To have {@code
    * null} treated as {@link #absent}, use {@link #fromNullable} instead.
    *
    * <p><b>Comparison to {@code java.util.Optional}:</b> no differences.
@@ -91,21 +91,21 @@ public abstract class Optional<T> implements Serializable {
   public Optional() {}
 
   /**
-   * Returns {@code true} if this holder contains a (non-null) instance.
+   * rt {@code true} if this holder contains a (non-null) instance.
    *
    * <p><b>Comparison to {@code java.util.Optional}:</b> no differences.
    */
   public abstract boolean isPresent();
 
   /**
-   * Returns the contained instance, which must be present. If the instance might be absent, use
+   * rt the contained instance, which must be present. If the instance might be absent, use
    * {@link #or(Object)} or {@link #orNull} instead.
    *
    * <p><b>Comparison to {@code java.util.Optional}:</b> when the value is absent, this method
    * throws {@link IllegalStateException}, whereas the Java 8 counterpart throws {@link
    * java.util.NoSuchElementException NoSuchElementException}.
    *
-   * @throws IllegalStateException if the instance is absent ({@link #isPresent} returns {@code
+   * @throws IllegalStateException if the instance is absent ({@link #isPresent} rt {@code
    *     false}); depending on this <i>specific</i> exception type (over the more general {@link
    *     RuntimeException}) is discouraged
    */

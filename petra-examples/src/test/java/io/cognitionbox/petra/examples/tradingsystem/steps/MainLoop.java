@@ -23,18 +23,19 @@ import io.cognitionbox.petra.examples.tradingsystem.steps.marketdata.SourceTrade
 import io.cognitionbox.petra.examples.tradingsystem.steps.risk.MainLoopJoin1;
 import io.cognitionbox.petra.examples.tradingsystem.steps.trade.Trade;
 import io.cognitionbox.petra.lang.PGraph;
+import io.cognitionbox.petra.util.Petra;
 
-import static io.cognitionbox.petra.util.Petra.readOnly;
-import static io.cognitionbox.petra.util.Petra.returns;
+import static io.cognitionbox.petra.util.Petra.ro;
+import static io.cognitionbox.petra.util.Petra.rt;
 
 public class MainLoop extends PGraph<State, State> {
     {
         setMaxIterations(1);
         setSleepPeriod(1000);
-        pre(readOnly(StateOk.class,x->true));
+        pre(ro(StateOk.class, x->true));
         step(new SourceTraderTick());
         step(new Trade());
         joinSome(new MainLoopJoin1());
-        post(returns(StopAtMaxExposure.class,x->x.currentExp().get()>=200));
+        post(Petra.rt(StopAtMaxExposure.class, x->x.currentExp().get()>=200));
     }
 }

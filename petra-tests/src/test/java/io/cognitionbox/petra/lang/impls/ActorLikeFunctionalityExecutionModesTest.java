@@ -58,8 +58,8 @@ public class ActorLikeFunctionalityExecutionModesTest extends BaseExecutionModes
 
   public static class MainJoin extends PJoin2<AisEqualTo11, AisEqualTo64,OutSet> {
     {
-      preA(readConsume(AisEqualTo11.class, a->a.i()==11));
-      preB(readConsume(AisEqualTo64.class, a->a.i()==64));
+      preA(rc(AisEqualTo11.class, a->a.i()==11));
+      preB(rc(AisEqualTo64.class, a->a.i()==64));
       func((a, b)->{
         AisEqualTo11_OR_64 one = a.get(0);
         AisEqualTo11_OR_64 two = b.get(0);
@@ -68,7 +68,7 @@ public class ActorLikeFunctionalityExecutionModesTest extends BaseExecutionModes
         out.add(two);
         return out;
       });
-      post(returns(OutSet.class, x->{
+      post(rt(OutSet.class, x->{
         return new OutSet(x).equals(new OutSet(Arrays.asList(new A(11),new A(64))));
       }));
     }
@@ -77,12 +77,12 @@ public class ActorLikeFunctionalityExecutionModesTest extends BaseExecutionModes
   @Feedback
   public static class OppA extends PEdge<A,A> implements IRollback<A> {
     {
-      pre(readWrite(AisEvenAndNotEqualTo64.class, a->a.i()%2==0 && a.i()!=64));
+      pre(rw(AisEvenAndNotEqualTo64.class, a->a.i()%2==0 && a.i()!=64));
       func(x->{
         x.multiplyIby2();
         return x;
       });
-      post(returns(AisEqualTo64.class, a->a.i()==64)); // lets output pass through
+      post(rt(AisEqualTo64.class, a->a.i()==64)); // lets output pass through
     }
 
     @Override
@@ -99,12 +99,12 @@ public class ActorLikeFunctionalityExecutionModesTest extends BaseExecutionModes
   @Feedback
   public static class OppB extends PEdge<A,A> implements IRollback<A>{
     {
-      pre(readWrite(AisOddAndNotEqualTo11.class, a->a.i()%2!=0 && a.i()!=11));
+      pre(rw(AisOddAndNotEqualTo11.class, a->a.i()%2!=0 && a.i()!=11));
       func(x->{
         x.incrementIby2();
         return x;
       }); // 1, 3, 5, 7, 9
-      post(returns(AisEqualTo11.class, a->a.i()==11)); // lets output pass through
+      post(rt(AisEqualTo11.class, a->a.i()==11)); // lets output pass through
     }
 
     @Override
@@ -120,15 +120,15 @@ public class ActorLikeFunctionalityExecutionModesTest extends BaseExecutionModes
 
   public static class Main extends PGraph<InSet,OutSet> {
     {
-      pre(readConsume(InSet.class, x->true));
+      pre(rc(InSet.class, x->true));
       step(new OppA());
       step(new OppB());
-//      step(readConsume(A.class),x->{
+//      step(rc(A.class),x->{
 //        state.out.println(x);
 //        return x;
-//      },readConsume(A.class));
+//      },rc(A.class));
       joinSome(new MainJoin());
-      post(returns(OutSet.class, x->{
+      post(rt(OutSet.class, x->{
         return x.equals(new OutSet(Arrays.asList(new A(11),new A(64))));
       }));
     }

@@ -18,17 +18,17 @@ package io.cognitionbox.petra.lang.impls.language;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.PGraph;
+import io.cognitionbox.petra.util.Petra;
 import io.cognitionbox.petra.util.impl.PList;
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.util.function.IToIntFunction;
-import io.cognitionbox.petra.util.Petra;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 
-import static io.cognitionbox.petra.util.Petra.readConsume;
-import static io.cognitionbox.petra.util.Petra.returns;
+import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rt;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
@@ -44,21 +44,21 @@ public class Example24Test extends BaseExecutionModesTest {
 
     public static class SumTwoIntegerLists extends PEdge<TwoIntegerLists,Integer> {
         {
-            pre(readConsume(TwoIntegerLists.class, x->true));
+            pre(rc(TwoIntegerLists.class, x->true));
             func(x->{
                 IToIntFunction<Integer> mapper = i->i.intValue();
                 int sumA = x.stream().mapToInt(mapper).sum();
                 int sumB = x.numbers.stream().mapToInt(mapper).sum();
                 return sumA+sumB;
             });
-            post(returns(Integer.class, x->true));
+            post(Petra.rt(Integer.class, x->true));
         }
     }
 
     public static class SingleStep extends PGraph<TwoIntegerLists,Integer> {
         {
-            pre(readConsume(TwoIntegerLists.class, x->true));
-            post(returns(Integer.class, x->true));
+            pre(rc(TwoIntegerLists.class, x->true));
+            post(Petra.rt(Integer.class, x->true));
             step(new SumTwoIntegerLists());
         };
     }

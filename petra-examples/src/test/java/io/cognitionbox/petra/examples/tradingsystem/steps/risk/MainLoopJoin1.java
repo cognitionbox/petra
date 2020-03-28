@@ -32,8 +32,8 @@ import static io.cognitionbox.petra.util.Petra.*;
 public class MainLoopJoin1 extends PJoin2<State, Decisions,State> implements IRollback<State> {
     static final Logger LOG = LoggerFactory.getLogger(MainLoopJoin1.class);
     {
-       preA(readWrite(BeforeExposure.class, x->x.lastExp().get()<=x.currentExp().get()));
-       preB(readConsume(DecisionsOk.class, x->true));
+       preA(rw(BeforeExposure.class, x->x.lastExp().get()<=x.currentExp().get()));
+       preB(rc(DecisionsOk.class, x->true));
        func(
                 (a, b) -> {
                     State state = a.get(0);
@@ -43,7 +43,7 @@ public class MainLoopJoin1 extends PJoin2<State, Decisions,State> implements IRo
                     LOG.info("currentExp: " + state.currentExp());
                     return state;
                 });
-        post(returns(AfterExposure.class, x->x.currentExp().get()>x.lastExp().get()));
+        post(rt(AfterExposure.class, x->x.currentExp().get()>x.lastExp().get()));
     }
 
     @Override

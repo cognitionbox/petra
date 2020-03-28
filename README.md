@@ -61,7 +61,7 @@ Lindenmayer used L-systems to describe the behaviour of plant cells and to model
 of plant development.
 
 Petra's execution model resembles a unique extension to Workflow-nets (a type of Petri-net that have desirable safety properties).
-More specifically Petra can be described as a ```Read/Write/Consume, Recursively Extractable Object-orientated, Dynamic, Coloured, Workflow-net with Regular Iteration```.
+More specifically Petra can be described as a ```Read-Only / Read-Write / Read-Consume, Recursively Extractable Object-orientated, Dynamic, Coloured, Workflow-net with Regular Iteration```.
 
 Petri-nets were invented by Carl Adam Petri in 1939, for the purpose of describing chemical processes.
 A basic description of Petri-net and Workflow-net mechanics is provided below.
@@ -216,7 +216,7 @@ public class PetraExample {
         PGraphComputer.getConfig().enableStatesLogging();
         
         // The line below kicks of a Petra graph named DependancyGraph which takes A as input and
-        // returns Void as output.
+        // rt Void as output.
         Void result = new PGraphComputer<A, Void>().computeWithInput(new DependancyGraph(),new A());
         System.out.println(result);
     }
@@ -247,10 +247,10 @@ import io.cognitionbox.petra.examples.simple.common.*;
 
 public class AtoC extends PGraph<A, C> {
     {
-        pre(readConsume(A.class,a->true));
+        pre(rc(A.class,a->true));
         step(new BtoC());
         step(new AtoB());
-        post(returns(C.class,c->true));
+        post(rt(C.class,c->true));
     }
 }
 ```
@@ -273,9 +273,9 @@ import io.cognitionbox.petra.examples.simple.common.C;
 
 public class BtoC extends PEdge<B,C> {
     {
-       pre(readConsume(B.class,b->true));
+       pre(rc(B.class,b->true));
        func(b->new C());
-       post(returns(C.class,c->true));
+       post(rt(C.class,c->true));
     }
 }
 ```
@@ -317,14 +317,14 @@ import io.cognitionbox.petra.examples.simple.common.B;
 
 public class ABtoABjoin extends PJoin2<A, B, AB_Result> {
     {
-       preA(readConsume(A.class,x->true));
-       preB(readConsume(B.class,x->true));
+       preA(rc(A.class,x->true));
+       preB(rc(B.class,x->true));
        func((as, bs)->{
             A a = as.get(0);
             B b = bs.get(0);
             return new AB_Result(a,b);
        });
-       post(returns(AB_Result.class,x->true));
+       post(rt(AB_Result.class,x->true));
     }
 }
 ```
@@ -341,32 +341,32 @@ semantics will stay consistent over all the runtime modes (sequential, parallel 
 
 #### Operations ####
 ##### Pre-conditions #####
-###### readOnly ######
+###### ro (read-only) ######
 Reads a value from the parents place, and does not consume it.
-###### readWrite ######
+###### rw (read-write) ######
 Reads a value from the parents place, does not consume it, 
 and allows writing to this value.
-###### readConsume ######
+###### rc (read-consume) ######
 Consumes a value from the parents place, for reading only.
 ##### Post-conditions #####
-###### returns ######
+###### rt (return) ######
 Declares a value which will be returned to the parents place.
 It can be used one or more times if there is a choice of values to return e.g.
 ```java
-post(returns(Person.class,p->p.getHeightType().equals(HeightType.SHORT)));
-post(returns(Person.class,p->p.getHeightType().equals(HeightType.MEDIUM));
-post(returns(Person.class,p->p.getHeightType().equals(HeightType.TALL)));
+post(rt(Person.class,p->p.getHeightType().equals(HeightType.SHORT)));
+post(rt(Person.class,p->p.getHeightType().equals(HeightType.MEDIUM));
+post(rt(Person.class,p->p.getHeightType().equals(HeightType.TALL)));
 ```
 
 For PGraph to successfully return an object, there must be only 1 object
-in the graph's place and this object must match one of the returns post-conditions.
-In the case of a PGraph which returns Void, there must be 0 objects in the graph's place.
+in the graph's place and this object must match one of the rt post-conditions.
+In the case of a PGraph which rt Void, there must be 0 objects in the graph's place.
 Void types are interpreted as the lack of an object, i.e. steps which consume from
 their parent and return Void, are purely consumers, and do not return another object back
 into the parent's place.
 
 For PEdge to successfully return an object it simply must output an object from its
-function that matches one of the edge's returns post-conditions.
+function that matches one of the edge's rt post-conditions.
 
 ##### postVoid #####
 Declares no value will be returned to the parents place.
@@ -404,10 +404,10 @@ import io.cognitionbox.petra.examples.simple.common.*;
 
 public class AtoC extends PGraph<A, C> {
     {
-        pre(readConsume(A.class,a->true));
+        pre(rc(A.class,a->true));
         step(new BtoC());
         step(new AtoB());
-        post(returns(C.class,c->true));
+        post(rt(C.class,c->true));
     }
 }
 ```
@@ -428,11 +428,11 @@ import io.cognitionbox.petra.examples.simple.common.*;
 
 public class ABtoAB extends PGraph<AB, AB_Result> {
     {
-        pre(readConsume(AB.class,x->true));
+        pre(rc(AB.class,x->true));
         step(new IncrementA());
         step(new IncrementB());
         joinSome(new ABtoABjoin());
-        post(returns(AB_Result.class,x->true));
+        post(rt(AB_Result.class,x->true));
     }
 }
 ```
@@ -450,11 +450,11 @@ import io.cognitionbox.petra.examples.simple.common.*;
 
 public class ABtoAB extends PGraph<AB, AB_Result> {
     {
-        pre(readConsume(AB.class,x->true));
+        pre(rc(AB.class,x->true));
         step(new IncrementA());
         step(new IncrementB());
         joinAll(new ABtoABjoin());
-        post(returns(AB_Result.class,x->true));
+        post(rt(AB_Result.class,x->true));
     }
 }
 ```

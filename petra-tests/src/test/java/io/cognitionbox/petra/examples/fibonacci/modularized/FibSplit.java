@@ -20,12 +20,12 @@ import io.cognitionbox.petra.examples.fibonacci.IntListEx;
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.util.Petra;
 
-import static io.cognitionbox.petra.util.Petra.readConsume;
-import static io.cognitionbox.petra.util.Petra.returns;
+import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rt;
 
 public class FibSplit extends PEdge<Integer, IntList> {
     {
-        pre(readConsume(Integer.class, i->true));
+        pre(rc(Integer.class, i->true));
         func(i->{
             IntList il = null;
             if (i<2){
@@ -38,7 +38,7 @@ public class FibSplit extends PEdge<Integer, IntList> {
             }
             return il;
         });
-        post(Petra.returns(IntList.class, il->il.size()==2));
-        post(Petra.returns(IntList.class, il->il.size()==1));
+        post(Petra.rt(IntList.class, il->il.size()==2));
+        post(Petra.rt(IntList.class, il->il.size()==1));
     }
 }

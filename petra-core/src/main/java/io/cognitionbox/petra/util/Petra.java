@@ -19,20 +19,12 @@ import io.cognitionbox.petra.core.IJoin;
 import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.core.impl.OperationType;
 import io.cognitionbox.petra.factory.IPetraComponentsFactory;
-import io.cognitionbox.petra.factory.PetraParallelComponentsFactory;
-import io.cognitionbox.petra.factory.PetraSequentialComponentsFactory;
 import io.cognitionbox.petra.lang.Void;
 import io.cognitionbox.petra.lang.*;
 import io.cognitionbox.petra.util.function.*;
-import io.cognitionbox.petra.util.impl.PList;
-import io.cognitionbox.petra.util.impl.PMap;
-import io.cognitionbox.petra.util.impl.PSet;
-import org.javatuples.Pair;
-import org.javatuples.Triplet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Serializable;
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.Map.Entry;
@@ -89,7 +81,7 @@ public class Petra {
         }
     }
 
-    // can potentially do readConsume checks here on the predicate itself, maybe on just the string,
+    // can potentially do rc checks here on the predicate itself, maybe on just the string,
     // or on the actually logic using a symbolic reasoner
     private static Map<Class<? extends Guard>, Guard> singletonTypeCache = new HashMap<>();
 
@@ -104,23 +96,23 @@ public class Petra {
         }
     }
 
-    public static <T> GuardRead<T> readOnly(Class<T> eventClazz, IPredicate<T> predicate) {
+    public static <T> GuardRead<T> ro(Class<T> eventClazz, IPredicate<T> predicate) {
         return new GuardRead<>(eventClazz, predicate);
     }
 
-    public static <T> GuardWrite<T> readWrite(Class<T> eventClazz, IPredicate<T> predicate) {
+    public static <T> GuardWrite<T> rw(Class<T> eventClazz, IPredicate<T> predicate) {
         return new GuardWrite<>(eventClazz, predicate);
     }
 
-    public static <T> GuardConsume<T> readConsume(Class<T> eventClazz, IPredicate<T> predicate) {
+    public static <T> GuardConsume<T> rc(Class<T> eventClazz, IPredicate<T> predicate) {
         return new GuardConsume<>(eventClazz, predicate);
     }
 
-    public static <T> GuardReturn<T> returns(Class<T> eventClazz, IPredicate<T> predicate) {
+    public static <T> GuardReturn<T> rt(Class<T> eventClazz, IPredicate<T> predicate) {
         return new GuardReturn<>(eventClazz, predicate);
     }
 
-    public static GuardReturn<Void> returns(Class<Void> eventClazz) {
+    public static GuardReturn<Void> rt(Class<Void> eventClazz) {
         return new GuardReturn<>(eventClazz, x -> true);
     }
 
@@ -147,11 +139,11 @@ public class Petra {
     }
 
     public static <T> Guard<T> False(Class<T> eventClazz) {
-        return readConsume(eventClazz, v -> false);
+        return rc(eventClazz, v -> false);
     }
 
     public static <T> Guard<T> True(Class<T> eventClazz) {
-        return readConsume(eventClazz, v -> true);
+        return rc(eventClazz, v -> true);
     }
 
     public static IPetraComponentsFactory getFactory() {
@@ -198,8 +190,8 @@ public class Petra {
         return getFactory().createStreamFromSet(set);
     }
 
-//    public static <T,C extends Ref<T>> C someRef(T readConsume, Class<C> clazz) {
-//        return (C) getFactory().createRef(readConsume, UUID.randomUUID().toString());
+//    public static <T,C extends Ref<T>> C someRef(T rc, Class<C> clazz) {
+//        return (C) getFactory().createRef(rc, UUID.randomUUID().toString());
 //    }
 
     public static <T> Ref<T> ref(T value, String id) {

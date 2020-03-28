@@ -45,7 +45,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import static io.cognitionbox.petra.lang.Void.vd;
-import static io.cognitionbox.petra.util.Petra.returns;
+import static io.cognitionbox.petra.util.Petra.rt;
 import static java.lang.Math.min;
 
 public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> implements IGraph<I,O> {
@@ -166,7 +166,7 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
         joinsTypes.add(join);
     }
 
-    // need to add the domain restriction support to joins as readConsume point
+    // need to add the domain restriction support to joins as rc point
     @Deprecated
     public <A extends D, R extends D> void joinSome(Class<? extends IJoin> clazz) {
         if (AbstractJoin1.class.isAssignableFrom(clazz)) {
@@ -483,7 +483,7 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
         }
     }
 
-    // PJoin 1 readConsume
+    // PJoin 1 rc
     <A, R, E extends Throwable> void executeJoin1(boolean joinAll, AbstractJoin1 join, int index, Guard<? super A> a,
                                                   IFunction<List<A>, R> transform,
                                                   Guard<? super R> predicate, Collection<IToken> toUse, RGraph toWrite, List<Class<? extends Exception>> throwsRandomly) {

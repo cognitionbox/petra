@@ -27,8 +27,8 @@ import org.junit.runners.Parameterized;
 import java.io.Serializable;
 
 
-import static io.cognitionbox.petra.util.Petra.readConsume;
-import static io.cognitionbox.petra.util.Petra.returns;
+import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rt;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
@@ -99,17 +99,17 @@ public class PGraphForwardBackwardReachabilityTest extends BaseExecutionModesTes
 
   public static class AtoB extends PEdge<AisOne,BisEven> {
     {
-      pre(readConsume(AisOne.class, x->x.matches()));
+      pre(rc(AisOne.class, x->x.matches()));
       func(a->new B(222));
-      post(Petra.returns(BisEven.class, x->x.matches()));
+      post(Petra.rt(BisEven.class, x->x.matches()));
     }
   }
 
 
   public static class g extends PGraph<AisOne, BisEven> {
     {
-      pre(readConsume(AisOne.class, x->x.matches()));
-      post(Petra.returns(BisEven.class, x->x.matches()));
+      pre(rc(AisOne.class, x->x.matches()));
+      post(Petra.rt(BisEven.class, x->x.matches()));
       step(AtoB.class);
     }
   }

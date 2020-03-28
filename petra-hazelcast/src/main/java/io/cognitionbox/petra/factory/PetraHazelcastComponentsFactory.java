@@ -41,9 +41,6 @@ public class PetraHazelcastComponentsFactory implements IPetraComponentsFactory 
         return tpe;
     }
 
-    // needs to be static as more efficient to have one imdgClient per process, rather
-    // than recreating each time the object readConsume serialized
-
     @Override
     public IRingbuffer createRingbuffer(String s) {
         return new HazelcastRingBufferWrapper(s);

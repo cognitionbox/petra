@@ -37,7 +37,7 @@ public class PCollectionsTest extends BaseExecutionModesTest {
   }
 
   /*
-   * Focuses on testing readConsume info is kept when serializing/de-serializing on hazelcast
+   * Focuses on testing rc info is kept when serializing/de-serializing on hazelcast
    */
 
   static class IntegerLinkedList extends LinkedList<Integer> {}
@@ -111,7 +111,7 @@ public class PCollectionsTest extends BaseExecutionModesTest {
 
   @Test
   public void testBoxedSet(){
-    // when boxed by another class, does not readConsume info in all modes
+    // when boxed by another class, does not rc info in all modes
     Ref<IntegerSetBox> ref = ref(new IntegerSetBox(new IntegerSet()));
     assertThat(ref.get().getSet()).isInstanceOf(IntegerSet.class);
   }

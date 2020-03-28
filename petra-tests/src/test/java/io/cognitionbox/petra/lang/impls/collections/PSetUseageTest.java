@@ -27,8 +27,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 
-import static io.cognitionbox.petra.util.Petra.readConsume;
-import static io.cognitionbox.petra.util.Petra.returns;
+import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rt;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
@@ -56,21 +56,21 @@ public class PSetUseageTest extends BaseExecutionModesTest {
 
   public static class SumTwoIntegerSets extends PEdge<TwoIntegerSets,Integer> {
     SumTwoIntegerSets(){
-      pre(readConsume(TwoIntegerSets.class, a->true));
+      pre(rc(TwoIntegerSets.class, a->true));
       func(x->{
         IToIntFunction<Integer> mapper = i->i.intValue();
         int sumA = x.stream().mapToInt(mapper).sum();
         int sumB = x.numbers.stream().mapToInt(mapper).sum();
         return sumA+sumB;
       });
-      post(Petra.returns(Integer.class, a->true));
+      post(Petra.rt(Integer.class, a->true));
     }
   }
 
   public static class SingleStep extends PGraph<TwoIntegerSets,Integer> {
     SingleStep(){
-      pre(readConsume(TwoIntegerSets.class, a->true));
-      post(Petra.returns(Integer.class, a->true));
+      pre(rc(TwoIntegerSets.class, a->true));
+      post(Petra.rt(Integer.class, a->true));
       step(new SumTwoIntegerSets());
     }
   }

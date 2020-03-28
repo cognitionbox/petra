@@ -20,15 +20,16 @@ package io.cognitionbox.petra.examples.fibonacci.modularized;
 
 import io.cognitionbox.petra.examples.fibonacci.IntList;
 import io.cognitionbox.petra.lang.PGraph;
+import io.cognitionbox.petra.util.Petra;
 
-import static io.cognitionbox.petra.util.Petra.readConsume;
-import static io.cognitionbox.petra.util.Petra.returns;
+import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rt;
 
 public class Fibonacci extends PGraph<Integer, IntList> {
     {
-        pre(readConsume(Integer.class, i->true));
+        pre(rc(Integer.class, i->true));
         step(new FibSplit());
         joinAll(new FibJoin());
-        post(returns(IntList.class, i->i.size()==1));
+        post(Petra.rt(IntList.class, i->i.size()==1));
     }
 }

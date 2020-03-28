@@ -149,8 +149,8 @@ public class Guard<E> implements IPredicate<E> {
     @Override
     public boolean test(Object value) {
         Object x = value;
-//        if (readConsume instanceof Ref){
-//            x = ((Ref) readConsume).get();
+//        if (rc instanceof Ref){
+//            x = ((Ref) rc).get();
 //        }
         if (x==null && !Void.class.equals(eventClazz)){
             return false;
@@ -166,7 +166,7 @@ public class Guard<E> implements IPredicate<E> {
             }
         }
 
-        // allows nulls to be return, allowing for an "option" readConsume
+        // allows nulls to be return, allowing for an "option" rc
         if (x==null || x== vd){
             try {
                 return this.predicate.test(x);

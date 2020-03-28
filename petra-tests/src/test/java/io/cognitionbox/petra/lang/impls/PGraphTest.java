@@ -60,16 +60,16 @@ public class PGraphTest extends BaseExecutionModesTest {
 
   public static class SingleStep extends PGraph<Integer,IntegerBox> {
     SingleStep(){
-      pre(readConsume(Integer.class, x->true));
-      post(returns(IntegerBox.class, x->true));
+      pre(rc(Integer.class, x->true));
+      post(rt(IntegerBox.class, x->true));
       step(new BoxIntegers());
     };
   }
 
   public static class BoxIntegers extends PEdge<Integer,IntegerBox> {
     BoxIntegers(){
-      pre(readConsume(Integer.class, x->true));
-      post(returns(IntegerBox.class, x->true));
+      pre(rc(Integer.class, x->true));
+      post(rt(IntegerBox.class, x->true));
       func(x->{
         return new IntegerBox(x);
       });
@@ -104,8 +104,8 @@ public class PGraphTest extends BaseExecutionModesTest {
 
   public static class MultiStepsCreatedForMultipleMatchesWithNesting extends PGraph<@Extract IntList,OutIntList> {
     MultiStepsCreatedForMultipleMatchesWithNesting(){
-      pre(readConsume(IntList.class, x->x.size()==6 && x.stream().mapToInt(i->i).sum()==0));
-      post(returns(OutIntList.class, x->x.size()==6  && x.stream().mapToInt(i->i).sum()==6));
+      pre(rc(IntList.class, x->x.size()==6 && x.stream().mapToInt(i->i).sum()==0));
+      post(rt(OutIntList.class, x->x.size()==6  && x.stream().mapToInt(i->i).sum()==6));
       step(new Nesting());
       joinSome(new MultiStepsCreatedForMultipleMatchesWithNestingPureJoin());
     }
@@ -113,9 +113,9 @@ public class PGraphTest extends BaseExecutionModesTest {
 
   public static class MultiStepsCreatedForMultipleMatchesWithNestingPureJoin extends PJoin<Integer,OutIntList> {
     MultiStepsCreatedForMultipleMatchesWithNestingPureJoin(){
-      pre(readConsume(Integer.class, x->x==1));
+      pre(rc(Integer.class, x->x==1));
       func(x->new OutIntList(x));
-      post(returns(OutIntList.class, x->x.size()==6 && x.stream().mapToInt(i->i).sum()==6));
+      post(rt(OutIntList.class, x->x.size()==6 && x.stream().mapToInt(i->i).sum()==6));
     }
   }
 
@@ -132,8 +132,8 @@ public class PGraphTest extends BaseExecutionModesTest {
 
   public static class MultiStepsCreatedForMultipleMatches extends PGraph<@Extract IntList,OutIntList> {
     MultiStepsCreatedForMultipleMatches(){
-      pre(readConsume(IntList.class, x->x.size()==6 && x.stream().mapToInt(i->i).sum()==0));
-      post(returns(OutIntList.class, x->x.size()==6  && x.stream().mapToInt(i->i).sum()==6));
+      pre(rc(IntList.class, x->x.size()==6 && x.stream().mapToInt(i->i).sum()==0));
+      post(rt(OutIntList.class, x->x.size()==6  && x.stream().mapToInt(i->i).sum()==6));
       step(new PlusOne());
       joinSome(new MultiStepsCreatedForMultipleMatchesPureJoin());
     }
@@ -141,9 +141,9 @@ public class PGraphTest extends BaseExecutionModesTest {
 
   public static class MultiStepsCreatedForMultipleMatchesPureJoin extends PJoin<Integer,OutIntList> {
     MultiStepsCreatedForMultipleMatchesPureJoin(){
-      pre(readConsume(Integer.class, x->x==1));
+      pre(rc(Integer.class, x->x==1));
       func(x->new OutIntList(x));
-      post(returns(OutIntList.class, x->x.size()==6 && x.stream().mapToInt(i->i).sum()==6));
+      post(rt(OutIntList.class, x->x.size()==6 && x.stream().mapToInt(i->i).sum()==6));
     }
   }
 
@@ -164,8 +164,8 @@ public class PGraphTest extends BaseExecutionModesTest {
 
   public static class g extends PGraph<MixedSet, PSet> {
     g(){
-      pre(readConsume(MixedSet.class, x->true));
-      post(returns(PSet.class, x->x.equals(new PSet(Arrays.asList(1,"B")))));
+      pre(rc(MixedSet.class, x->true));
+      post(rt(PSet.class, x->x.equals(new PSet(Arrays.asList(1,"B")))));
       step(new PlusOne());
       step(AtoB.class);
       joinSome(new gPureJoin());
@@ -174,23 +174,23 @@ public class PGraphTest extends BaseExecutionModesTest {
 
   public static class gPureJoin extends PJoin2<Integer,String,PSet> {
     gPureJoin(){
-      preA(readConsume(Integer.class, x->x==1));
-      preB(readConsume(String.class, s->s.equals("B")));
+      preA(rc(Integer.class, x->x==1));
+      preB(rc(String.class, s->s.equals("B")));
       func((x, y)->{
         PSet set = new PSet();
         set.add(x.get(0));
         set.add(y.get(0));
         return set;
       });
-      post(returns(PSet.class, x->new PSet(x).equals(new PSet(Arrays.asList(1,"B")))));
+      post(rt(PSet.class, x->new PSet(x).equals(new PSet(Arrays.asList(1,"B")))));
     }
   }
 
 
   public static class PlusOne extends PEdge<Integer,Integer> {
     PlusOne(){
-      pre(readConsume(Integer.class, x->x==0));
-      post(returns(Integer.class, x->x==1));
+      pre(rc(Integer.class, x->x==0));
+      post(rt(Integer.class, x->x==1));
       func(x->x+1);
     }
   }
@@ -198,8 +198,8 @@ public class PGraphTest extends BaseExecutionModesTest {
 
   public static class AtoB extends PEdge<String,String> {
     {
-      pre(readConsume(String.class, x->x.equals("A")));
-      post(returns(String.class, x->x.equals("B")));
+      pre(rc(String.class, x->x.equals("A")));
+      post(rt(String.class, x->x.equals("B")));
       func(x->"B");
     }
   }
@@ -220,8 +220,8 @@ public class PGraphTest extends BaseExecutionModesTest {
 
   public static class MainLoop extends PGraph<Integer,Integer> {
     MainLoop(){
-      pre(readConsume(Integer.class, x->x==0));
-      post(returns(Integer.class, x->x==1));
+      pre(rc(Integer.class, x->x==0));
+      post(rt(Integer.class, x->x==1));
       step(new Nesting());
     }
   }
@@ -229,8 +229,8 @@ public class PGraphTest extends BaseExecutionModesTest {
 
   public static class Nesting extends PGraph<Integer,Integer> {
     Nesting(){
-      pre(readConsume(Integer.class, x->x==0));
-      post(returns(Integer.class, x->x==1));
+      pre(rc(Integer.class, x->x==0));
+      post(rt(Integer.class, x->x==1));
       step(new PlusOne());
     }
   }
@@ -244,24 +244,24 @@ public class PGraphTest extends BaseExecutionModesTest {
 
   public static class PlusOneWhenXis2 extends PEdge<Integer,Integer> {
     PlusOneWhenXis2(){
-      pre(readConsume(Integer.class, x->x==2));
-      post(returns(Integer.class, x->true));
+      pre(rc(Integer.class, x->x==2));
+      post(rt(Integer.class, x->true));
       func(x->x+1);
     }
   }
 
   public static class PlusOneWhenXisEven extends PEdge<Integer,Integer> {
     PlusOneWhenXisEven(){
-      pre(readConsume(Integer.class, x->x==2));
-      post(returns(Integer.class, x->true));
+      pre(rc(Integer.class, x->x==2));
+      post(rt(Integer.class, x->true));
       func(x->x+1);
     }
   }
 
   public static class OverlapCheck extends PGraph<Integer,Integer> {
     {
-      pre(readConsume(Integer.class, x->x==2));
-      post(returns(Integer.class, x->x==3));
+      pre(rc(Integer.class, x->x==2));
+      post(rt(Integer.class, x->x==3));
       step(new PlusOneWhenXis2());
       step(new PlusOneWhenXisEven());
     }
@@ -280,8 +280,8 @@ public class PGraphTest extends BaseExecutionModesTest {
 
   public static class AtoA extends PEdge<A,A> implements IRollback<A>{
     {
-      pre(readWrite(A.class, a->a.value.get().equals(0)));
-      post(returns(A.class, a->a.value.get().equals(1)));
+      pre(rw(A.class, a->a.value.get().equals(0)));
+      post(rt(A.class, a->a.value.get().equals(1)));
       func(x->{
         x.value.set(x.value.get()+1);
         return x;
@@ -302,8 +302,8 @@ public class PGraphTest extends BaseExecutionModesTest {
   //@Effect
   public static class AtoAPPGraph extends PGraph<A,A> {
     {
-      pre(readConsume(A.class, a->a.value.get().equals(0)));
-      post(returns(A.class, a->a.value.get().equals(1)));
+      pre(rc(A.class, a->a.value.get().equals(0)));
+      post(rt(A.class, a->a.value.get().equals(1)));
       step(new AtoA());
     }
   }
@@ -366,16 +366,16 @@ public class PGraphTest extends BaseExecutionModesTest {
 
   public static class RefPGraph extends PGraph<Z, Z> {
     {
-      pre(readConsume(Z.class, z->z.y.get().name.equals("hello")));
-      post(returns(Z.class, z->z.y.get().name.equals("goodbye")));
+      pre(rc(Z.class, z->z.y.get().name.equals("hello")));
+      post(rt(Z.class, z->z.y.get().name.equals("goodbye")));
       step(new XPEdge());
     }
   }
 
   public static class XPEdge extends PEdge<Z,Z> implements IRollback<Z> {
      {
-      pre(readWrite(Z.class, z->z.y.get().name.equals("hello")));
-      post(returns(Z.class, z->z.y.get().name.equals("goodbye")));
+      pre(rw(Z.class, z->z.y.get().name.equals("hello")));
+      post(rt(Z.class, z->z.y.get().name.equals("goodbye")));
       func(z->{
         z.y.set(new Y("goodbye"));
         return z;
@@ -403,8 +403,8 @@ public class PGraphTest extends BaseExecutionModesTest {
 
   public static class ExtractRefValuePGraph extends PGraph<X, X> {
     {
-      pre(readConsume(X.class, x->x.y.get().name.equals("hello")));
-      post(returns(X.class, x->x.y.get().name.equals("goodbye")));
+      pre(rc(X.class, x->x.y.get().name.equals("hello")));
+      post(rt(X.class, x->x.y.get().name.equals("goodbye")));
       step(new ExtractRefValueGraphPEdge());
     }
   }
@@ -412,8 +412,8 @@ public class PGraphTest extends BaseExecutionModesTest {
 
   public static class ExtractRefValueGraphPEdge extends PEdge<Y,Y> implements IRollback<Y>{
     {
-      pre(readConsume(Y.class, y->y.name.equals("hello")));
-      post(returns(Y.class, y->y.name.equals("goodbye")));
+      pre(rc(Y.class, y->y.name.equals("hello")));
+      post(rt(Y.class, y->y.name.equals("goodbye")));
       // invalid code
       func(y->{
         y.name = "goodbye";
