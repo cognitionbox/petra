@@ -20,6 +20,7 @@ import io.cognitionbox.petra.core.IGraph;
 import io.cognitionbox.petra.core.IJoin;
 import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.lang.*;
+import io.cognitionbox.petra.lang.annotations.propositions.State;
 
 public class CheckAllPrePostTypesAreStates implements GraphCheck {
 
@@ -36,7 +37,7 @@ public class CheckAllPrePostTypesAreStates implements GraphCheck {
         }
 
         private boolean checkTypeImpl(Guard guard) {
-            return true;//guard.getTypeClass().isAnnotationPresent(State.class);
+            return guard.getTypeClass().isAnnotationPresent(State.class);
         }
 
         @Override
