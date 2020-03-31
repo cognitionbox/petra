@@ -89,7 +89,7 @@ public class ConstructionGuarantees {
         addCheck(new ExclusivesMustBeMatchedOnlyByEffectSteps());
         addCheck(new ExclusiveFieldsCanOnlyExistWithinAnExclusiveEffectTypes());
         addCheck(new ExclusiveMethodsCanOnlyExistWithinAnExclusiveTypes());
-        //addCheck(new StaticFieldsOnlyAllowedIfFinalAndPrimitive());
+        addCheck(new StaticFieldsOnlyAllowedIfFinalAndPrimitive());
         addCheck(new ClassesWithExtractsOnFieldsMustHaveExtractAnnotation());
         addCheck(new ExtractsAtClassLevelMustBeAppliedOnlyToIterablesOrClassesWhichHaveExtractOnFields());
         addCheck(new CheckAllPrePostTypesHaveNoGenericsUnlessTheyAreRefsWhichCanOnlyHaveNonGenericTypes());
