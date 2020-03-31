@@ -59,14 +59,14 @@ public class ConstructionGuarantees {
 //            stepErrors.add(new StepError(step,config.JoinEffectMustHaveOnlyOneInputTypeEqualToTheOutputType.getClass().getSimpleName()));
 //        }
 
-        addCheck(new OnlyEdgesWithSideEffectsMustImplementIRollback());
+        //addCheck(new OnlyEdgesWithSideEffectsMustImplementIRollback());
         addCheck(new OnlyStepWithSideAffectTrueMustImplementSideEffect());
         addCheck(new StepWithImmutablePreOrPostConditionTypesCannotBeSideEffects());
-        addCheck(new StepsCannotHaveFields());
+        //addCheck(new StepsCannotHaveFields());
 
-        addCheck(new StepsCanCannotDeclareConstructors());
+        //addCheck(new StepsCanCannotDeclareConstructors());
         addCheck(new PrePostTypesMustBeBoundToUniquePredicates());
-        addCheck(new StepsCannotHaveFields());
+        //addCheck(new StepsCannotHaveFields());
 
         if (config.isStrictModeExtraConstructionGuarantee()) {
             addCheck(new CheckAllPrePostTypesAreStates());
@@ -89,7 +89,7 @@ public class ConstructionGuarantees {
         addCheck(new ExclusivesMustBeMatchedOnlyByEffectSteps());
         addCheck(new ExclusiveFieldsCanOnlyExistWithinAnExclusiveEffectTypes());
         addCheck(new ExclusiveMethodsCanOnlyExistWithinAnExclusiveTypes());
-        addCheck(new StaticFieldsOnlyAllowedIfFinalAndPrimitive());
+        //addCheck(new StaticFieldsOnlyAllowedIfFinalAndPrimitive());
         addCheck(new ClassesWithExtractsOnFieldsMustHaveExtractAnnotation());
         addCheck(new ExtractsAtClassLevelMustBeAppliedOnlyToIterablesOrClassesWhichHaveExtractOnFields());
         addCheck(new CheckAllPrePostTypesHaveNoGenericsUnlessTheyAreRefsWhichCanOnlyHaveNonGenericTypes());

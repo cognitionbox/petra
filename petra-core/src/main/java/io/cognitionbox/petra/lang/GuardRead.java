@@ -20,6 +20,6 @@ import io.cognitionbox.petra.util.function.IPredicate;
 
 public class GuardRead<E> extends GuardInput<E> {
     public GuardRead(Class<E> eventClazz, IPredicate<E> predicate){
-        super(eventClazz,predicate, OperationType.READ);
+        super(eventClazz,predicate, OperationType.READ_ONLY);
     }
 }

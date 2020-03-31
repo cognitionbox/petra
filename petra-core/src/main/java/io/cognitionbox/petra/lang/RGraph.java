@@ -93,7 +93,7 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
     void initInput(){
         if (this.p().getTypeClass().isAnnotationPresent(Extract.class)){
             deconstruct(getInput().getValue());
-            if (this.p().getOperationType()!= OperationType.CONSUME){
+            if (this.p().getOperationType()!= OperationType.READ_CONSUME){
                 putState(getInput().getValue());
             }
         } else {
@@ -139,10 +139,12 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
             }
             if ((b && c)) {
                 if (p().getTypeClass().isAnnotationPresent(Extract.class) &&
-                        this.p().getOperationType()!=OperationType.CONSUME){
+                        this.p().getOperationType()!=OperationType.READ_CONSUME){
                     deconstruct(getInput().getValue());
                 }
             }
+
+            //De();
             Ex();
             Jn();
             Object toReturn = Rt();
@@ -254,6 +256,12 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
         stepDotLogger.logJoin(this, index);
     }
 
+    void De(){
+         for (IToken t : place.getTokens()){
+             deconstruct(t.getValue());
+         }
+    }
+
     // Exclusivity check
     void Ex() {
         Lg_ALL_STATES("[Ex in]");
@@ -299,11 +307,12 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
 
         try {
             for (StepCallable f : callables){
-                if (OperationType.CONSUME == f.get().getOperationType()) {
+                if (OperationType.READ_CONSUME == f.get().getOperationType()) {
                     removeState(f.get().getInput());
                 }
-                if (OperationType.WRITE != f.get().getOperationType()) {
+                if (OperationType.READ_WRITE != f.get().getOperationType()) {
                     deconstruct(f.get().getOutputValue());
+                    //putState(f.get().getOutputValue());
                 }
             }
         } catch (Exception e) {
@@ -493,7 +502,7 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
         populateListOfMatchesAndRemoveFromCurrentStates(join, index, Guards, listOfMatches, toUse);
         if ((!joinAll && listOfMatches.stream().flatMap(l->l.stream()).findAny().isPresent()) || (joinAll && listOfMatches.stream().flatMap(l->l.stream()).count()==toUse.size())){
             List<IToken> one = listOfMatches.get(0);
-            if ((!join.getEffectType().isPresent() && !one.isEmpty()) ^
+            if ((!join.getEffectType().isPresent() && !one.isEmpty()) ||
                     (join.getEffectType().isPresent() && join instanceof IMaybeEffect && ((IMaybeEffect) join).getEffectType().isPresent() && one.size() == 1)) {
                 Object value = null;
                 PList<A> as = one.stream().map(x -> x.getValue()).collect(Collectors.toCollection(() -> new PList()));
@@ -514,14 +523,15 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
                         // remove matches
                         int i = 0;
                         for (List matches : listOfMatches) {
-                            if (Guards[i].getOperationType() == OperationType.CONSUME) {
+                            //if (Guards[i].getOperationType() == OperationType.CONSUME) {
                                 toWrite.removeAllStates(matches);
-                            }
+                            //}
                             i++;
                         }
-                        if (!join.getEffectType().isPresent()) {
+                        //if (!join.getEffectType().isPresent()) {
                             toWrite.deconstruct(value);
-                        }
+                            //toWrite.putState(value);
+                        //}
                     } else {
                         if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
                             if (!postConditionOk && sideEffectsOk) {
@@ -557,8 +567,8 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
         populateListOfMatchesAndRemoveFromCurrentStates(join, index, Guards, listOfMatches, toUse);
         if ((!joinAll && listOfMatches.stream().flatMap(l->l.stream()).findAny().isPresent()) || (joinAll && listOfMatches.stream().flatMap(l->l.stream()).count()==toUse.size())){
             Pair<PList<IToken>, PList<IToken>> pair = Pair.with((PList<IToken>) listOfMatches.get(0), (PList<IToken>) listOfMatches.get(1));
-            if ((!join.getEffectType().isPresent() && !pair.getValue0().isEmpty() && !pair.getValue1().isEmpty()) ^
-                    (join.getEffectType().isPresent() && join instanceof IMaybeEffect && ((IMaybeEffect) join).getEffectType().isPresent() && pair.getValue0().size() == 1 && !pair.getValue1().isEmpty()) ^
+            if ((!join.getEffectType().isPresent() && !pair.getValue0().isEmpty() && !pair.getValue1().isEmpty()) ||
+                    (join.getEffectType().isPresent() && join instanceof IMaybeEffect && ((IMaybeEffect) join).getEffectType().isPresent() && pair.getValue0().size() == 1 && !pair.getValue1().isEmpty()) ||
                     (join.getEffectType().isPresent() && join instanceof IMaybeEffect && ((IMaybeEffect) join).getEffectType().isPresent() && pair.getValue1().size() == 1 && !pair.getValue0().isEmpty())
             ) {
                 Object value = null;
@@ -581,14 +591,15 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
                         // remove matches
                         int i = 0;
                         for (List matches : listOfMatches) {
-                            if (Guards[i].getOperationType() == OperationType.CONSUME) {
+                            //if (Guards[i].getOperationType() == OperationType.CONSUME) {
                                 toWrite.removeAllStates(matches);
-                            }
+                            //}
                             i++;
                         }
-                        if (!join.getEffectType().isPresent()) {
+                        //if (!join.getEffectType().isPresent()) {
                             toWrite.deconstruct(value);
-                        }
+                            //toWrite.putState(value);
+                        //}
                     } else {
                         if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
                             if (!postConditionOk && sideEffectsOk) {
@@ -625,9 +636,9 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
         populateListOfMatchesAndRemoveFromCurrentStates(join, index, Guards, listOfMatches, toUse);
         if ((!joinAll && listOfMatches.stream().flatMap(l->l.stream()).findAny().isPresent()) || (joinAll && listOfMatches.stream().flatMap(l->l.stream()).count()==toUse.size())){
             Triplet<PList<IToken>, PList<IToken>, PList<IToken>> triplet = Triplet.with((PList<IToken>) listOfMatches.get(0), (PList<IToken>) listOfMatches.get(1), (PList<IToken>) listOfMatches.get(2));
-            if ((!join.getEffectType().isPresent() && !triplet.getValue0().isEmpty() && !triplet.getValue1().isEmpty() && !triplet.getValue2().isEmpty()) ^
-                    (join.getEffectType().isPresent() && join instanceof IMaybeEffect && ((IMaybeEffect) join).getEffectType().isPresent() && triplet.getValue0().size() == 1 && !triplet.getValue1().isEmpty() && !triplet.getValue2().isEmpty()) ^
-                    (join.getEffectType().isPresent() && join instanceof IMaybeEffect && ((IMaybeEffect) join).getEffectType().isPresent() && triplet.getValue1().size() == 1 && !triplet.getValue0().isEmpty() && !triplet.getValue2().isEmpty()) ^
+            if ((!join.getEffectType().isPresent() && !triplet.getValue0().isEmpty() && !triplet.getValue1().isEmpty() && !triplet.getValue2().isEmpty()) ||
+                    (join.getEffectType().isPresent() && join instanceof IMaybeEffect && ((IMaybeEffect) join).getEffectType().isPresent() && triplet.getValue0().size() == 1 && !triplet.getValue1().isEmpty() && !triplet.getValue2().isEmpty()) ||
+                    (join.getEffectType().isPresent() && join instanceof IMaybeEffect && ((IMaybeEffect) join).getEffectType().isPresent() && triplet.getValue1().size() == 1 && !triplet.getValue0().isEmpty() && !triplet.getValue2().isEmpty()) ||
                     (join.getEffectType().isPresent() && join instanceof IMaybeEffect && ((IMaybeEffect) join).getEffectType().isPresent() && triplet.getValue2().size() == 1 && !triplet.getValue0().isEmpty() && !triplet.getValue1().isEmpty())) {
                 Object value = null;
                 PList<A> as = (PList<A>) triplet.getValue0().stream().map(x -> x.getValue()).collect(Collectors.toCollection(() -> new PList<>()));
@@ -650,14 +661,15 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
                         // remove matches
                         int i = 0;
                         for (List matches : listOfMatches) {
-                            if (Guards[i].getOperationType() == OperationType.CONSUME) {
+                            //if (Guards[i].getOperationType() == OperationType.CONSUME) {
                                 toWrite.removeAllStates(matches);
-                            }
+                            //}
                             i++;
                         }
-                        if (!join.getEffectType().isPresent()) {
+                        //if (!join.getEffectType().isPresent()) {
                             toWrite.deconstruct(value);
-                        }
+                            //toWrite.putState(value);
+                        //}
                     } else {
                         if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
                             if (!postConditionOk && sideEffectsOk) {
@@ -684,12 +696,12 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
 
     private void populateListOfMatchesAndRemoveFromCurrentStates(IJoin join, int index, Guard[] Guards, List<List<IToken>> listOfMatches, Collection<IToken> toUse) {
         for (Guard<?> guard : Guards) {
-            boolean copyInputs = true;
-            if (join instanceof IMaybeEffect) {
-                io.cognitionbox.petra.google.Optional<Class<?>> effectType = ((IMaybeEffect) join).getEffectType();
-                copyInputs = !( effectType.isPresent() &&
-                        guard.getTypeClass().isAssignableFrom(effectType.get()));
-            }
+            boolean copyInputs = guard.operationType!=OperationType.READ_WRITE;
+//            if (join instanceof IMaybeEffect) {
+//                io.cognitionbox.petra.google.Optional<Class<?>> effectType = ((IMaybeEffect) join).getEffectType();
+//                copyInputs = !( effectType.isPresent() &&
+//                        guard.getTypeClass().isAssignableFrom(effectType.get()));
+//            }
             copyInputs = copyInputs && RGraphComputer.getConfig().isDefensiveCopyAllInputsExceptForEffectedInputs();
             IJoinMatchesProcessor joinMatchesProcessor = new JoinMatchesProcessor();
             List<IToken> matches = joinMatchesProcessor.getMatchesUsingGuard(guard,copyInputs, toUse);
@@ -751,6 +763,10 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
 
     private void deconstruct(Object s) {
         rootValueExtractor.extractToPlace(s,place);
+        Extract ext = s.getClass().getAnnotation(Extract.class);
+        if (ext!=null && ext.keepRoot()){
+            place.addValue(s);
+        }
     }
 
     public RGraph copy() {

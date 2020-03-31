@@ -37,7 +37,7 @@ public class Guard<E> implements IPredicate<E> {
         return getTypeClass().equals(Void.class);
     }
 
-    protected OperationType operationType = OperationType.CONSUME;
+    protected OperationType operationType = OperationType.READ_CONSUME;
 
     public OperationType getOperationType() {
         return operationType;
@@ -185,7 +185,7 @@ public class Guard<E> implements IPredicate<E> {
             Set<Class<?>> classesLockKey = null;
             try {
                 Object xToUse = x;
-                if (operationType==OperationType.WRITE){// && this.eventClazz.isAnnotationPresent(Exclusive.class)){
+                if (operationType==OperationType.READ_WRITE){// && this.eventClazz.isAnnotationPresent(Exclusive.class)){
                     classesLockKey =
                             ReflectUtils.getAllMethodsAccessibleFromObject(this.eventClazz)
                                     .stream()
@@ -211,7 +211,7 @@ public class Guard<E> implements IPredicate<E> {
             } catch (Exception e){
                 throw new TypeEvalException(e);
             } finally {
-                if (classesLockKey!=null && !classesLockKey.isEmpty() && operationType==OperationType.WRITE){// && this.eventClazz.isAnnotationPresent(Exclusive.class)){
+                if (classesLockKey!=null && !classesLockKey.isEmpty() && operationType==OperationType.READ_WRITE){// && this.eventClazz.isAnnotationPresent(Exclusive.class)){
                     Exclusives.returnExclusive(classesLockKey);
                 }
             }

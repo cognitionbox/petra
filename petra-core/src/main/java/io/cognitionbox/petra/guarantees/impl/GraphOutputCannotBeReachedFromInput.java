@@ -23,6 +23,8 @@ import io.cognitionbox.petra.core.impl.ReachabilityHelper;
 import io.cognitionbox.petra.guarantees.GraphCheck;
 import io.cognitionbox.petra.lang.*;
 import io.cognitionbox.petra.lang.annotations.Extract;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,6 +34,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static java.util.stream.Collectors.toSet;
 
 public class GraphOutputCannotBeReachedFromInput implements GraphCheck {
+
+    final Logger LOG = LoggerFactory.getLogger(GraphOutputCannotBeReachedFromInput.class);
 
     ReachabilityHelper helper = new ReachabilityHelper();
 
@@ -53,7 +57,7 @@ public class GraphOutputCannotBeReachedFromInput implements GraphCheck {
         Class<?> input = step.p().getTypeClass();
         if (step.p().getTypeClass().isAnnotationPresent(Extract.class)) {
             helper.deconstruct(new HashSet<>(), step.p().getOperationType(), step.p().getTypeClass(), state, 0);
-            if (step.p().getOperationType() != OperationType.CONSUME) {
+            if (step.p().getOperationType() != OperationType.READ_CONSUME) {
                 state.add(input);
             }
         } else {
@@ -88,7 +92,7 @@ public class GraphOutputCannotBeReachedFromInput implements GraphCheck {
         while (true) {
             if (((state.size() == 1 && (step.p().getTypeClass().isAssignableFrom(new ArrayList<>(state).get(0)))))) {
                 if (step.p().getTypeClass().isAnnotationPresent(Extract.class) &&
-                        step.p().getOperationType() != OperationType.CONSUME) {
+                        step.p().getOperationType() != OperationType.READ_CONSUME) {
                     helper.deconstruct(new HashSet<>(), step.p().getOperationType(), step.p().getTypeClass(), state, 0);
                 }
             }
@@ -103,8 +107,8 @@ public class GraphOutputCannotBeReachedFromInput implements GraphCheck {
                         // if read just add the output type and leave the input type
                         // it works differently to for equivalent semantics in execution runtime where we
                         // do not remove the state for effects.
-                        if (stp.p().getOperationType() == OperationType.CONSUME ||
-                                stp.p().getOperationType() == OperationType.WRITE) {
+                        if (stp.p().getOperationType() == OperationType.READ_CONSUME ||
+                                stp.p().getOperationType() == OperationType.READ_WRITE) {
                             statesToRemove.add(st);
                         }
                         if (stp.q() instanceof GuardXOR<?>) {
@@ -155,8 +159,8 @@ public class GraphOutputCannotBeReachedFromInput implements GraphCheck {
                         Guard t = actualTypeArguments[i];
                         Class<?> tOut = t.getTypeClass();
                         for (Class<?> s : state) {
-                            if (tOut.isAssignableFrom(s) &&
-                                    (t.getOperationType() == OperationType.CONSUME || t.getOperationType() == OperationType.WRITE)) {
+                            if (tOut.isAssignableFrom(s)){// &&
+                                    //(t.getOperationType() == OperationType.CONSUME || t.getOperationType() == OperationType.WRITE)) {
                                 state.remove(s);
                             }
                         }
@@ -167,9 +171,10 @@ public class GraphOutputCannotBeReachedFromInput implements GraphCheck {
                     helper.deconstruct(new HashSet<>(), r.getOperationType(), rOut, state, 0);
                 }
             }
-            if (lastState != null && state.equals(lastState)) {
-                throw new IllegalStateException("state not changing.");
-            }
+            LOG.info("state: "+state);
+//            if (lastState != null && state.equals(lastState)) {
+//                throw new IllegalStateException("state not changing.");
+//            }
             lastState = new HashSet<>(state);
             // If marked does not terminate there should be a cycle
             // where the same marking is re-visited

@@ -21,6 +21,7 @@ import io.cognitionbox.petra.core.engine.extractors.MapExtractor;
 import io.cognitionbox.petra.core.engine.petri.Place;
 import io.cognitionbox.petra.core.engine.extractors.CollectionExtractor;
 import io.cognitionbox.petra.lang.Ref;
+import io.cognitionbox.petra.lang.annotations.Extract;
 
 import java.util.Collection;
 import java.util.Map;

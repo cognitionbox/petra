@@ -129,6 +129,11 @@ public class ReachabilityHelper {
             addState(type,types);
         }
 
+        Extract ext = type.getAnnotation(Extract.class);
+        if (ext!=null && ext.keepRoot()){
+            addState(type,types);
+        }
+
 //        if (type.isAnnotationPresent(Extract.class) && opp!=null && opp==OperationType.READ){
 //            addState(type,types);
 //        }

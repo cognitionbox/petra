@@ -22,4 +22,6 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.TYPE, ElementType.TYPE_USE})
 @Inherited
 
-public @interface Extract {}
+public @interface Extract {
+    boolean keepRoot() default false;
+}

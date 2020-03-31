@@ -135,7 +135,7 @@ public abstract class AbstractStep<I, O> extends Identifyable implements ICallab
     public final Optional<Class<?>> getEffectType() {
         if (effectType==null){
             effectType = Optional.absent();
-            if (p().getOperationType()== OperationType.WRITE){
+            if (p().getOperationType()== OperationType.READ_WRITE){
                 java.util.Optional<Class<?>> optional = ReflectUtils.getCommonSubType(p().getTypeClass(),q().getTypeClass());
                 //Optional optional = Optional.absent();
                 if (optional.isPresent()){

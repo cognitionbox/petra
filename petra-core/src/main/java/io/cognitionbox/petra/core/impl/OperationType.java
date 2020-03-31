@@ -16,8 +16,8 @@
 package io.cognitionbox.petra.core.impl;
 
 public enum OperationType {
-    READ,
-    WRITE,
-    CONSUME,
+    READ_ONLY,
+    READ_WRITE,
+    READ_CONSUME,
     RETURN // was named PRODUCE
 }

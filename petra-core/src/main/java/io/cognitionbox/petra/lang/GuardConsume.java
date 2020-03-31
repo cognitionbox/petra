@@ -20,6 +20,6 @@ import io.cognitionbox.petra.util.function.IPredicate;
 
 public class GuardConsume<E> extends GuardInput<E> {
     public GuardConsume(Class<E> eventClazz, IPredicate<E> predicate){
-        super(eventClazz,predicate, OperationType.CONSUME);
+        super(eventClazz,predicate, OperationType.READ_CONSUME);
     }
 }
