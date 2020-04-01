@@ -61,6 +61,8 @@ public class StepCallable extends Identifyable implements Callable<StepResult>, 
                     //LOG.info(this.getUniqueId() + ": step processed!");
                 }
                 return result.get();
+            } catch (Exception e) {
+                LOG.error(this.getUniqueId(),e);
             } finally {
                 lock.unlock();
             }

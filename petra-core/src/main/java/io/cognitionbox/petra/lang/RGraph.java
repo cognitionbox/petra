@@ -546,6 +546,7 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
                         }
                     }
                 } catch (Exception e) {
+                    LOG.error(this.getUniqueId()+"."+join.getJoinClazz().getSimpleName()+"."+index, e);
                     if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
                         toWrite.putState(new JoinException(null, e));
                     } else {
@@ -614,6 +615,7 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
                         }
                     }
                 } catch (Exception e) {
+                    LOG.error(this.getUniqueId()+"."+join.getJoinClazz().getSimpleName()+"."+index, e);
                     if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
                         toWrite.putState(new JoinException(null, e));
                     } else {
@@ -684,6 +686,7 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
                         }
                     }
                 } catch (Exception e) {
+                    LOG.error(this.getUniqueId()+"."+join.getJoinClazz().getSimpleName()+"."+index, e);
                     if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
                         toWrite.putState(new JoinException(null, e));
                     } else {
