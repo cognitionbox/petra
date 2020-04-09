@@ -19,7 +19,8 @@ import io.cognitionbox.petra.core.engine.petri.IToken;
 import io.cognitionbox.petra.core.engine.petri.Place;
 
 import java.util.Map;
+import java.util.function.Predicate;
 
 public interface MapExtractor extends ValueExtractor<Map> {
-    void extractToPlace(Map map, Place place);
+    void extractToPlace(IToken<Map> map, Place place, ExtractedStore extractedStore, Predicate<IToken> extractIfMatches);
 }

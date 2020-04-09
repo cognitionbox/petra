@@ -24,4 +24,9 @@ import java.lang.annotation.*;
 
 public @interface Extract {
     boolean keepRoot() default false;
+    Mode mode() default Mode.ONCE;
+    enum Mode {
+        ONCE,
+        ALWAYS
+    }
 }

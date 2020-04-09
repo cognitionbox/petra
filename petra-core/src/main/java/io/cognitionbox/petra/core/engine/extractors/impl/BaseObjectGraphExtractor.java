@@ -15,28 +15,32 @@
  */
 package io.cognitionbox.petra.core.engine.extractors.impl;
 
+import io.cognitionbox.petra.core.engine.extractors.ExtractedStore;
 import io.cognitionbox.petra.core.engine.extractors.ObjectGraphExtractor;
+import io.cognitionbox.petra.core.engine.petri.IToken;
 import io.cognitionbox.petra.core.engine.petri.Place;
+import io.cognitionbox.petra.core.engine.petri.impl.Token;
 import io.cognitionbox.petra.core.impl.ReflectUtils;
 import io.cognitionbox.petra.lang.annotations.Extract;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.function.Predicate;
 
 public abstract class BaseObjectGraphExtractor<E>  extends AbstractValueExtractor<E> implements ObjectGraphExtractor<E> {
     @Override
-    public void extractToPlace(Object value, Place place) {
-        for (Method m : ReflectUtils.getAllMethodsAccessibleFromObject(value.getClass())) {
+    public void extractToPlace(IToken<E> value, Place place, ExtractedStore extractedStore, Predicate<IToken> extractIfMatches) {
+        for (Method m : ReflectUtils.getAllMethodsAccessibleFromObject(value.getValue().getClass())) {
             try {
                 m.setAccessible(true);
                 if (m.isAnnotationPresent(Extract.class) &&
                         m.getParameterCount() == 0 &&
                         Modifier.isPublic(m.getModifiers())) {
                     try {
-                        Object field = m.invoke(value);
+                        Object field = m.invoke(value.getValue());
                         AbstractRootValueExtractor extractor = new SequentialRootValueExtractor();
-                        extractor.extractToPlace(field,place);
+                        extractor.extractToPlace(new Token(field),place,extractedStore,extractIfMatches);
                         Extract ext = m.getAnnotation(Extract.class);
                         if (ext!=null && ext.keepRoot()){
                             place.addValue(field);

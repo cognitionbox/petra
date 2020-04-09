@@ -18,6 +18,8 @@ package io.cognitionbox.petra.core.engine.extractors;
 import io.cognitionbox.petra.core.engine.petri.IToken;
 import io.cognitionbox.petra.core.engine.petri.Place;
 
+import java.util.function.Predicate;
+
 public interface IterableExtractor extends ValueExtractor<Iterable> {
-    void extractToPlace(Iterable iterable, Place place);
+    void extractToPlace(IToken<Iterable> iterable, Place place, ExtractedStore extractedStore, Predicate<IToken> extractIfMatches);
 }

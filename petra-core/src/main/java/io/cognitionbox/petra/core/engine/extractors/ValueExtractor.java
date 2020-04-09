@@ -19,8 +19,9 @@ import io.cognitionbox.petra.core.engine.petri.IToken;
 import io.cognitionbox.petra.core.engine.petri.Place;
 
 import java.io.Serializable;
+import java.util.function.Predicate;
 
 public interface ValueExtractor<E> extends Serializable {
-    void extractToPlace(E value, Place place);
-    boolean isValueExtractable(Object value);
+    void extractToPlace(IToken<E> value, Place place, ExtractedStore extractedStore, Predicate<IToken> extractIfMatches);
+    boolean isValueExtractable(IToken<E> value, ExtractedStore extractedStore, Predicate<IToken> extractIfMatches);
 }

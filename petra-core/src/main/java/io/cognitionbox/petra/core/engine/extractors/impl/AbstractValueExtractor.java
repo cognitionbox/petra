@@ -15,13 +15,18 @@
  */
 package io.cognitionbox.petra.core.engine.extractors.impl;
 
+import io.cognitionbox.petra.core.engine.extractors.ExtractedStore;
 import io.cognitionbox.petra.core.engine.extractors.ValueExtractor;
 import io.cognitionbox.petra.core.engine.petri.IToken;
 import io.cognitionbox.petra.lang.annotations.Extract;
 
+import java.util.function.Predicate;
+
 public abstract class AbstractValueExtractor<E> implements ValueExtractor<E> {
-    public boolean isValueExtractable(Object value){
-        if (value.getClass().isAnnotationPresent(Extract.class)) {
+    public boolean isValueExtractable(IToken<E> value, ExtractedStore extractedStore, Predicate<IToken> extractIfMatches){
+        if (value.getValue().getClass().isAnnotationPresent(Extract.class) &&
+                                                !extractedStore.isExtracted(value) &&
+                                                    extractIfMatches.test(value)) {
             return true;
         }
         return false;

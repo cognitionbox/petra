@@ -15,6 +15,7 @@
  */
 package io.cognitionbox.petra.core.engine.extractors.impl;
 
+import io.cognitionbox.petra.core.engine.extractors.ExtractedStore;
 import io.cognitionbox.petra.core.engine.petri.IToken;
 import io.cognitionbox.petra.core.engine.extractors.IterableExtractor;
 import io.cognitionbox.petra.core.engine.extractors.MapExtractor;
@@ -25,9 +26,10 @@ import io.cognitionbox.petra.lang.annotations.Extract;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public abstract class AbstractRootValueExtractor extends AbstractValueExtractor {
+public abstract class AbstractRootValueExtractor extends AbstractValueExtractor<Object> {
     private MapExtractor mapExtractor = mapExtractorSupplier().get();
     private CollectionExtractor collectionExtractor = collectionExtractorSupplier().get();
     private IterableExtractor iterableExtractor = iterableExtractorSupplier().get();
@@ -38,26 +40,31 @@ public abstract class AbstractRootValueExtractor extends AbstractValueExtractor 
     abstract Supplier<IterableExtractor> iterableExtractorSupplier();
     abstract Supplier<AbstractValueExtractor> objectGraphExtractorSupplier();
 
+    // need to pass in the extracted map, or otherwise, probs a "do extract" predicate would be better
+    // which uses the map from outside.
     @Override
-    public void extractToPlace(Object value, Place place) {
+    public void extractToPlace(IToken<Object> value, Place place, ExtractedStore extractedStore, Predicate<IToken> extractIfMatches) {
         if (value == null) {
             return;
         }
         if (value instanceof Ref) {
             return;
         }
-        if (isValueExtractable(value)) {
-            if (value instanceof Map) {
-                mapExtractor.extractToPlace((Map) value, place);
-            } else if (value instanceof Collection) {
-                collectionExtractor.extractToPlace((Collection) value, place);
-            } else if (value instanceof Iterable) {
-                iterableExtractor.extractToPlace((Iterable) value, place);
+        if (isValueExtractable(value,extractedStore,extractIfMatches)) {
+            if (value.getValue() instanceof Map) {
+                mapExtractor.extractToPlace((IToken) value, place,extractedStore,extractIfMatches);
+            } else if (value.getValue() instanceof Collection) {
+                collectionExtractor.extractToPlace((IToken) value, place,extractedStore,extractIfMatches);
+            } else if (value.getValue() instanceof Iterable) {
+                iterableExtractor.extractToPlace((IToken) value, place,extractedStore,extractIfMatches);
             } else {
-                objectGraphExtractor.extractToPlace(value, place);
+                objectGraphExtractor.extractToPlace(value, place, extractedStore,extractIfMatches);
             }
+            extractedStore.markAsExtracted(value);
         } else {
-            place.addValue(value);
+            if (!extractedStore.isExtracted(value)){
+                place.addValue(value.getValue());
+            }
         }
     }
 }

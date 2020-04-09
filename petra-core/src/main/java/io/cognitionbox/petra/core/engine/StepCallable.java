@@ -15,6 +15,7 @@
  */
 package io.cognitionbox.petra.core.engine;
 
+import io.cognitionbox.petra.core.engine.petri.impl.Token;
 import io.cognitionbox.petra.lang.AbstractStep;
 import io.cognitionbox.petra.core.impl.Identifyable;
 import io.cognitionbox.petra.lang.RGraph;
@@ -56,7 +57,7 @@ public class StepCallable extends Identifyable implements Callable<StepResult>, 
             try {
                 if (!done.get()){
                     Object out = step.call();
-                    result.set(new StepResult(step.p().getOperationType(), step.getInput(),out));
+                    result.set(new StepResult(step.p().getOperationType(), step.getInput(),new Token(out)));
                     done.set(true);
                     //LOG.info(this.getUniqueId() + ": step processed!");
                 }

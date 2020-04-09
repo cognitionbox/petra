@@ -17,9 +17,12 @@ package io.cognitionbox.petra.lang;
 
 import io.cognitionbox.petra.core.*;
 import io.cognitionbox.petra.core.engine.StepCallable;
+import io.cognitionbox.petra.core.engine.extractors.ExtractedStore;
 import io.cognitionbox.petra.core.engine.extractors.impl.AbstractRootValueExtractor;
+import io.cognitionbox.petra.core.engine.extractors.impl.ExtractedStoreImpl;
 import io.cognitionbox.petra.core.engine.extractors.impl.SequentialRootValueExtractor;
 import io.cognitionbox.petra.core.engine.petri.Place;
+import io.cognitionbox.petra.core.engine.petri.impl.Token;
 import io.cognitionbox.petra.core.impl.*;
 import io.cognitionbox.petra.lang.annotations.DoesNotTerminate;
 import io.cognitionbox.petra.lang.annotations.Extract;
@@ -34,6 +37,7 @@ import io.cognitionbox.petra.core.engine.petri.IToken;
 import io.cognitionbox.petra.util.function.*;
 import io.cognitionbox.petra.util.impl.PList;
 import io.cognitionbox.petra.util.Petra;
+import io.cognitionbox.petra.util.impl.PMap;
 import org.javatuples.Pair;
 import org.javatuples.Triplet;
 import org.slf4j.Logger;
@@ -42,6 +46,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static io.cognitionbox.petra.lang.Void.vd;
@@ -92,7 +97,7 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
 
     void initInput(){
         if (this.p().getTypeClass().isAnnotationPresent(Extract.class)){
-            deconstruct(getInput().getValue());
+            deconstruct(getInput());
             if (this.p().getOperationType()!= OperationType.READ_CONSUME){
                 putState(getInput().getValue());
             }
@@ -140,7 +145,7 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
             if ((b && c)) {
                 if (p().getTypeClass().isAnnotationPresent(Extract.class) &&
                         this.p().getOperationType()!=OperationType.READ_CONSUME){
-                    deconstruct(getInput().getValue());
+                    deconstruct(getInput());
                 }
             }
 
@@ -258,7 +263,7 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
 
     void De(){
          for (IToken t : place.getTokens()){
-             deconstruct(t.getValue());
+             deconstruct(t);
          }
     }
 
@@ -523,13 +528,32 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
                         // remove matches
                         int i = 0;
                         for (List matches : listOfMatches) {
-                            //if (Guards[i].getOperationType() == OperationType.CONSUME) {
+                            if (Guards[i].getOperationType() == OperationType.READ_CONSUME) {
                                 toWrite.removeAllStates(matches);
-                            //}
+                            }
                             i++;
                         }
                         //if (!join.getEffectType().isPresent()) {
-                            toWrite.deconstruct(value);
+//                        if (Guards[0].getOperationType() == OperationType.READ_WRITE ||
+//                                Guards[0].getOperationType() == OperationType.READ_ONLY){
+//                            // do nothing so we preserve the tokens
+//                        } else {
+                            // only deconstruct new tokens, i.e. values that do not match rw/ro input
+                            // as these types are preserved as hence are new.
+                            toWrite.deconstruct(new Token(value),t->{
+                                if (t instanceof IToken){
+                                    boolean matches = true;
+                                    for (Guard g : Guards){
+                                        if (g.getOperationType() == OperationType.READ_WRITE ||
+                                                g.getOperationType() == OperationType.READ_ONLY){
+                                            matches = matches && g.test(((IToken)t).getValue());
+                                        }
+                                    }
+                                    return !matches;
+                                }
+                                return false;
+                            });
+                       // }
                             //toWrite.putState(value);
                         //}
                     } else {
@@ -592,14 +616,35 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
                         // remove matches
                         int i = 0;
                         for (List matches : listOfMatches) {
-                            //if (Guards[i].getOperationType() == OperationType.CONSUME) {
+                            if (Guards[i].getOperationType() == OperationType.READ_CONSUME) {
                                 toWrite.removeAllStates(matches);
-                            //}
+                            }
                             i++;
                         }
                         //if (!join.getEffectType().isPresent()) {
-                            toWrite.deconstruct(value);
-                            //toWrite.putState(value);
+//                        if (Guards[0].getOperationType() == OperationType.READ_WRITE ||
+//                                Guards[1].getOperationType() == OperationType.READ_WRITE ||
+//                                Guards[0].getOperationType() == OperationType.READ_ONLY ||
+//                                Guards[1].getOperationType() == OperationType.READ_ONLY){
+//                            // do nothing so we preserve the tokens
+//                        } else {
+                            // only deconstruct new tokens, i.e. values that do not match rw/ro input
+                            // as these types are preserved as hence are new.
+                            toWrite.deconstruct(new Token(value),t->{
+                                if (t instanceof IToken){
+                                    boolean matches = true;
+                                    for (Guard g : Guards){
+                                        if (g.getOperationType() == OperationType.READ_WRITE ||
+                                                g.getOperationType() == OperationType.READ_ONLY){
+                                            matches = matches && g.test(((IToken)t).getValue());
+                                        }
+                                    }
+                                    return !matches;
+                                }
+                                return false;
+                            });
+                       // }
+                        //toWrite.putState(value);
                         //}
                     } else {
                         if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
@@ -663,14 +708,37 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
                         // remove matches
                         int i = 0;
                         for (List matches : listOfMatches) {
-                            //if (Guards[i].getOperationType() == OperationType.CONSUME) {
+                            if (Guards[i].getOperationType() == OperationType.READ_CONSUME) {
                                 toWrite.removeAllStates(matches);
-                            //}
+                            }
                             i++;
                         }
                         //if (!join.getEffectType().isPresent()) {
-                            toWrite.deconstruct(value);
-                            //toWrite.putState(value);
+//                        if (Guards[0].getOperationType() == OperationType.READ_WRITE ||
+//                                Guards[1].getOperationType() == OperationType.READ_WRITE ||
+//                                Guards[2].getOperationType() == OperationType.READ_WRITE ||
+//                                Guards[0].getOperationType() == OperationType.READ_ONLY ||
+//                                Guards[1].getOperationType() == OperationType.READ_ONLY ||
+//                                Guards[2].getOperationType() == OperationType.READ_ONLY){
+//                            // do nothing so we preserve the tokens
+//                        } else {
+                            // only deconstruct new tokens, i.e. values that do not match rw/ro input
+                            // as these types are preserved as hence are new.
+                            toWrite.deconstruct(new Token(value),t->{
+                                if (t instanceof IToken){
+                                    boolean matches = true;
+                                    for (Guard g : Guards){
+                                        if (g.getOperationType() == OperationType.READ_WRITE ||
+                                                g.getOperationType() == OperationType.READ_ONLY){
+                                            matches = matches && g.test(((IToken)t).getValue());
+                                        }
+                                    }
+                                    return !matches;
+                                }
+                                return false;
+                            });
+ //                       }
+                        //toWrite.putState(value);
                         //}
                     } else {
                         if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
@@ -764,12 +832,17 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
         return false;
     }
 
-    private void deconstruct(Object s) {
-        rootValueExtractor.extractToPlace(s,place);
+    private ExtractedStore extractedStore = new ExtractedStoreImpl();
+    private void deconstruct(IToken s, Predicate<IToken> extractIfMatches) {
+        Extract extract = s.getValue().getClass().getAnnotation(Extract.class);
+        rootValueExtractor.extractToPlace(s,place,extractedStore,extractIfMatches);
         Extract ext = s.getClass().getAnnotation(Extract.class);
-        if (ext!=null && ext.keepRoot()){
-            place.addValue(s);
+        if (ext!=null && ext.keepRoot() && !extractedStore.isExtracted(s)){
+            place.addValue(s.getValue());
         }
+    }
+    private void deconstruct(IToken s) {
+        deconstruct(s,t->true);
     }
 
     public RGraph copy() {

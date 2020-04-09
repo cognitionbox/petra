@@ -15,16 +15,18 @@
  */
 package io.cognitionbox.petra.core.engine.extractors.impl;
 
+import io.cognitionbox.petra.core.engine.extractors.ExtractedStore;
 import io.cognitionbox.petra.core.engine.extractors.MapExtractor;
 import io.cognitionbox.petra.core.engine.petri.IToken;
 import io.cognitionbox.petra.core.engine.petri.Place;
 
 import java.util.Map;
+import java.util.function.Predicate;
 
 public class MapExtractorImpl extends AbstractValueExtractor<Map> implements MapExtractor {
 
     @Override
-    public void extractToPlace(Map value, Place place) {
-        value.entrySet().forEach(e->place.addValue(e));
+    public void extractToPlace(IToken<Map> value, Place place, ExtractedStore extractedStore, Predicate<IToken> extractIfMatches) {
+        value.getValue().entrySet().forEach(e->place.addValue(e));
     }
 }

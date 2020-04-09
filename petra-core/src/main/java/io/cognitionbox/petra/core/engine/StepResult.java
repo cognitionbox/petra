@@ -23,9 +23,9 @@ import java.io.Serializable;
 public final class StepResult implements Serializable {
     private OperationType operationType;
     private IToken input;
-    private Object outputValue;
+    private IToken outputValue;
 
-    public StepResult(OperationType operationType, IToken input, Object outputValue) {
+    public StepResult(OperationType operationType, IToken input, IToken outputValue) {
         this.operationType = operationType;
         this.input = input;
         this.outputValue = outputValue;
@@ -39,7 +39,7 @@ public final class StepResult implements Serializable {
         return input;
     }
 
-    public Object getOutputValue() {
+    public IToken getOutputValue() {
         return outputValue;
     }
 }
