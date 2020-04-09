@@ -15,20 +15,16 @@
  */
 package io.cognitionbox.petra.lang;
 
-import io.cognitionbox.petra.google.Optional;
 import io.cognitionbox.petra.core.IJoin;
 import io.cognitionbox.petra.core.IMaybeEffect;
-import io.cognitionbox.petra.util.function.IPredicate;
+import io.cognitionbox.petra.google.Optional;
 import io.cognitionbox.petra.util.PetraUtils;
+import io.cognitionbox.petra.util.function.IPredicate;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractJoin<R> implements IJoin, IMaybeEffect {
-
-    AbstractJoin(Guard<? super R> r) {
-        this.r = r;
-    }
+public abstract class AbstractJoin implements IJoin {
 
     protected AbstractJoin() {}
 
@@ -36,7 +32,7 @@ public abstract class AbstractJoin<R> implements IJoin, IMaybeEffect {
         return inputTypes;
     }
 
-    private List<Guard<?>> inputTypes = new ArrayList<>();
+    final protected List<Guard<?>> inputTypes = new ArrayList<>();
 
     void addInputType(Guard<?> guard){
         inputTypes.add(guard);
@@ -61,32 +57,4 @@ public abstract class AbstractJoin<R> implements IJoin, IMaybeEffect {
         this.millisBeforeRetry = millisBeforeRetry;
     }
 
-    void setEffectType(Optional<Class<?>> effectType) {
-        this.effectType = effectType;
-    }
-
-    private Optional<Class<?>> effectType = null;
-    @Override
-    public Optional<Class<?>> getEffectType() {
-        if (effectType==null){
-            effectType = PetraUtils.getEffectTypeForJoinWithInputTypesAndReturnType(inputTypes,r);
-        }
-        return effectType;
-    }
-
-    Guard<? super R> r;
-    public Guard<? super R> r() {
-        return r;
-    }
-
-    public void post(GuardReturn<? super R> r) {
-        this.r = r;
-    }
-    public void post(Class<? super R> clazz, IPredicate<? super R> predicate) {
-        post(new GuardReturn(clazz,predicate));
-    }
-
-    public void postVoid() {
-        post(new GuardReturn(Void.class, x->true));
-    }
 }

@@ -19,15 +19,17 @@ import io.cognitionbox.petra.util.function.IFunction;
 
 import java.util.List;
 
-public abstract class AbstractJoin1<A> extends AbstractJoin implements IJoin {
+public abstract class AbstractPureJoin1<A,R> extends AbstractPureJoin<R> implements IJoin {
 
     Guard<? super A> a;
 
-    AbstractJoin1(Guard<? super A> a) {
+    AbstractPureJoin1(Guard<? super A> a, IFunction<List<A>, R> function, Guard<? super R> r) {
+        super(r);
         this.a = a;
+        this.function = function;
     }
 
-    protected AbstractJoin1() {}
+    protected AbstractPureJoin1() {}
 
     public Guard<? super A> a() {
         return a;
@@ -45,5 +47,17 @@ public abstract class AbstractJoin1<A> extends AbstractJoin implements IJoin {
 
     protected void setMillisBeforeRetry(long millisBeforeRetry) {
         this.millisBeforeRetry = millisBeforeRetry;
+    }
+
+//    abstract IFunction func();
+
+    public IFunction<List<A>, R> func() {
+        return function;
+    }
+
+    IFunction<List<A>, R> function;
+
+    public void func(IFunction<List<A>, R> function) {
+        this.function = function;
     }
 }

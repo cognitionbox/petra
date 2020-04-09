@@ -15,31 +15,37 @@
  */
 package io.cognitionbox.petra.lang;
 import io.cognitionbox.petra.core.IJoin;
-import io.cognitionbox.petra.lang.AbstractJoin;
+import io.cognitionbox.petra.lang.AbstractJoin2;
 import io.cognitionbox.petra.lang.AbstractPureJoin;
 import io.cognitionbox.petra.lang.Guard;
 import io.cognitionbox.petra.lang.GuardInput;
+import io.cognitionbox.petra.util.function.IBiConsumer;
 import io.cognitionbox.petra.util.function.IBiFunction;
 
 import java.util.List;
 
-public abstract class AbstractJoin2<A,B> extends AbstractJoin implements IJoin {
+public abstract class AbstractEffectJoin2<A,B> extends AbstractJoin2<A,B> implements IJoin {
 
+    IBiConsumer<List<A>, List<B>> function;
     private Guard<? super B> b;
+    private Guard<? super A> a;
 
-    AbstractJoin2(Guard<? super A> a, Guard<? super B> b) {
+    Guard<? super B> postB;
+    Guard<? super A> postA;
+
+    AbstractEffectJoin2(Guard<? super A> a, Guard<? super B> b,
+                        IBiConsumer<List<A>, List<B>> function) {
         this.a = a;
         this.b = b;
+        this.function = function;
     }
 
-    protected AbstractJoin2() {
+    protected AbstractEffectJoin2() {
     }
 
     public Guard<? super B> b() {
         return b;
     }
-
-    private Guard<? super A> a;
 
     public Guard<? super A> a() {
         return a;
@@ -54,4 +60,20 @@ public abstract class AbstractJoin2<A,B> extends AbstractJoin implements IJoin {
         addInputType(b);
         this.b = b;
     }
+
+    protected void postA(GuardReturn<? super A> a) {
+        this.postA = a;
+    }
+
+    protected void postB(GuardReturn<? super B> b) {
+        this.postB = b;
+    }
+
+    public IBiConsumer<List<A>, List<B>> func(){
+        return function;
+    }
+    public void func(IBiConsumer<List<A>, List<B>> function) {
+        this.function = function;
+    }
+
 }

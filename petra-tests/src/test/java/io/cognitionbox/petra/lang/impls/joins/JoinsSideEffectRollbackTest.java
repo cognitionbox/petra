@@ -15,12 +15,12 @@
  */
 package io.cognitionbox.petra.lang.impls.joins;
 
+import io.cognitionbox.petra.lang.PJoin;
 import io.cognitionbox.petra.lang.annotations.Extract;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import io.cognitionbox.petra.config.ExecMode;
 
 import io.cognitionbox.petra.lang.PGraph;
-import io.cognitionbox.petra.lang.PJoin;
 import io.cognitionbox.petra.util.impl.PList;
 import io.cognitionbox.petra.util.Petra;
 import org.junit.Test;

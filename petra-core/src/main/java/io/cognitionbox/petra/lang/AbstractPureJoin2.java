@@ -14,38 +14,35 @@
  * limitations under the License.
  */
 package io.cognitionbox.petra.lang;
-
 import io.cognitionbox.petra.core.IJoin;
-import io.cognitionbox.petra.util.function.ITriFunction;
+import io.cognitionbox.petra.util.function.IBiFunction;
 
 import java.util.List;
 
-public abstract class AbstractJoin3<A, B, C> extends AbstractJoin implements IJoin {
+public abstract class AbstractPureJoin2<A,B,R> extends AbstractPureJoin<R> implements IJoin {
 
-    private Guard<? super A> a;
     private Guard<? super B> b;
-    private Guard<? super C> c;
-    private long millisBeforeRetry = 100;
 
-    AbstractJoin3(Guard<? super A> a, Guard<? super B> b, Guard<? super C> c) {
+    AbstractPureJoin2(Guard<? super A> a, Guard<? super B> b,
+                      IBiFunction<List<A>, List<B>,R> function,
+                      Guard<? super R> r) {
+        super(r);
         this.a = a;
         this.b = b;
-        this.c = c;
+        this.function = function;
     }
 
-    protected AbstractJoin3() {
-    }
-
-    public Guard<? super A> a() {
-        return a;
+    protected AbstractPureJoin2() {
     }
 
     public Guard<? super B> b() {
         return b;
     }
 
-    public Guard<? super C> c() {
-        return c;
+    private Guard<? super A> a;
+
+    public Guard<? super A> a() {
+        return a;
     }
 
     protected void preA(GuardInput<? super A> a) {
@@ -58,17 +55,12 @@ public abstract class AbstractJoin3<A, B, C> extends AbstractJoin implements IJo
         this.b = b;
     }
 
-    protected void preC(GuardInput<? super C> c) {
-        addInputType(c);
-        this.c = c;
+    IBiFunction<List<A>, List<B>,R> function;
+    public IBiFunction<List<A>, List<B>,R> func(){
+        return function;
     }
-
-    public long getMillisBeforeRetry() {
-        return millisBeforeRetry;
-    }
-
-    protected void setMillisBeforeRetry(long millisBeforeRetry) {
-        this.millisBeforeRetry = millisBeforeRetry;
+    public void func(IBiFunction<List<A>, List<B>, R> function) {
+        this.function = function;
     }
 
 }

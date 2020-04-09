@@ -130,10 +130,10 @@ public class RGraphComputer<I extends D, O extends D, D> implements Serializable
       }
     }
 
-    PGraphDotDiagramRendererImpl2 renderer = new PGraphDotDiagramRendererImpl2();
-    renderer.render(this.rootGraph);
-    renderer.finish();
-    LOG.info("\n"+renderer.getDotOutput());
+//    PGraphDotDiagramRendererImpl2 renderer = new PGraphDotDiagramRendererImpl2();
+//    renderer.render(this.rootGraph);
+//    renderer.finish();
+//    LOG.info("\n"+renderer.getDotOutput());
 
     if (!invoked) {
       invoked = true;

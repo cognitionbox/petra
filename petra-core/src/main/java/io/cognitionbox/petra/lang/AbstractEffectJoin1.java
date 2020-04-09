@@ -15,19 +15,22 @@
  */
 package io.cognitionbox.petra.lang;
 import io.cognitionbox.petra.core.IJoin;
+import io.cognitionbox.petra.util.function.IConsumer;
 import io.cognitionbox.petra.util.function.IFunction;
 
 import java.util.List;
 
-public abstract class AbstractJoin1<A> extends AbstractJoin implements IJoin {
+public abstract class AbstractEffectJoin1<A> extends AbstractJoin1<A> implements IJoin {
 
     Guard<? super A> a;
+    Guard<? super A> postA;
 
-    AbstractJoin1(Guard<? super A> a) {
+    AbstractEffectJoin1(Guard<? super A> a, IConsumer<List<A>> function) {
         this.a = a;
+        this.function = function;
     }
 
-    protected AbstractJoin1() {}
+    protected AbstractEffectJoin1() {}
 
     public Guard<? super A> a() {
         return a;
@@ -38,6 +41,10 @@ public abstract class AbstractJoin1<A> extends AbstractJoin implements IJoin {
         this.a = a;
     }
 
+    protected void post(GuardReturn<? super A> a) {
+        this.postA = a;
+    }
+
     private long millisBeforeRetry = 100;
     public long getMillisBeforeRetry() {
         return millisBeforeRetry;
@@ -45,5 +52,17 @@ public abstract class AbstractJoin1<A> extends AbstractJoin implements IJoin {
 
     protected void setMillisBeforeRetry(long millisBeforeRetry) {
         this.millisBeforeRetry = millisBeforeRetry;
+    }
+
+//    abstract IFunction func();
+
+    public IConsumer<List<A>> func() {
+        return function;
+    }
+
+    IConsumer<List<A>> function;
+
+    public void func(IConsumer<List<A>> function) {
+        this.function = function;
     }
 }

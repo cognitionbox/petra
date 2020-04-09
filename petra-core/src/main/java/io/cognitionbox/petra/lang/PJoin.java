@@ -16,13 +16,13 @@
 package io.cognitionbox.petra.lang;
 
 import io.cognitionbox.petra.lang.annotations.Pure;
-import io.cognitionbox.petra.core.IJoin1;
+import io.cognitionbox.petra.core.IPJoin1;
 import io.cognitionbox.petra.util.function.IFunction;
 
 import java.util.List;
 
 @Pure
-public class PJoin<A,R> extends AbstractJoin1<A,R> implements IJoin1<A, R> {
+public class PJoin<A,R> extends AbstractPureJoin1<A,R> implements IPJoin1<A, R> {
 
     private long millisBeforeRetry = 100;
 

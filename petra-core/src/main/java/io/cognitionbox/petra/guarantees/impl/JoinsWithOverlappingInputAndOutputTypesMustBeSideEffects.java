@@ -15,10 +15,9 @@
  */
 package io.cognitionbox.petra.guarantees.impl;
 
-import io.cognitionbox.petra.lang.PJoin;
+import io.cognitionbox.petra.lang.*;
 import io.cognitionbox.petra.lang.PJoin2;
-import io.cognitionbox.petra.lang.PJoin3;
-import io.cognitionbox.petra.lang.RGraph;
+import io.cognitionbox.petra.lang.PJoin;
 import io.cognitionbox.petra.core.IJoin;
 
 import java.util.function.Predicate;

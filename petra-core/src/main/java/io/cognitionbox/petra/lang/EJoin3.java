@@ -15,16 +15,18 @@
  */
 package io.cognitionbox.petra.lang;
 
-import io.cognitionbox.petra.lang.annotations.Pure;
+import io.cognitionbox.petra.core.IEJoin3;
 import io.cognitionbox.petra.core.IPJoin3;
+import io.cognitionbox.petra.lang.annotations.Pure;
+import io.cognitionbox.petra.util.function.ITriConsumer;
 import io.cognitionbox.petra.util.function.ITriFunction;
 
 import java.util.List;
 
 @Pure
-public class PJoin3<A,B,C,R> extends AbstractPureJoin3<A,B,C,R> implements IPJoin3<A, B, C, R> {
-    public PJoin3(){}
-    public PJoin3(Guard<? super A> a, Guard<? super B> b, Guard<? super C> c, ITriFunction<List<A>, List<B>, List<C>, R> function, Guard<? super R> r) {
-        super(a, b, c, function, r);
+public class EJoin3<A,B,C> extends AbstractEffectJoin3<A,B,C> implements IEJoin3<A, B, C> {
+    public EJoin3(){}
+    public EJoin3(Guard<? super A> a, Guard<? super B> b, Guard<? super C> c, ITriConsumer<List<A>, List<B>, List<C>> function) {
+        super(a, b, c, function);
     }
 }

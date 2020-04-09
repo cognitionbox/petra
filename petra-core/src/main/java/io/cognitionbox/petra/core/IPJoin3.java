@@ -16,15 +16,16 @@
 package io.cognitionbox.petra.core;
 
 import io.cognitionbox.petra.lang.Guard;
-import io.cognitionbox.petra.util.function.IBiFunction;
+import io.cognitionbox.petra.util.function.ITriFunction;
 
 import java.io.Serializable;
 import java.util.List;
 
-public interface IJoin2<A,B,R> extends Serializable {
+public interface IPJoin3<A,B,C,R> extends Serializable {
     long getMillisBeforeRetry();
     Guard<? super A> a();
     Guard<? super B> b();
+    Guard<? super C> c();
     Guard<? super R> r();
-    IBiFunction<List<A>,List<B>,R> func();
+    ITriFunction<List<A>,List<B>,List<C>,R> func();
 }

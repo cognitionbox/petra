@@ -21,7 +21,7 @@ import io.cognitionbox.petra.util.function.IFunction;
 import java.io.Serializable;
 import java.util.List;
 
-public interface IJoin1<A,R> extends Serializable {
+public interface IPJoin1<A,R> extends Serializable {
     Guard<? super A> a();
     Guard<? super R> r();
     IFunction<List<A>,R> func();

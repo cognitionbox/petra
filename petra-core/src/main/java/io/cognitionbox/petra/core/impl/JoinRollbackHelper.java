@@ -15,10 +15,9 @@
  */
 package io.cognitionbox.petra.core.impl;
 
-import io.cognitionbox.petra.lang.Guard;
-import io.cognitionbox.petra.lang.PJoin;
+import io.cognitionbox.petra.lang.*;
 import io.cognitionbox.petra.lang.PJoin2;
-import io.cognitionbox.petra.lang.PJoin3;
+import io.cognitionbox.petra.lang.PJoin;
 import io.cognitionbox.petra.util.impl.PList;
 import io.cognitionbox.petra.core.IJoin;
 import io.cognitionbox.petra.core.IRollback;
@@ -42,7 +41,7 @@ public class JoinRollbackHelper implements Serializable {
         return null;
     }
 
-    public void captureListStates(long millisBeforeRetry, IJoin join, PList... lists){
+    private void captureListStates(long millisBeforeRetry, IJoin join, PList... lists){
         if (isJoinSideEffect(join)){
             for (PList list : lists){
                 if (getSideEffectType(join).isAssignableFrom(list.get(0).getClass())){
@@ -52,7 +51,7 @@ public class JoinRollbackHelper implements Serializable {
         }
     }
 
-    public void rollbackListStates(long millisBeforeRetry, IJoin join, PList... lists){
+    private void rollbackListStates(long millisBeforeRetry, IJoin join, PList... lists){
         if (isJoinSideEffect(join)){
             Guard[] types = new Guard[lists.length];
             if (join instanceof PJoin){
@@ -82,7 +81,7 @@ public class JoinRollbackHelper implements Serializable {
         }
     }
 
-    public boolean sideEffectsCheck(IJoin join, PList... lists){
+    private boolean sideEffectsCheck(IJoin join, PList... lists){
         if (isJoinSideEffect(join)){
             // only check non side effected types
             // it should have the effect of isolating lists which do not have the side effects,

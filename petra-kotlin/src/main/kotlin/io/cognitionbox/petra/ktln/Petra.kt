@@ -17,10 +17,6 @@ package io.cognitionbox.petra.ktln
 
 import io.cognitionbox.petra.core.impl.OperationType
 import io.cognitionbox.petra.lang.*
-import io.cognitionbox.petra.util.function.IBiFunction
-import io.cognitionbox.petra.util.function.IFunction
-import io.cognitionbox.petra.util.function.IPredicate
-import io.cognitionbox.petra.util.function.ITriFunction
 import kotlin.reflect.KClass
 
 object Petra {

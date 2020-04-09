@@ -20,20 +20,24 @@ import io.cognitionbox.petra.util.function.ITriFunction;
 
 import java.util.List;
 
-public abstract class AbstractJoin3<A, B, C> extends AbstractJoin implements IJoin {
+public abstract class AbstractPureJoin3<A, B, C, R> extends AbstractPureJoin<R> implements IJoin {
 
     private Guard<? super A> a;
     private Guard<? super B> b;
     private Guard<? super C> c;
     private long millisBeforeRetry = 100;
 
-    AbstractJoin3(Guard<? super A> a, Guard<? super B> b, Guard<? super C> c) {
+    AbstractPureJoin3(Guard<? super A> a, Guard<? super B> b, Guard<? super C> c,
+                      ITriFunction<List<A>, List<B>,List<C>,R> function,
+                      Guard<? super R> r) {
+        super(r);
         this.a = a;
         this.b = b;
         this.c = c;
+        this.function = function;
     }
 
-    protected AbstractJoin3() {
+    protected AbstractPureJoin3() {
     }
 
     public Guard<? super A> a() {
@@ -69,6 +73,17 @@ public abstract class AbstractJoin3<A, B, C> extends AbstractJoin implements IJo
 
     protected void setMillisBeforeRetry(long millisBeforeRetry) {
         this.millisBeforeRetry = millisBeforeRetry;
+    }
+
+   // abstract ITriFunction func();
+
+    private ITriFunction<List<A>, List<B>,List<C>,R> function;
+    protected void func(ITriFunction<List<A>, List<B>, List<C>, R> function) {
+        this.function = function;
+    }
+
+    public ITriFunction<List<A>, List<B>,List<C>, R> func(){
+        return function;
     }
 
 }

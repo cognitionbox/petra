@@ -13,18 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.cognitionbox.petra.lang;
+package io.cognitionbox.petra.core;
 
-import io.cognitionbox.petra.lang.annotations.Pure;
-import io.cognitionbox.petra.core.IPJoin3;
-import io.cognitionbox.petra.util.function.ITriFunction;
+import io.cognitionbox.petra.lang.Guard;
+import io.cognitionbox.petra.util.function.IBiConsumer;
+import io.cognitionbox.petra.util.function.IConsumer;
 
+import java.io.Serializable;
 import java.util.List;
 
-@Pure
-public class PJoin3<A,B,C,R> extends AbstractPureJoin3<A,B,C,R> implements IPJoin3<A, B, C, R> {
-    public PJoin3(){}
-    public PJoin3(Guard<? super A> a, Guard<? super B> b, Guard<? super C> c, ITriFunction<List<A>, List<B>, List<C>, R> function, Guard<? super R> r) {
-        super(a, b, c, function, r);
-    }
+public interface IEJoin2<A,B> extends Serializable {
+    Guard<? super A> a();
+    Guard<? super B> b();
+    IBiConsumer<List<A>,List<B>> func();
 }

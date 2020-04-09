@@ -16,24 +16,31 @@
 package io.cognitionbox.petra.lang;
 
 import io.cognitionbox.petra.core.IJoin;
+import io.cognitionbox.petra.util.function.ITriConsumer;
 import io.cognitionbox.petra.util.function.ITriFunction;
 
 import java.util.List;
 
-public abstract class AbstractJoin3<A, B, C> extends AbstractJoin implements IJoin {
+public abstract class AbstractEffectJoin3<A, B, C> extends AbstractJoin3<A,B,C> implements IJoin {
 
     private Guard<? super A> a;
     private Guard<? super B> b;
     private Guard<? super C> c;
     private long millisBeforeRetry = 100;
 
-    AbstractJoin3(Guard<? super A> a, Guard<? super B> b, Guard<? super C> c) {
+    Guard<? super A> postA;
+    Guard<? super B> postB;
+    Guard<? super C> postC;
+
+    AbstractEffectJoin3(Guard<? super A> a, Guard<? super B> b, Guard<? super C> c,
+                        ITriConsumer<List<A>, List<B>,List<C>> function) {
         this.a = a;
         this.b = b;
         this.c = c;
+        this.function = function;
     }
 
-    protected AbstractJoin3() {
+    protected AbstractEffectJoin3() {
     }
 
     public Guard<? super A> a() {
@@ -63,12 +70,35 @@ public abstract class AbstractJoin3<A, B, C> extends AbstractJoin implements IJo
         this.c = c;
     }
 
+    protected void postA(GuardReturn<? super A> a) {
+        this.postA = a;
+    }
+
+    protected void postB(GuardReturn<? super B> b) {
+        this.postB = b;
+    }
+
+    protected void postC(GuardReturn<? super C> c) {
+        this.postC = c;
+    }
+
     public long getMillisBeforeRetry() {
         return millisBeforeRetry;
     }
 
     protected void setMillisBeforeRetry(long millisBeforeRetry) {
         this.millisBeforeRetry = millisBeforeRetry;
+    }
+
+   // abstract ITriFunction func();
+
+    private ITriConsumer<List<A>, List<B>,List<C>> function;
+    protected void func(ITriConsumer<List<A>, List<B>,List<C>> function) {
+        this.function = function;
+    }
+
+    public ITriConsumer<List<A>, List<B>,List<C>> func(){
+        return function;
     }
 
 }

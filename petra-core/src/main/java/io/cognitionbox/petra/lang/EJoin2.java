@@ -15,20 +15,22 @@
  */
 package io.cognitionbox.petra.lang;
 
-import io.cognitionbox.petra.lang.annotations.Pure;
+import io.cognitionbox.petra.core.IEJoin2;
 import io.cognitionbox.petra.core.IPJoin2;
+import io.cognitionbox.petra.lang.annotations.Pure;
+import io.cognitionbox.petra.util.function.IBiConsumer;
 import io.cognitionbox.petra.util.function.IBiFunction;
 
 import java.util.List;
 
 @Pure
-public class PJoin2<A,B,R> extends AbstractPureJoin2<A,B,R> implements IPJoin2<A, B, R> {
+public class EJoin2<A,B> extends AbstractEffectJoin2<A,B> implements IEJoin2<A, B> {
 
 
     private long millisBeforeRetry = 100;
-    public PJoin2(){}
-    public PJoin2(Guard<? super A> a, Guard<? super B> b, IBiFunction<List<A>, List<B>, R> function, Guard<? super R> r) {
-        super(a, b, function, r);
+    public EJoin2(){}
+    public EJoin2(Guard<? super A> a, Guard<? super B> b, IBiConsumer<List<A>, List<B>> function) {
+        super(a, b, function);
     }
 
     public long getMillisBeforeRetry() {
