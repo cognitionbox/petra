@@ -22,9 +22,57 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.stream.Collectors;
+import java.util.function.Predicate;
 
 public class ReflectUtils {
+
+    public static class ObjectNotNullStringNotEmptyAndValidFloatingPoint implements Predicate<Object>{
+
+        @Override
+        public boolean test(Object v) {
+            if (v==null){
+                return false;
+            }
+            if (v instanceof String){
+                return !((String) v).isEmpty();
+            } else if (v instanceof Float){
+                Float f = ((Float) v);
+                return Float.isFinite(f.floatValue()) && !Float.isInfinite(f.floatValue()) && !Float.isNaN(f.floatValue());
+            } else if (v instanceof Double){
+                Double d = ((Double) v);
+                return Double.isFinite(d.floatValue()) && !Double.isInfinite(d.floatValue()) && !Double.isNaN(d.floatValue());
+            }
+            return true;
+        }
+    }
+
+    static public boolean isAllObjectGraphFieldsValid(Object object, Predicate validator) {
+        for (Field f : getAllFieldsAccessibleFromObject(object.getClass())){
+            Object fieldValue = null;
+            try {
+                boolean accessible = f.isAccessible();
+                f.setAccessible(true);
+                fieldValue = f.get(object);
+                f.setAccessible(accessible);
+            } catch (IllegalAccessException e) {
+                throw new IllegalStateException("could not complete validation of object.");
+            }
+            if (fieldValue instanceof Iterable){
+                for (Object o : (Iterable)fieldValue){
+                    if (!validator.test(o)) {
+                        return false;
+                    }
+                }
+            } else if (!validator.test(fieldValue)){
+                return false;
+            }
+            if (!(fieldValue instanceof Number || fieldValue instanceof String || fieldValue instanceof Boolean)){
+                return isAllObjectGraphFieldsValid(fieldValue,validator);
+            }
+        }
+        return true;
+    }
+
     static public <T> Set<Field> getAllFieldsAccessibleFromObject(Class<?> t) {
         Set<Field> fields = new HashSet<>();
         if (t.isPrimitive() || t.isArray()){
