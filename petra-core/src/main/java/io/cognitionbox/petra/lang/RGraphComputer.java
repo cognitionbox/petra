@@ -17,7 +17,6 @@ package io.cognitionbox.petra.lang;
 
 import io.cognitionbox.petra.config.IPetraConfig;
 import io.cognitionbox.petra.core.IRingbuffer;
-import io.cognitionbox.petra.core.engine.StepWorker;
 import io.cognitionbox.petra.config.PetraConfig;
 import io.cognitionbox.petra.core.engine.petri.impl.Token;
 import io.cognitionbox.petra.core.impl.*;
@@ -29,10 +28,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.URL;
-import java.net.URLConnection;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
@@ -104,7 +99,6 @@ public class RGraphComputer<I extends D, O extends D, D> implements Serializable
 
     if (!RGraphComputer.getConfig().getMode().isSEQ()){
       workerExecutor = Petra.getFactory().createExecutorService("exe");
-      RGraphComputer.getWorkerExecutor().submit(new StepWorker());
     }
 
     List<AbstractStep> steps = LogicStepsCollector.getAllSteps(this.rootGraph);

@@ -17,6 +17,7 @@ package io.cognitionbox.petra.lang;
 
 import io.cognitionbox.petra.core.*;
 import io.cognitionbox.petra.core.engine.StepCallable;
+import io.cognitionbox.petra.core.engine.StepResult;
 import io.cognitionbox.petra.core.engine.extractors.ExtractedStore;
 import io.cognitionbox.petra.core.engine.extractors.impl.AbstractRootValueExtractor;
 import io.cognitionbox.petra.core.engine.extractors.impl.ExtractedStoreImpl;
@@ -44,6 +45,8 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -349,37 +352,38 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
     }
 
     private void forkAndJoinCallables(List<StepCallable> callables) {
-        for (StepCallable callable : callables) {
-            if (RGraphComputer.getConfig().getMode().isSEQ()){
+        if (RGraphComputer.getConfig().getMode().isSEQ()){
+            for (StepCallable callable : callables) {
                 try {
-                    callable.call();
+                    StepResult sr = callable.call();
+                    if (OperationType.READ_CONSUME == sr.getOperationType()) {
+                        removeState(sr.getInput());
+                    }
+                    if (OperationType.READ_WRITE != sr.getOperationType()) {
+                        deconstruct(sr.getOutputValue());
+                        //putState(f.get().getOutputValue());
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            } else {
-                RGraphComputer.getTaskQueue().add(callable);
             }
-        }
-        while (!callables.stream().allMatch(f -> f.isDone())) {
+        } else {
             try {
-                Thread.sleep(20);
+                List<Future<StepResult>> futures = RGraphComputer.getWorkerExecutor().invokeAll(callables);
+                for (Future<StepResult> f : futures){
+                    if (OperationType.READ_CONSUME == f.get().getOperationType()) {
+                        removeState(f.get().getInput());
+                    }
+                    if (OperationType.READ_WRITE != f.get().getOperationType()) {
+                        deconstruct(f.get().getOutputValue());
+                        //putState(f.get().getOutputValue());
+                    }
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
             }
-        }
-
-        try {
-            for (StepCallable f : callables){
-                if (OperationType.READ_CONSUME == f.get().getOperationType()) {
-                    removeState(f.get().getInput());
-                }
-                if (OperationType.READ_WRITE != f.get().getOperationType()) {
-                    deconstruct(f.get().getOutputValue());
-                    //putState(f.get().getOutputValue());
-                }
-            }
-        } catch (Exception e) {
-            return;
         }
     }
 

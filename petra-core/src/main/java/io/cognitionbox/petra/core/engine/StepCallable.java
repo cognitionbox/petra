@@ -36,42 +36,22 @@ import static io.cognitionbox.petra.util.Petra.ref;
 public class StepCallable extends Identifyable implements Callable<StepResult>, Serializable, ICallable<StepResult> {
     final static Logger LOG = LoggerFactory.getLogger(StepCallable.class);
     private static final long serialVersionUID = 1L;
-    protected Lock lock = new PLock();
     protected RGraph parent;
     protected AbstractStep step;
-    protected Ref<StepResult> result = ref();
-    protected Ref<Boolean> done = ref(false);
 
     public StepCallable(RGraph parent, AbstractStep step) {
         this.parent = parent;
         this.step = step;
     }
 
-    public StepResult get() {
-        return result.get();
-    }
-
     @Override
     public StepResult call() throws Exception {
-        if (lock.tryLock()) {
-            try {
-                if (!done.get()){
-                    Object out = step.call();
-                    result.set(new StepResult(step.p().getOperationType(), step.getInput(),new Token(out)));
-                    done.set(true);
-                    //LOG.info(this.getUniqueId() + ": step processed!");
-                }
-                return result.get();
-            } catch (Exception e) {
-                LOG.error(this.getUniqueId(),e);
-            } finally {
-                lock.unlock();
-            }
+        try {
+            Object out = step.call();
+            return new StepResult(step.p().getOperationType(), step.getInput(),new Token(out));
+        } catch (Exception e) {
+            LOG.error(this.getUniqueId(),e);
         }
         return null;
-    }
-
-    public boolean isDone() {
-        return done != null && done.get();
     }
 }
