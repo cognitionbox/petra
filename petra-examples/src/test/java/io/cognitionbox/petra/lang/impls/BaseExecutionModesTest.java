@@ -71,6 +71,7 @@ public class BaseExecutionModesTest extends BaseTest {
             .setMode(execMode)
             //.setHazelcastServerMode(HazelcastServerMode.LOCAL).
             .enableStatesLogging()
+            .enableAllStatesLogging()
             .setIsReachabilityChecksEnabled(false)
             .setConstructionGuaranteeChecks(true)
             .setDefensiveCopyAllInputsExceptForEffectedInputs(false)

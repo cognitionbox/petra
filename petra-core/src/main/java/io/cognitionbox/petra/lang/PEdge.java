@@ -82,9 +82,16 @@ public class PEdge<I> extends AbstractStep<I> implements Serializable {
         this.PEdgeRollbackHelper = new PEdgeRollbackHelper(millisBeforeRetry);
     }
 
+    private void Lg_ALL_STATES(String desc, I value) {
+        if (RGraphComputer.getConfig().isAllStatesLoggingEnabled()) {
+            LOG.info(desc + " " + RGraphComputer.getConfig().getMode() + " " + " " + this.getPartitionKey() + " " + " thread=" + Thread.currentThread().getId() + " -> " + value);
+        }
+    }
+
     @Override
     public I call() {
         I input = getInput().getValue();
+        Lg_ALL_STATES("[Eg in]",input);
         if (!p().test(input)) {
             return (I) input;
         }
@@ -148,6 +155,7 @@ public class PEdge<I> extends AbstractStep<I> implements Serializable {
 
                 boolean sideEffectOk = !(isSideEffectAndDidNotChangeInput || isNotSideEffectAndDidChangeInput);
                 if (!inputMatchesPostConditionBeforeRunning && postConditionOk && sideEffectOk) {
+                    Lg_ALL_STATES("[Eg out]",input);
                     return res;
                 } else if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
 

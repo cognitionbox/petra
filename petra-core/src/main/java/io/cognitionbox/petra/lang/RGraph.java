@@ -335,14 +335,14 @@ public class RGraph<I extends D,D> extends AbstractStep<I> implements IGraph<I> 
     void Ex() {
         Lg_ALL_STATES("[Ex in]");
         Collection<IToken> toUse = getWorkingStatesToUse();
-        if (place.tokensMatchedByUniqueStepPreconditions(this.getParallizable())) {
+//        if (place.tokensMatchedByUniqueStepPreconditions(this.getParallizable())) {
             Collections.rotate(parallizable, 1);
             matchComputationsToStatesAndExecute(parallizable);
-        } else {
-            if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
-                throw new AssertionError("fails overlap check!");
-            }
-        }
+//        } else {
+//            if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
+//                throw new AssertionError("fails overlap check!");
+//            }
+//        }
         Lg_ALL_STATES("[Ex out]");
     }
 

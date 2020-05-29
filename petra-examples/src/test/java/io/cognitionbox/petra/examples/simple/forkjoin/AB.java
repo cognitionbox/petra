@@ -18,21 +18,43 @@
  */
 package io.cognitionbox.petra.examples.simple.forkjoin;
 
-import io.cognitionbox.petra.examples.simple.common.AB_Result;
-import io.cognitionbox.petra.examples.simple.common.IncrementA;
-import io.cognitionbox.petra.examples.simple.common.IncrementB;
-import io.cognitionbox.petra.lang.PGraph;
-import io.cognitionbox.petra.util.Petra;
 
-import static io.cognitionbox.petra.util.Petra.rw;
-import static io.cognitionbox.petra.util.Petra.rt;
+import io.cognitionbox.petra.lang.annotations.Extract;
 
+import java.io.Serializable;
 
-public class ABtoAB extends PGraph<AB> {
-    {
-        pre(rw(AB.class, x->true));
-        step(new IncrementA());
-        step(new IncrementB());
-        post(rt(AB.class, x->x.getA().value==10 && x.getB().value==10));
+public class AB implements Serializable, GetA, GetB {
+    A a;
+    B b;
+
+    public AB(A a, B b) {
+        this.a = a;
+        this.b = b;
+    }
+
+    public A getA() {
+        return a;
+    }
+
+    public B getB() {
+        return b;
+    }
+
+    @Override
+    public A a() {
+        return a;
+    }
+
+    @Override
+    public B b() {
+        return b;
+    }
+
+    @Override
+    public String toString() {
+        return "AB{" +
+                "a=" + a +
+                ", b=" + b +
+                '}';
     }
 }
