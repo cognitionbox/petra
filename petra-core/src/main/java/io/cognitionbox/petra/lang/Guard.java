@@ -37,7 +37,7 @@ public class Guard<E> implements IPredicate<E> {
         return getTypeClass().equals(Void.class);
     }
 
-    protected OperationType operationType = OperationType.READ_CONSUME;
+    protected OperationType operationType = OperationType.READ_WRITE;
 
     public OperationType getOperationType() {
         return operationType;
@@ -149,8 +149,8 @@ public class Guard<E> implements IPredicate<E> {
     @Override
     public boolean test(Object value) {
         Object x = value;
-//        if (rc instanceof Ref){
-//            x = ((Ref) rc).get();
+//        if (rw instanceof Ref){
+//            x = ((Ref) rw).get();
 //        }
         if (x==null && !Void.class.equals(eventClazz)){
             return false;
@@ -166,7 +166,7 @@ public class Guard<E> implements IPredicate<E> {
             }
         }
 
-        // allows nulls to be return, allowing for an "option" rc
+        // allows nulls to be return, allowing for an "option" rw
         if (x==null || x== vd){
             try {
                 return this.predicate.test(x);

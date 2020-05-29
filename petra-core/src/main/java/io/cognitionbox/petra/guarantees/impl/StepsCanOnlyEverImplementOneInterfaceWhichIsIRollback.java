@@ -25,7 +25,7 @@ import io.cognitionbox.petra.core.IStep;
 public class StepsCanOnlyEverImplementOneInterfaceWhichIsIRollback implements StepCheck {
 
         @Override
-        public boolean test(IStep<?, ?> step) {
+        public boolean test(IStep<?> step) {
             if (step.getStepClazz().equals(PEdge.class) ||
                     step.getStepClazz().equals(RGraph.class) ||
                     step.getStepClazz().equals(PGraph.class)) {

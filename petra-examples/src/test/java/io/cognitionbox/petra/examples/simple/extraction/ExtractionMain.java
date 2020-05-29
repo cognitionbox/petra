@@ -50,6 +50,6 @@ public class ExtractionMain extends BaseExecutionModesTest {
      */
     @Test
     public void test(){
-        Void result = new PGraphComputer<AB, Void>().computeWithInput(new ExtractAB(),new AB(new A(),new B()));
+        AB result = new PGraphComputer<AB, AB>().computeWithInput(new ExtractAB(),new AB(new A(),new B()));
     }
 }

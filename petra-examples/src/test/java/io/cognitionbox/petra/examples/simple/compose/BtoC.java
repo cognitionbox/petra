@@ -17,20 +17,19 @@
  * along with Petra.  If not, see <https://www.gnu.org/licenses/>.
  */
 package io.cognitionbox.petra.examples.simple.compose;
-
-import io.cognitionbox.petra.examples.simple.common.B;
-import io.cognitionbox.petra.examples.simple.common.C;
 import io.cognitionbox.petra.lang.PEdge;
-import io.cognitionbox.petra.util.Petra;
 
-import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rw;
 import static io.cognitionbox.petra.util.Petra.rt;
 
 
-public class BtoC extends PEdge<B, C> {
+public class BtoC extends PEdge<rwBC> {
     {
-       pre(rc(B.class, b->true));
-       func(b->new C());
-       post(Petra.rt(C.class, c->true));
+       pre(rw(roBC.class, b ->true));
+       func(b ->{
+           b.c(new C());
+           return b;
+       });
+       post(rt(roBC.class, b->true));
     }
 }

@@ -52,7 +52,7 @@ public class ComposeMain extends BaseExecutionModesTest {
     @Test
     public void test(){
         PGraphComputer.getConfig().enableStatesLogging();
-        Void result = new PGraphComputer<A, Void>().computeWithInput(new DependancyGraph(),new A());
+        X result = new PGraphComputer<X, X>().computeWithInput(new DependancyGraph(),new X());
         System.out.println(result);
     }
 }

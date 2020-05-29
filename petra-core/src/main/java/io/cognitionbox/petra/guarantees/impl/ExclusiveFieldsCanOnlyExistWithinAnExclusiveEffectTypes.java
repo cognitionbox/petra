@@ -28,7 +28,7 @@ import java.util.Set;
 
 public class ExclusiveFieldsCanOnlyExistWithinAnExclusiveEffectTypes implements StepCheck {
         @Override
-        public boolean test(IStep<?, ?> step) {
+        public boolean test(IStep<?> step) {
             if (step.getEffectType().isPresent()) {
                 Class<?> effectType = step.getEffectType().get();
                 boolean a = checkType(effectType);

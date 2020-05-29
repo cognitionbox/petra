@@ -51,6 +51,6 @@ public class DynamicStepParallelismMain extends BaseExecutionModesTest {
      */
     @Test
     public void test(){
-        Void result = new PGraphComputer<X, Void>().computeWithInput(new PrintAGraph(),new X());
+        X result = new PGraphComputer<X, X>().computeWithInput(new PrintAGraph(),new X());
     }
 }

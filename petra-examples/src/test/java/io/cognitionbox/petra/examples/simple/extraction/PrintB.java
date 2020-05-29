@@ -24,16 +24,17 @@ import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.Void;
 
 import static io.cognitionbox.petra.lang.Void.vd;
-import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rt;
+import static io.cognitionbox.petra.util.Petra.rw;
 
 
-public class PrintB extends PEdge<B, Void> {
+public class PrintB extends PEdge<B> {
     {
-       pre(rc(B.class, b->true));
-       func(a->{
-           System.out.println(a.getClass().getSimpleName());
-           return vd;
+       pre(rw(B.class, b->true));
+       func(b->{
+           System.out.println(b.getClass().getSimpleName());
+           return b;
         });
-       postVoid();
+       post(rt(B.class, b->true));
     }
 }

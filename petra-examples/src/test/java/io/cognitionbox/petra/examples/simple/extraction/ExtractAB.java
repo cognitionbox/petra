@@ -23,13 +23,14 @@ import io.cognitionbox.petra.examples.simple.common.AB;
 import io.cognitionbox.petra.lang.PGraph;
 import io.cognitionbox.petra.lang.Void;
 
-import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rt;
+import static io.cognitionbox.petra.util.Petra.rw;
 
-public class ExtractAB extends PGraph<AB, Void> {
+public class ExtractAB extends PGraph<AB> {
    {
-       pre(rc(AB.class, x->true));
+       pre(rw(AB.class, x->true));
        step(new PrintA());
        step(new PrintB());
-       postVoid();
+       post(rt(AB.class, x->true));
     }
 }

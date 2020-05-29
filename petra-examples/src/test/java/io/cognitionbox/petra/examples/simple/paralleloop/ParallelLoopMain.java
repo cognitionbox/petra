@@ -45,8 +45,8 @@ public class ParallelLoopMain extends BaseExecutionModesTest {
      */
     @Test
     public void test(){
-        AB_Result result = new PGraphComputer<AB, AB_Result>().computeWithInput(new ABtoAB(),new AB(new A(),new B()));
-        assertThat(result.a.value).isEqualTo(10);
-        assertThat(result.b.value).isEqualTo(10);
+        AB result = new PGraphComputer<AB, AB>().computeWithInput(new ABtoAB(),new AB(new A(),new B()));
+        assertThat(result.getA().value).isEqualTo(10);
+        assertThat(result.getB().value).isEqualTo(10);
     }
 }

@@ -42,7 +42,7 @@ public class ClassesWithExtractsOnFieldsMustHaveExtractAnnotation implements Ste
         }
 
         @Override
-        public boolean test(IStep<?, ?> step) {
+        public boolean test(IStep<?> step) {
             if (step.p() == null) {
                 return true;
             }

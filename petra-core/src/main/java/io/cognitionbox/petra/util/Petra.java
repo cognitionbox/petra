@@ -65,7 +65,7 @@ public class Petra {
         }
     }
 
-    public static <T extends IStep<?, ?>> T createStep(Class<T> clazz) {
+    public static <T extends IStep<?>> T createStep(Class<T> clazz) {
         try {
             return clazz.newInstance();
         } catch (Exception e) {
@@ -81,7 +81,7 @@ public class Petra {
         }
     }
 
-    // can potentially do rc checks here on the predicate itself, maybe on just the string,
+    // can potentially do rw checks here on the predicate itself, maybe on just the string,
     // or on the actually logic using a symbolic reasoner
     private static Map<Class<? extends Guard>, Guard> singletonTypeCache = new HashMap<>();
 
@@ -96,16 +96,8 @@ public class Petra {
         }
     }
 
-    public static <T> GuardRead<T> ro(Class<T> eventClazz, IPredicate<T> predicate) {
-        return new GuardRead<>(eventClazz, predicate);
-    }
-
     public static <T> GuardWrite<T> rw(Class<T> eventClazz, IPredicate<T> predicate) {
         return new GuardWrite<>(eventClazz, predicate);
-    }
-
-    public static <T> GuardConsume<T> rc(Class<T> eventClazz, IPredicate<T> predicate) {
-        return new GuardConsume<>(eventClazz, predicate);
     }
 
     public static <T> GuardReturn<T> rt(Class<T> eventClazz, IPredicate<T> predicate) {
@@ -116,10 +108,10 @@ public class Petra {
         return new GuardReturn<>(eventClazz, x -> true);
     }
 
-    public static <I, O> PEdge<I, O> anonymous(Guard<? super I> p,
-                                               IFunction<I, O> function,
-                                               Guard<O>... qs) {
-        GuardXOR<O> pTypeXOR = new GuardXOR<>(OperationType.RETURN);
+    public static <I> PEdge<I> anonymous(Guard<? super I> p,
+                                               IFunction<I, I> function,
+                                               Guard<? super I>... qs) {
+        GuardXOR<I> pTypeXOR = new GuardXOR<>(OperationType.RETURN);
         for (Guard q : qs) {
             pTypeXOR.addChoice(q);
         }
@@ -136,14 +128,6 @@ public class Petra {
 
     public static <A, B, C, R> PJoin3<A, B, C, R> anonymousJ3(Guard<? super A> a, Guard<? super B> b, Guard<? super C> c, ITriFunction<List<A>, List<B>, List<C>, R> function, Guard<? super R> r) {
         return new PJoin3(a, b, c, function, r);
-    }
-
-    public static <T> Guard<T> False(Class<T> eventClazz) {
-        return rc(eventClazz, v -> false);
-    }
-
-    public static <T> Guard<T> True(Class<T> eventClazz) {
-        return rc(eventClazz, v -> true);
     }
 
     public static IPetraComponentsFactory getFactory() {
@@ -190,8 +174,8 @@ public class Petra {
         return getFactory().createStreamFromSet(set);
     }
 
-//    public static <T,C extends Ref<T>> C someRef(T rc, Class<C> clazz) {
-//        return (C) getFactory().createRef(rc, UUID.randomUUID().toString());
+//    public static <T,C extends Ref<T>> C someRef(T rw, Class<C> clazz) {
+//        return (C) getFactory().createRef(rw, UUID.randomUUID().toString());
 //    }
 
     public static <T> Ref<T> ref(T value, String id) {

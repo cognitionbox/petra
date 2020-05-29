@@ -27,7 +27,7 @@ import java.util.Set;
 
 public class ExclusiveMethodsCanOnlyExistWithinAnExclusiveTypes implements StepCheck {
         @Override
-        public boolean test(IStep<?, ?> step) {
+        public boolean test(IStep<?> step) {
             if (step.p() == null) {
                 return true;
             }

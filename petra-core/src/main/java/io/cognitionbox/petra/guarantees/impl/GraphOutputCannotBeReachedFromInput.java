@@ -47,7 +47,7 @@ public class GraphOutputCannotBeReachedFromInput implements GraphCheck {
         }
     }
 
-    private int isPostConditionReachable(IGraph<?, ?> step, List<Guard<?>> list) throws PostConditionNotReachable {
+    private int isPostConditionReachable(IGraph<?> step, List<Guard<?>> list) throws PostConditionNotReachable {
 
         Set<Class<?>> state = new CopyOnWriteArraySet<>();
 
@@ -57,9 +57,7 @@ public class GraphOutputCannotBeReachedFromInput implements GraphCheck {
         Class<?> input = step.p().getTypeClass();
         if (step.p().getTypeClass().isAnnotationPresent(Extract.class)) {
             helper.deconstruct(new HashSet<>(), step.p().getOperationType(), step.p().getTypeClass(), state, 0);
-            if (step.p().getOperationType() != OperationType.READ_CONSUME) {
-                state.add(input);
-            }
+            state.add(input);
         } else {
             state.add(input);
         }
@@ -77,7 +75,7 @@ public class GraphOutputCannotBeReachedFromInput implements GraphCheck {
         if (RGraphComputer.getConfig().isStrictModeExtraConstructionGuarantee()) {
             for (Class<?> s : state) {
                 int matches = 0;
-                for (IStep<?, ?> stp : step.getParallizable()) {
+                for (IStep<?> stp : step.getParallizable()) {
                     if (stp.p().getTypeClass().isAssignableFrom(s)) {
                         matches++;
                         if (matches > 1) {
@@ -91,14 +89,13 @@ public class GraphOutputCannotBeReachedFromInput implements GraphCheck {
         int count = 0;
         while (true) {
             if (((state.size() == 1 && (step.p().getTypeClass().isAssignableFrom(new ArrayList<>(state).get(0)))))) {
-                if (step.p().getTypeClass().isAnnotationPresent(Extract.class) &&
-                        step.p().getOperationType() != OperationType.READ_CONSUME) {
+                if (step.p().getTypeClass().isAnnotationPresent(Extract.class)) {
                     helper.deconstruct(new HashSet<>(), step.p().getOperationType(), step.p().getTypeClass(), state, 0);
                 }
             }
             Set<Class<?>> statesToRemove = new HashSet<>();
             Set<Class<?>> statesToAdd = new HashSet<>();
-            for (IStep<?, ?> stp : step.getParallizable()) { //perm
+            for (IStep<?> stp : step.getParallizable()) { //perm
                 for (Class<?> st : state) {
                     if (stp.p().getTypeClass().isAssignableFrom(st)) {
                         stepsVisitCount.get(stp).incrementAndGet();
@@ -107,8 +104,7 @@ public class GraphOutputCannotBeReachedFromInput implements GraphCheck {
                         // if read just add the output type and leave the input type
                         // it works differently to for equivalent semantics in execution runtime where we
                         // do not remove the state for effects.
-                        if (stp.p().getOperationType() == OperationType.READ_CONSUME ||
-                                stp.p().getOperationType() == OperationType.READ_WRITE) {
+                        if (stp.p().getOperationType() == OperationType.READ_WRITE) {
                             statesToRemove.add(st);
                         }
                         if (stp.q() instanceof GuardXOR<?>) {
@@ -217,7 +213,7 @@ public class GraphOutputCannotBeReachedFromInput implements GraphCheck {
     }
 
     @Override
-    public boolean test(IGraph<?, ?> step) {
+    public boolean test(IGraph<?> step) {
 
         try {
             //runAllChecksExceptForThoseNotCompatibleWithGraphsGeneratedByReachabilityCheck(new ArrayList<>(), step);

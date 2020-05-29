@@ -22,7 +22,7 @@ import io.cognitionbox.petra.core.IStep;
 public class EdgeEffectMustHaveInputTypeEqualToOutputType implements StepCheck {
 
         @Override
-        public boolean test(IStep<?, ?> step) {
+        public boolean test(IStep<?> step) {
             boolean sideEffect = step.p().getOperationType() == OperationType.READ_WRITE;
             if (sideEffect) {
                 return step.getEffectType().isPresent();

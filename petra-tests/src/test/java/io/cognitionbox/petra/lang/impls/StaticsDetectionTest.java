@@ -23,8 +23,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import static io.cognitionbox.petra.util.Petra.rc;
-import static io.cognitionbox.petra.util.Petra.rt;
+import static io.cognitionbox.petra.util.Petra.*;
 
 @RunWith(Parameterized.class)
 public class StaticsDetectionTest extends BaseExecutionModesTest {
@@ -51,18 +50,18 @@ public class StaticsDetectionTest extends BaseExecutionModesTest {
   }
 
 
-  public static class AtoA extends PEdge<A,A> {
+  public static class AtoA extends PEdge<A> {
     {
-      pre(rc(A.class, a->true));
+      pre(rw(A.class, a->true));
       func(a->new A(222));
-      post(Petra.rt(A.class, a->true));
+      post(rt(A.class, a->true));
     }
   }
 
 
-  public static class g extends PGraph<A,A> {
+  public static class g extends PGraph<A> {
     {
-      pre(rc(A.class, a->true));
+      pre(rw(A.class, a->true));
       post(Petra.rt(A.class, a->true));
       step(AtoA.class);
     }

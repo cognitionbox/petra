@@ -31,12 +31,12 @@ public class StepWithImmutablePreOrPostConditionTypesCannotBeSideEffects impleme
             return false;
         }
 
-        private boolean isSideEffect(IStep<?, ?> step) {
+        private boolean isSideEffect(IStep<?> step) {
             return step.getEffectType().isPresent();
         }
 
         @Override
-        public boolean test(IStep<?, ?> step) {
+        public boolean test(IStep<?> step) {
             if (isSideEffect(step) && (isImmutableType(step.p().getTypeClass()) ||
                     isImmutableType(step.q().getTypeClass()))) {
                 return false;

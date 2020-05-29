@@ -26,15 +26,15 @@ import io.cognitionbox.petra.util.Petra;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rw;
 import static io.cognitionbox.petra.util.Petra.rt;
 
 
 public class ABtoABjoin extends PJoin2<A, B, AB_Result> {
     static final Logger LOG = LoggerFactory.getLogger(ABtoABjoin.class);
     {
-       preA(rc(A.class, a->a.value==10));
-       preB(rc(B.class, b->b.value==10));
+       preA(rw(A.class, a->a.value==10));
+       preB(rw(B.class, b->b.value==10));
        func((as, bs)->{
             A a = as.get(0);
             B b = bs.get(0);

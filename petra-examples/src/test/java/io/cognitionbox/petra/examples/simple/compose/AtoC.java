@@ -18,21 +18,17 @@
  */
 package io.cognitionbox.petra.examples.simple.compose;
 
-import io.cognitionbox.petra.examples.simple.common.A;
-import io.cognitionbox.petra.examples.simple.common.AtoB;
-import io.cognitionbox.petra.examples.simple.common.C;
 import io.cognitionbox.petra.lang.PGraph;
-import io.cognitionbox.petra.util.Petra;
 
-import static io.cognitionbox.petra.util.Petra.rc;
 import static io.cognitionbox.petra.util.Petra.rt;
+import static io.cognitionbox.petra.util.Petra.rw;
 
 
-public class AtoC extends PGraph<A, C> {
+public class AtoC extends PGraph<rwABC> {
     {
-        pre(rc(A.class, a->true));
+        pre(rw(roABC.class, a->true));
         step(new BtoC());
         step(new AtoB());
-        post(Petra.rt(C.class, c->true));
+        post(rt(roABC.class, c->true));
     }
 }

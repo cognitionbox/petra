@@ -22,14 +22,17 @@ package io.cognitionbox.petra.examples.simple.helloworld;
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.util.Petra;
 
-import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rw;
 import static io.cognitionbox.petra.util.Petra.rt;
 
 
-public class AtoA extends PEdge<A, A> {
+public class AtoA extends PEdge<A> {
     {
-       pre(rc(A.class, a->a.value.equals("")));
-       func(a->new A("hello world."));
-       post(Petra.rt(A.class, a->a.value.equals("hello world.")));
+       pre(rw(A.class, a->a.value.equals("")));
+       func(a->{
+           a.value = "hello world.";
+           return a;
+       });
+       post(rt(A.class, a->a.value.equals("hello world.")));
     }
 }

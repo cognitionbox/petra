@@ -19,5 +19,5 @@ import io.cognitionbox.petra.core.IStep;
 
 import java.util.function.Predicate;
 
-public interface Check<S extends IStep<?,?>> extends Predicate<S> {
+public interface Check<S extends IStep<?>> extends Predicate<S> {
 }

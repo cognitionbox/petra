@@ -55,7 +55,7 @@ import static io.cognitionbox.petra.lang.Void.vd;
 import static io.cognitionbox.petra.util.Petra.rt;
 import static java.lang.Math.min;
 
-public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> implements IGraph<I,O> {
+public class RGraph<I extends D,D> extends AbstractStep<I> implements IGraph<I> {
 
     final static Logger LOG = LoggerFactory.getLogger(RGraph.class);
     List<StepCallable> callables = new ArrayList<>();
@@ -100,20 +100,18 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
     void initInput(){
         if (this.p().getTypeClass().isAnnotationPresent(Extract.class)){
             deconstruct(getInput());
-            if (this.p().getOperationType()!= OperationType.READ_CONSUME){
-                putState(getInput().getValue());
-            }
+            putState(getInput().getValue());
         } else {
             putState(getInput().getValue());
         }
     }
 
-    O executeMatchingLoopUntilPostCondition() {
+    I executeMatchingLoopUntilPostCondition() {
         currentIteration = 0;
-        while (true) {
+        while (evalP(getInput().getValue())) {
             try {
                 Lg();
-                O out = iteration();
+                I out = iteration();
                 if (out!=null){
                     return out;
                 }
@@ -123,13 +121,15 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
             iterationId.getAndIncrement();
             currentIteration++;
         }
+        // loop terminated before post condition reached
+        throw new PostConditionFailure();
     }
 
-    O iteration(){
+    I iteration(){
         if (currentIteration > getMaxIterations()) {
             // if we go past the max iterations, we have failed to meet the post cons
             putState(new IterationsTimeoutException());
-            return (O) new IterationsTimeoutException();
+            return (I) new IterationsTimeoutException();
         } else {
             if (sleepPeriod>0) {
                 sleep(sleepPeriod);
@@ -145,8 +145,7 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
 //                }
 //            }
 //            if ((b && c)) {
-                if (p().getTypeClass().isAnnotationPresent(Extract.class) &&
-                        this.p().getOperationType()!=OperationType.READ_CONSUME){
+                if (p().getTypeClass().isAnnotationPresent(Extract.class)){
                     deconstruct(getInput());
                 }
 //            }
@@ -156,18 +155,22 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
             Jn();
             Object toReturn = Rt();
             if (toReturn != null) {
-                return (O) toReturn;
+                return (I) toReturn;
             } else {
                 return null;
             }
         }
     }
 
-    public void step(Class<? extends IStep<? extends D, ? extends D>> computation) {
+    public void step(Class<? extends IStep<?>> computation) {
         step(Petra.createStep(computation));
     }
 
-    public void step(IStep<? extends D, ? extends D> computation) {
+//    public void step(IStep<? super I> computation) {
+//        addParallizable(computation);
+//    }
+
+    public void step(IStep<?> computation) {
         addParallizable(computation);
     }
 
@@ -356,9 +359,6 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
             for (StepCallable callable : callables) {
                 try {
                     StepResult sr = callable.call();
-                    if (OperationType.READ_CONSUME == sr.getOperationType()) {
-                        removeState(sr.getInput());
-                    }
                     if (OperationType.READ_WRITE != sr.getOperationType()) {
                         deconstruct(sr.getOutputValue());
                         //putState(f.get().getOutputValue());
@@ -371,9 +371,6 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
             try {
                 List<Future<StepResult>> futures = RGraphComputer.getWorkerExecutor().invokeAll(callables);
                 for (Future<StepResult> f : futures){
-                    if (OperationType.READ_CONSUME == f.get().getOperationType()) {
-                        removeState(f.get().getInput());
-                    }
                     if (OperationType.READ_WRITE != f.get().getOperationType()) {
                         deconstruct(f.get().getOutputValue());
                         //putState(f.get().getOutputValue());
@@ -403,7 +400,7 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
         forkAndJoinCallables(callables);
     }
 
-    <D> void addParallizable(IStep<? extends D, ? extends D> computation) {
+    <D> void addParallizable(IStep<? extends D> computation) {
         if (Throwable.class.isAssignableFrom(computation.p().getTypeClass())) {
             throw new UnsupportedOperationException("Cannot match directly on Throwable types, please handle errors inside XEdges instead.");
         }
@@ -447,7 +444,7 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
                 .collect(Collectors.toCollection(() -> new PList<>()));
     }
 
-    O Rt() {
+    I Rt() {
         List<PetraException> exceptions = exceptions();
         if (!exceptions.isEmpty()) {
             for (PetraException petraException : exceptions) {
@@ -456,16 +453,13 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
                     t.printStackTrace();
                 }
             }
-            return (O) new GraphException((I) this.getInput().getValue(), null, exceptions);
+            return (I) new GraphException((I) this.getInput().getValue(), null, exceptions);
         }
-        if ((doReturnVOID() || (this.getPlace().size() == 1 && checkOutput(peekState())))) {
-            if (doReturnVOID()) {
-                return (O) vd;
-            }
+        if (checkOutput(getInput().getValue())) {
             if (this.getPlace().size() == 0) {
-                return (O) new IllegalStateException("cannot have zero tokens in place and not return void.");
+                return (I) new IllegalStateException("cannot have zero tokens in place and not return void.");
             }
-            Object obj = this.takeState();
+            Object obj = getInput().getValue();
             /*
              * Arpad's Hack
              */
@@ -473,20 +467,20 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
              * Arpad's Kotlin Hack
              */
             if (this.q().getTypeClass().equals(int.class) && Integer.class.isInstance(obj)) {
-                if (this.evalQ((O) obj)) {
-                    return (O) obj;
+                if (this.evalQ((I) obj)) {
+                    return (I) obj;
                 }
             }
 
             if (this.q().getTypeClass().equals(int.class)) {
                 if (Integer.class.isInstance(obj)) {
-                    if (this.evalQ((O) obj)) {
-                        return (O) obj;
+                    if (this.evalQ((I) obj)) {
+                        return (I) obj;
                     }
                 }
             }
             if (checkOutput(obj)) {
-                return (O) obj;
+                return (I) obj;
             }
         }
         return null;
@@ -632,9 +626,6 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
                     // remove matches
                     int i = 0;
                     for (List matches : listOfMatches) {
-                        if (Guards[i].getOperationType() == OperationType.READ_CONSUME) {
-                            toWrite.removeAllStates(matches);
-                        }
                         i++;
                     }
                     toWrite.deconstruct(new Token(value),t->true);
@@ -732,9 +723,6 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
                     // remove matches
                     int i = 0;
                     for (List matches : listOfMatches) {
-                        if (Guards[i].getOperationType() == OperationType.READ_CONSUME) {
-                            toWrite.removeAllStates(matches);
-                        }
                         i++;
                     }
                     toWrite.deconstruct(new Token(value),t->true);
@@ -835,9 +823,6 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
                     // remove matches
                     int i = 0;
                     for (List matches : listOfMatches) {
-                        if (Guards[i].getOperationType() == OperationType.READ_CONSUME) {
-                            toWrite.removeAllStates(matches);
-                        }
                         i++;
                     }
                     toWrite.deconstruct(new Token(value),t->true);
@@ -962,7 +947,7 @@ public class RGraph<I extends D, O extends D, D> extends AbstractStep<I, O> impl
     }
 
     @Override
-    public O call() throws Exception {
+    public I call() throws Exception {
         initInput();
         return executeMatchingLoopUntilPostCondition();
     }

@@ -26,7 +26,7 @@ import java.lang.reflect.Field;
 public class StepsCannotHaveFields implements StepCheck {
 
         @Override
-        public boolean test(IStep<?, ?> step) {
+        public boolean test(IStep<?> step) {
             if (step.getStepClazz().equals(PEdge.class) ||
                     step.getStepClazz().equals(RGraph.class) ||
                     step.getStepClazz().equals(PGraph.class)) {

@@ -25,16 +25,16 @@ import io.cognitionbox.petra.examples.simple.common.IncrementB;
 import io.cognitionbox.petra.lang.PGraph;
 import io.cognitionbox.petra.util.Petra;
 
-import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rw;
 import static io.cognitionbox.petra.util.Petra.rt;
 
 
-public class ABtoAB extends PGraph<AB, AB_Result> {
+public class ABtoAB extends PGraph<AB> {
     {
-        pre(rc(AB.class, x->true));
+        pre(rw(AB.class, x->true));
         step(new IncrementA());
         step(new IncrementB());
-        joinSome(new ABtoABjoin());
-        post(Petra.rt(AB_Result.class, x->true));
+        //joinSome(new ABtoABjoin());
+        post(rt(AB.class, x->x.getA().value==10 && x.getB().value==10));
     }
 }

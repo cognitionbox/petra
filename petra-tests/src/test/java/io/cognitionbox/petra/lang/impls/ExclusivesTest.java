@@ -76,7 +76,7 @@ public class ExclusivesTest extends BaseExecutionModesTest {
   }
 
   @Feedback
-  public static class AtoA extends PEdge<A,A> implements IRollback<A> {
+  public static class AtoA extends PEdge<A> implements IRollback<A> {
     {
       pre(rw(A.class, a->a.integer.get()==0 || a.integer.get()!=10));
       post(rt(A.class, a->a.integer.get()==10));
@@ -97,7 +97,7 @@ public class ExclusivesTest extends BaseExecutionModesTest {
     }
   }
 
-  public static class g extends PGraph<A, A> {
+  public static class g extends PGraph<A> {
     {
       pre(rw(A.class, a->a.integer.get()==0));
       post(rt(A.class, a->a.integer.get()==10));

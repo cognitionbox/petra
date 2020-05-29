@@ -34,15 +34,14 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-
-import static io.cognitionbox.petra.util.Petra.rc;
 import static io.cognitionbox.petra.util.Petra.rt;
+import static io.cognitionbox.petra.util.Petra.rw;
 import static junit.framework.TestCase.assertTrue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 
-public abstract class StepTest<I,O> extends BaseExecutionModesTest {
+public abstract class StepTest<I> extends BaseExecutionModesTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(StepTest.class);
     private static PGraphDotDiagramRendererImpl2 renderer;
@@ -61,24 +60,24 @@ public abstract class StepTest<I,O> extends BaseExecutionModesTest {
         stepFixture = new StepFixture(stepSupplier().get(),getExecMode());
     }
 
-    public static class EdgePGraph extends PGraph<Object,Object> {
+    public static class EdgePGraph extends PGraph<Object> {
         EdgePGraph(PEdge PEdge){
-            pre(rc(Object.class, x->true));
+            pre(rw(Object.class, x->true));
             step(PEdge);
-            post(Petra.rt(Object.class, x->true));
+            post(rt(Object.class, x->true));
         }
     }
 
-    public static class StepFixture<I,O> {
-        private AbstractStep<I,O> step;
+    public static class StepFixture<I> {
+        private AbstractStep<I> step;
         private I in;
-        private O out;
+        private I out;
 
         private void setInput(I in) {
             this.in = in;
         }
 
-        private O getOutput() {
+        private I getOutput() {
             return out;
         }
 
@@ -87,7 +86,7 @@ public abstract class StepTest<I,O> extends BaseExecutionModesTest {
         }
 
         ExecMode execMode;
-        private StepFixture(AbstractStep<I,O> step, ExecMode execMode) {
+        private StepFixture(AbstractStep<I> step, ExecMode execMode) {
             this.step = step;
             this.execMode = execMode;
         }
@@ -95,12 +94,12 @@ public abstract class StepTest<I,O> extends BaseExecutionModesTest {
             if (step instanceof PGraph && execMode.isDIS()) {
                 io.cognitionbox.petra.lang.PGraphComputer computer;
                 computer = new PGraphComputer<>();
-                out = (O) computer.computeWithInput((RGraph) step, in);
+                out = (I) computer.computeWithInput((RGraph) step, in);
                 computer.shutdown();
             } else if (step instanceof PEdge && execMode.isDIS()){
                 io.cognitionbox.petra.lang.PGraphComputer computer;
                 computer = new PGraphComputer<>();
-                out = (O) computer.computeWithInput(new EdgePGraph((PEdge) step), in);
+                out = (I) computer.computeWithInput(new EdgePGraph((PEdge) step), in);
                 computer.shutdown();
             } else {
                 step.setInput(new Token(in));
@@ -119,14 +118,14 @@ public abstract class StepTest<I,O> extends BaseExecutionModesTest {
             }
         }
     }
-    private StepFixture<I,O> stepFixture;
+    private StepFixture<I> stepFixture;
 
     protected void setInput(I input){
         stepFixture.setInput(input);
     }
 
-    private Predicate<O> expectation;
-    protected void setExpectation(Predicate<O> expectation){
+    private Predicate<? super I> expectation;
+    protected void setExpectation(Predicate<I> expectation){
         if (stepFixture.getInput()==null){
             throw new IllegalStateException("no input set!");
         }
@@ -134,7 +133,7 @@ public abstract class StepTest<I,O> extends BaseExecutionModesTest {
         stepFixture.execute();
     }
 
-    abstract Supplier<AbstractStep<I,O>> stepSupplier();
+    abstract Supplier<AbstractStep<I>> stepSupplier();
 
     public static int comp(String s1, String s2) {
         if (s1.contains("red") && !s2.contains("red")){
@@ -155,7 +154,7 @@ public abstract class StepTest<I,O> extends BaseExecutionModesTest {
 
     @After
     public void after(){
-        O out = stepFixture.getOutput();
+        I out = stepFixture.getOutput();
         if (out==null){
             fail("output is null");
         }

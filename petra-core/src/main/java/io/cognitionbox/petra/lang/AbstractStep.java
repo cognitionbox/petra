@@ -23,7 +23,7 @@ import io.cognitionbox.petra.core.engine.petri.IToken;
 
 import java.io.IOException;
 
-public abstract class AbstractStep<I, O> extends Identifyable implements ICallable<O>, IStep<I, O> {
+public abstract class AbstractStep<I> extends Identifyable implements ICallable<I>, IStep<I> {
 
     public IToken<I> getInput() {
         return inputToken;
@@ -45,17 +45,17 @@ public abstract class AbstractStep<I, O> extends Identifyable implements ICallab
         this.clazz = aClass;
     }
 
-    protected Guard<I> p = null;
+    protected Guard<? super I> p = null;
 
-    protected GuardXOR<O> q = null;
+    protected GuardXOR<? super I> q = null;
 
-    protected void setP(Guard<I> p) {
+    protected void setP(Guard<? super I> p) {
         assertNotNull(p);
         assertNull(this.p());
         this.p = p;
     }
 
-    protected void setQ(GuardXOR<O> q) {
+    protected void setQ(GuardXOR<? super I> q) {
         assertNotNull(q);
         //assertNull(this.q());
         this.q = q;
@@ -100,19 +100,19 @@ public abstract class AbstractStep<I, O> extends Identifyable implements ICallab
     }
 
     @Override
-    final public boolean evalQ(O output) {
+    final public boolean evalQ(I output) {
         if (q == null)
             return false;
         return q.test(output);
     }
 
     @Override
-    public Guard<I> p() {
+    public Guard<? super I> p() {
         return p;
     }
 
     @Override
-    public GuardXOR<O> q() {
+    public GuardXOR<? super I> q() {
         return q;
     }
 
@@ -121,7 +121,7 @@ public abstract class AbstractStep<I, O> extends Identifyable implements ICallab
     private boolean sleepOk = true;
     private boolean failureDetected = false;
     private int milliSecondSretryDelay = 0;
-    public AbstractStep<I, O> retryDelay(int milliSeconds){
+    public AbstractStep<I> retryDelay(int milliSeconds){
         this.milliSecondSretryDelay = milliSeconds;
         return this;
     }
@@ -153,13 +153,13 @@ public abstract class AbstractStep<I, O> extends Identifyable implements ICallab
 
     private boolean isEffect = false;
 
-    final GuardXOR<O> returnType =  new GuardXOR<O>(OperationType.RETURN);
+    final GuardXOR<I> returnType =  new GuardXOR<I>(OperationType.RETURN);
 
     public void pre(GuardInput<? super I> p) {
         setP((GuardInput<I>) p);
     }
 
-    public void post(GuardReturn<? super O> q) {
+    public void post(GuardReturn<? super I> q) {
         returnType.addChoice(new Guard(q.getTypeClass(),q.predicate,OperationType.RETURN));
         setQ(returnType);
     }

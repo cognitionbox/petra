@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 
 import static io.cognitionbox.petra.util.Petra.ref;
 
-public class RGraphComputer<I extends D, O extends D, D> implements Serializable {
+public class RGraphComputer<I extends D, O extends I, D> implements Serializable {
 
   public static IPetraConfig getConfig() {
     return config;
@@ -91,8 +91,8 @@ public class RGraphComputer<I extends D, O extends D, D> implements Serializable
 
   }
 
-  private RGraph<I, O, D> rootGraph;
-  synchronized public O computeWithInput(RGraph<I, O, D> xGraphSafe, I input) {
+  private RGraph<I, D> rootGraph;
+  synchronized public I computeWithInput(RGraph<I, D> xGraphSafe, I input) {
     this.rootGraph = xGraphSafe;
 
     taskQueue = Petra.getFactory().createRingbuffer("tasks");

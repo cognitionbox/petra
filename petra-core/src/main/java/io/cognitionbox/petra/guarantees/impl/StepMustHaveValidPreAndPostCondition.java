@@ -21,7 +21,7 @@ import io.cognitionbox.petra.core.IStep;
 
 public class StepMustHaveValidPreAndPostCondition implements StepCheck {
         @Override
-        public boolean test(IStep<?, ?> step) {
+        public boolean test(IStep<?> step) {
             boolean a = step.p() != null && step.p().getTypeClass() != null;
             boolean b = step.q() != null && step.q().getTypeClass() != null;
             boolean c = step.q() == null && step.getStepClazz().isAnnotationPresent(DoesNotTerminate.class);

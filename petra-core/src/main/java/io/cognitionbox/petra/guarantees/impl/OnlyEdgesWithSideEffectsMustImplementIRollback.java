@@ -28,7 +28,7 @@ import io.cognitionbox.petra.core.IStep;
     // this can be checked for at runtime.
     public class OnlyEdgesWithSideEffectsMustImplementIRollback implements StepCheck {
         @Override
-        public boolean test(IStep<?, ?> step) {
+        public boolean test(IStep<?> step) {
             if (step instanceof PEdge) {
                 if (step.getEffectType().isPresent()) {
                     return step instanceof IRollback;

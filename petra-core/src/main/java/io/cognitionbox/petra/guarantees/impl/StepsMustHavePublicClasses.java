@@ -23,7 +23,7 @@ import java.lang.reflect.Modifier;
 public class StepsMustHavePublicClasses implements StepCheck {
 
         @Override
-        public boolean test(IStep<?, ?> step) {
+        public boolean test(IStep<?> step) {
             return step.getStepClazz().isLocalClass() || Modifier.isPublic(step.getStepClazz().getModifiers());
         }
     }

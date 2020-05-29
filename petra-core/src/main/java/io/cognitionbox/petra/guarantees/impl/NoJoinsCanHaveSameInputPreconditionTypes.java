@@ -27,9 +27,9 @@ import java.util.Set;
 
 public class NoJoinsCanHaveSameInputPreconditionTypes implements StepCheck {
         @Override
-        public boolean test(IStep<?, ?> graphSafe) {
+        public boolean test(IStep<?> graphSafe) {
             if (graphSafe instanceof RGraph) {
-                for (IJoin jt : ((RGraph<?, ?, ?>) graphSafe).getJoinTypes()) {
+                for (IJoin jt : ((RGraph<?, ?>) graphSafe).getJoinTypes()) {
                     Set<Class<?>> clazzes = new HashSet<>();
                     if (jt instanceof PJoin) {
                         clazzes.add(((PJoin) jt).a().getTypeClass());
@@ -54,7 +54,7 @@ public class NoJoinsCanHaveSameInputPreconditionTypes implements StepCheck {
                         }
                     }
                 }
-                if (((RGraph<?, ?, ?>) graphSafe).getJoinTypes().isEmpty()) {
+                if (((RGraph<?, ?>) graphSafe).getJoinTypes().isEmpty()) {
                     return true;
                 } else {
                     return false;

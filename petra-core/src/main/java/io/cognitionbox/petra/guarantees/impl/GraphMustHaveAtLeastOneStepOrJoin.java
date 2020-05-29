@@ -20,7 +20,7 @@ import io.cognitionbox.petra.core.IGraph;
 
 public class GraphMustHaveAtLeastOneStepOrJoin implements GraphCheck {
         @Override
-        public boolean test(IGraph<?, ?> graphSafe) {
+        public boolean test(IGraph<?> graphSafe) {
             if (graphSafe.getParallizable().size() > 0 || graphSafe.getNoOfJoins() > 0) {
                 return true;
             } else {

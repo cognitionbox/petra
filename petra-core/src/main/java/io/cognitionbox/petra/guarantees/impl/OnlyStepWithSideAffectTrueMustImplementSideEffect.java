@@ -21,7 +21,7 @@ import io.cognitionbox.petra.core.IStep;
 public class OnlyStepWithSideAffectTrueMustImplementSideEffect implements StepCheck {
 
         @Override
-        public boolean test(IStep<?, ?> step) {
+        public boolean test(IStep<?> step) {
 //            if (step.getEffectType().isPresent()){
 //                if (IRollback.class.isAssignableFrom(step.getClass())){
 //                    return true;

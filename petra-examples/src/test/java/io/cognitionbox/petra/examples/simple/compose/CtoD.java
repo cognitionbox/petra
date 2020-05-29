@@ -19,21 +19,16 @@
 package io.cognitionbox.petra.examples.simple.compose;
 
 
-import io.cognitionbox.petra.examples.simple.common.C;
-import io.cognitionbox.petra.examples.simple.common.D;
-import io.cognitionbox.petra.examples.simple.common.E;
-import io.cognitionbox.petra.examples.simple.common.F;
 import io.cognitionbox.petra.lang.PEdge;
-import io.cognitionbox.petra.util.Petra;
+import static io.cognitionbox.petra.util.Petra.*;
 
-import static io.cognitionbox.petra.util.Petra.rc;
-import static io.cognitionbox.petra.util.Petra.rt;
-
-
-public class CtoD extends PEdge<C, D> {
+public class CtoD extends PEdge<rwCD> {
     {
-       pre(rc(C.class, c->true));
-       func(c->new D(new E(),new F()));
-       post(Petra.rt(D.class, d->true));
+       pre(rw(roCD.class, cd->true));
+       func(cd->{
+           cd.d(new D(new E(),new F()));
+           return cd;
+       });
+       post(rt(roCD.class, d->true));
     }
 }

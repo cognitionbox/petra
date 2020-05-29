@@ -55,8 +55,8 @@ public class ForkJoinMain extends BaseExecutionModesTest {
      */
     @Test
     public void test(){
-        AB_Result output = new PGraphComputer<AB, AB_Result>().computeWithInput(new ABtoAB(),new AB(new A(),new B()));
-        assertThat(output.a.value).isEqualTo(10);
-        assertThat(output.b.value).isEqualTo(10);
+        AB output = new PGraphComputer<AB, AB>().computeWithInput(new ABtoAB(),new AB(new A(),new B()));
+        assertThat(output.getA().value).isEqualTo(10);
+        assertThat(output.getB().value).isEqualTo(10);
     }
 }

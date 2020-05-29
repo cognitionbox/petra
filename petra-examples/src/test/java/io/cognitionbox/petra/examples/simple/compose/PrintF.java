@@ -18,21 +18,18 @@
  */
 package io.cognitionbox.petra.examples.simple.compose;
 
-import io.cognitionbox.petra.examples.simple.common.F;
 import io.cognitionbox.petra.lang.PEdge;
-import io.cognitionbox.petra.lang.Void;
 
-import static io.cognitionbox.petra.lang.Void.vd;
-import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.*;
 
 
-public class PrintF extends PEdge<F, Void> {
+public class PrintF extends PEdge<rwF> {
     {
-       pre(rc(F.class, f->true));
+       pre(rw(roF.class, f->true));
        func(f->{
-            f.printMe();
-            return vd;
+            f.printF();
+            return f;
        });
-       postVoid();
+       post(rt(roF.class, f->true));
     }
 }
