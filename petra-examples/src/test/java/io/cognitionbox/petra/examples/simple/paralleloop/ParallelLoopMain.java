@@ -25,12 +25,14 @@ import io.cognitionbox.petra.examples.simple.common.AB_Result;
 import io.cognitionbox.petra.examples.simple.common.B;
 import io.cognitionbox.petra.lang.PGraphComputer;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Ignore
 @RunWith(Parameterized.class)
 public class ParallelLoopMain extends BaseExecutionModesTest {
     public ParallelLoopMain(ExecMode execMode) {

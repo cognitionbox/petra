@@ -36,7 +36,8 @@ public class NoStepsInSameStepHaveSamePreconditionType implements StepCheck {
                     }
                 }
             } else if (step instanceof PEdge) {
-                return !step.p().getTypeClass().equals(step.q().getTypeClass());
+                return true;
+                //return !step.p().getTypeClass().equals(step.q().getTypeClass());
             }
             return true;
         }

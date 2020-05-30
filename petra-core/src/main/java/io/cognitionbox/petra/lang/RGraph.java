@@ -63,6 +63,7 @@ public class RGraph<I extends D,D> extends AbstractStep<I> implements IGraph<I> 
     private List<IStep> parallizable = new ArrayList<>();
     private transient IEdgeDotLogger stepDotLogger = new PEdgeDotLoggerImpl();
     private List<IJoin> joinsTypes = new ArrayList<>();
+    private List<Triplet<IPredicate<? super I>,IConsumer<I>,IPredicate<? super I>>> newJoins = new ArrayList<>();
     private List<IBiConsumer<Collection<IToken>, RGraph>> joins =
             new ArrayList<>();
     private Set lastStates;
@@ -108,7 +109,7 @@ public class RGraph<I extends D,D> extends AbstractStep<I> implements IGraph<I> 
 
     I executeMatchingLoopUntilPostCondition() {
         currentIteration = 0;
-        while (evalP(getInput().getValue())) {
+        while (evalP(getInput().getValue()) && this.loopCondition.test(getInput().getValue())) {
             try {
                 Lg();
                 I out = iteration();
@@ -174,6 +175,11 @@ public class RGraph<I extends D,D> extends AbstractStep<I> implements IGraph<I> 
         addParallizable(computation);
     }
 
+    private IPredicate<? super I> loopCondition = x->true;
+    public void lc(IPredicate<? super I> loopCondition) {
+        this.loopCondition = loopCondition;
+    }
+
     private void addJoinType(IJoin join) {
         joinsTypes.add(join);
     }
@@ -189,6 +195,12 @@ public class RGraph<I extends D,D> extends AbstractStep<I> implements IGraph<I> 
             joinSome((AbstractPureJoin3<? extends D, ? extends D, ? extends D, ? extends D>) Petra.createJoin(clazz));
         }
         throw new UnsupportedOperationException();
+    }
+
+    public <A extends D, B extends D, R extends D> void join(IPredicate<? super I> pre,
+                                                             IConsumer<I> joinEdge,
+                                                             IPredicate<? super I> post) {
+        this.newJoins.add(Triplet.with(pre,joinEdge,post));
     }
 
     public <A extends D, R extends D> void joinSome(AbstractPureJoin1<A, R> PJoinEdge) {
@@ -420,6 +432,14 @@ public class RGraph<I extends D,D> extends AbstractStep<I> implements IGraph<I> 
         Lg_ALL_STATES("[Jn in]");
         for (IBiConsumer<Collection<IToken>, RGraph> t : this.joins) {
             t.accept(getWorkingStatesToUse(), this);
+        }
+        for (Triplet<IPredicate<? super I>,IConsumer<I>,IPredicate<? super I>> t : this.newJoins) {
+            if (t.getValue0().test(getInput().getValue())){
+                t.getValue1().accept(this.getInput().getValue());
+                if (t.getValue2().test(getInput().getValue())){
+                   // ok
+                }
+            }
         }
         Lg_ALL_STATES("[Jn out]");
     }

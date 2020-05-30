@@ -16,38 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with Petra.  If not, see <https://www.gnu.org/licenses/>.
  */
-package io.cognitionbox.petra.examples.simple.common;
+package io.cognitionbox.petra.examples.tradingsystem.steps.risk;
 
+import io.cognitionbox.petra.examples.tradingsystem.steps.StateOk;
+import io.cognitionbox.petra.examples.tradingsystem.steps.StopAtMaxExposure;
 
-import io.cognitionbox.petra.lang.annotations.Extract;
-
-import java.io.Serializable;
-
-@Extract
-public class AB implements Serializable {
-    A a;
-    B b;
-
-    public AB(A a, B b) {
-        this.a = a;
-        this.b = b;
-    }
-
-    @Extract
-    public A getA() {
-        return a;
-    }
-
-    @Extract
-    public B getB() {
-        return b;
-    }
-
-    @Override
-    public String toString() {
-        return "AB{" +
-                "a=" + a +
-                ", b=" + b +
-                '}';
-    }
+public interface AfterExposure extends StateOk, Exposure, StopAtMaxExposure {
 }
