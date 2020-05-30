@@ -31,7 +31,7 @@ import static io.cognitionbox.petra.util.Petra.*;
 
 public class Trade extends PEdge<Trader> {
     {
-       pre(rw(Trader.class, x->true));
+       pre(Trader.class, x->x.getDecisions().size()>=0);
        func(
                 x -> {
                     Decisions decisions = x.runStrategy(x.getFeed().sourceTick());
@@ -39,6 +39,6 @@ public class Trade extends PEdge<Trader> {
                     return x;
                 }
         );
-        post(rt(Trader.class, x->true));
+        post(Trader.class, x->x.getDecisions().size()>0);
     }
 }
