@@ -20,8 +20,11 @@ import io.cognitionbox.petra.google.Optional;
 import io.cognitionbox.petra.util.function.ICallable;
 import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.core.engine.petri.IToken;
+import io.cognitionbox.petra.util.function.IPredicate;
 
 import java.io.IOException;
+
+import static io.cognitionbox.petra.util.Petra.rw;
 
 public abstract class AbstractStep<I> extends Identifyable implements ICallable<I>, IStep<I> {
 
@@ -159,8 +162,26 @@ public abstract class AbstractStep<I> extends Identifyable implements ICallable<
         setP((GuardInput<I>) p);
     }
 
+    public void pre(Class<? super I> p, IPredicate<? super I> predicate) {
+        setP(new GuardWrite(p, predicate));
+    }
+
+    public void pre(IPredicate<? super I> predicate) {
+        setP(new GuardWrite(Object.class, predicate));
+    }
+
     public void post(GuardReturn<? super I> q) {
         returnType.addChoice(new Guard(q.getTypeClass(),q.predicate,OperationType.RETURN));
+        setQ(returnType);
+    }
+
+    public void post(Class<? super I> p, IPredicate<? super I> predicate) {
+        returnType.addChoice(new Guard(p,predicate,OperationType.RETURN));
+        setQ(returnType);
+    }
+
+    public void post(IPredicate<? super I> predicate) {
+        returnType.addChoice(new Guard(Object.class,predicate,OperationType.RETURN));
         setQ(returnType);
     }
 

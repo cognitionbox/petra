@@ -29,7 +29,7 @@ import static io.cognitionbox.petra.util.Petra.*;
 public class TradingSystem extends PGraph<State> {
     {
         setSleepPeriod(1000);
-        pre(rw(StateOk.class, x->x.currentExp().get()>=0 && x.currentExp().get()<=200));
+        pre(StateOk.class, x->x.currentExp().get()>=0 && x.currentExp().get()<=200);
         lc(x->
                 x.currentExp().get()==0 ^ x.currentExp().get()==40 ^ x.currentExp().get()==80
                         ^ x.currentExp().get()==120 ^ x.currentExp().get()==160);
@@ -37,6 +37,6 @@ public class TradingSystem extends PGraph<State> {
         join(state->true,
             state->state.updateExposure(),
             state->true);
-        post(rt(StopAtMaxExposure.class, x->x.currentExp().get()==200));
+        post(StopAtMaxExposure.class, x->x.currentExp().get()==200);
     }
 }
