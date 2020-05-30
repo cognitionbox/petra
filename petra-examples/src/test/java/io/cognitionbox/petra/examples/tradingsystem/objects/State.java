@@ -19,7 +19,7 @@
 package io.cognitionbox.petra.examples.tradingsystem.objects;
 
 
-import io.cognitionbox.petra.examples.tradingsystem.steps.MainLoop;
+import io.cognitionbox.petra.examples.tradingsystem.steps.TradingSystem;
 import io.cognitionbox.petra.examples.tradingsystem.steps.StateOk;
 import io.cognitionbox.petra.examples.tradingsystem.steps.StopAtMaxExposure;
 import io.cognitionbox.petra.examples.tradingsystem.steps.risk.AfterExposure;
@@ -102,7 +102,7 @@ public class State implements Serializable, GetTraders, StateOk, StopAtMaxExposu
         }
         return true;
     }
-    static final Logger LOG = LoggerFactory.getLogger(MainLoop.class);
+    static final Logger LOG = LoggerFactory.getLogger(TradingSystem.class);
     public void updateExposure(){
         lastExp().set(currentExp().get());
         currentExp().set(

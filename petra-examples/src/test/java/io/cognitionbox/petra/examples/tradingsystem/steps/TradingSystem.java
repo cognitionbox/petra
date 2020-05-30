@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import static io.cognitionbox.petra.util.Petra.*;
 
-public class MainLoop extends PGraph<State> {
+public class TradingSystem extends PGraph<State> {
     {
         setSleepPeriod(1000);
         pre(rw(StateOk.class, x->x.currentExp().get()>=0 && x.currentExp().get()<=200));

@@ -20,9 +20,8 @@ package io.cognitionbox.petra.examples.tradingsystem;
 
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.examples.tradingsystem.objects.*;
-import io.cognitionbox.petra.examples.tradingsystem.steps.MainLoop;
+import io.cognitionbox.petra.examples.tradingsystem.steps.TradingSystem;
 import io.cognitionbox.petra.lang.PGraphComputer;
-import io.cognitionbox.petra.lang.RGraphComputer;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,8 +30,8 @@ import org.junit.runners.Parameterized;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
-public class TradingSystem extends BaseExecutionModesTest {
-    public TradingSystem(ExecMode execMode) {
+public class TradingSystemMain extends BaseExecutionModesTest {
+    public TradingSystemMain(ExecMode execMode) {
         super(execMode);
     }
 
@@ -67,7 +66,7 @@ public class TradingSystem extends BaseExecutionModesTest {
         state.addTrader(new RandomTrader(TraderId.C, InstrumentId.FTSE));
         state.addTrader(new RandomTrader(TraderId.D, InstrumentId.DAX));
 
-        State output = lc.computeWithInput(new MainLoop(), state);
+        State output = lc.computeWithInput(new TradingSystem(), state);
 
         assertThat(output.currentExp().get()).isEqualTo(200);
     }
