@@ -63,7 +63,7 @@ public class RGraph<I extends D,D> extends AbstractStep<I> implements IGraph<I> 
     private List<IStep> parallizable = new ArrayList<>();
     private transient IEdgeDotLogger stepDotLogger = new PEdgeDotLoggerImpl();
     private List<IJoin> joinsTypes = new ArrayList<>();
-    private List<Triplet<IPredicate<? super I>,IConsumer<I>,IPredicate<? super I>>> newJoins = new ArrayList<>();
+    private List<Triplet<Guard<IPredicate<? super I>>,IConsumer<I>,Guard<IPredicate<? super I>>>> newJoins = new ArrayList<>();
     private List<IBiConsumer<Collection<IToken>, RGraph>> joins =
             new ArrayList<>();
     private Set lastStates;
@@ -200,7 +200,13 @@ public class RGraph<I extends D,D> extends AbstractStep<I> implements IGraph<I> 
     public <A extends D, B extends D, R extends D> void join(IPredicate<? super I> pre,
                                                              IConsumer<I> joinEdge,
                                                              IPredicate<? super I> post) {
-        this.newJoins.add(Triplet.with(pre,joinEdge,post));
+        this.newJoins.add(Triplet.with(new GuardWrite(Object.class, pre),joinEdge,new GuardWrite(Object.class, post)));
+    }
+
+    public <A extends D, B extends D, R extends D> void join(Class<? super I> preType, IPredicate<? super I> pre,
+                                                             IConsumer<I> joinEdge,
+                                                             Class<? super I> postType, IPredicate<? super I> post) {
+        this.newJoins.add(Triplet.with(new GuardWrite(preType, pre),joinEdge,new GuardWrite(postType, post)));
     }
 
     public <A extends D, R extends D> void joinSome(AbstractPureJoin1<A, R> PJoinEdge) {
@@ -433,7 +439,7 @@ public class RGraph<I extends D,D> extends AbstractStep<I> implements IGraph<I> 
         for (IBiConsumer<Collection<IToken>, RGraph> t : this.joins) {
             t.accept(getWorkingStatesToUse(), this);
         }
-        for (Triplet<IPredicate<? super I>,IConsumer<I>,IPredicate<? super I>> t : this.newJoins) {
+        for (Triplet<Guard<IPredicate<? super I>>,IConsumer<I>,Guard<IPredicate<? super I>>> t : this.newJoins) {
             if (t.getValue0().test(getInput().getValue())){
                 t.getValue1().accept(this.getInput().getValue());
                 if (t.getValue2().test(getInput().getValue())){
