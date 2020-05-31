@@ -92,7 +92,7 @@ public class RGraphComputer<I extends D, O extends I, D> implements Serializable
   }
 
   private RGraph<I, D> rootGraph;
-  synchronized public I computeWithInput(RGraph<I, D> xGraphSafe, I input) {
+  synchronized public I eval(RGraph<I, D> xGraphSafe, I input) {
     this.rootGraph = xGraphSafe;
 
     taskQueue = Petra.getFactory().createRingbuffer("tasks");

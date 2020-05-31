@@ -15,6 +15,7 @@
  */
 package io.cognitionbox.petra.lang.impls;
 
+import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.annotations.Extract;
 import io.cognitionbox.petra.lang.annotations.SharedResource;
 import io.cognitionbox.petra.config.ExecMode;
@@ -95,8 +96,8 @@ public class ResourceConflictTest extends BaseExecutionModesTest {
   @Test(expected = AssertionError.class)
   public void testResourceConflict() {
 
-    io.cognitionbox.petra.lang.PGraphComputer<A, A> lc = getGraphComputer();
-    A result = lc.computeWithInput(new g(), new A(1));
+    PComputer<A, A> lc = getGraphComputer();
+    A result = lc.eval(new g(), new A(1));
   }
 
 }

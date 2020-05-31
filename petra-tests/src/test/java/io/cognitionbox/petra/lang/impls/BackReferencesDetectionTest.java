@@ -15,6 +15,7 @@
  */
 package io.cognitionbox.petra.lang.impls;
 
+import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.annotations.Extract;
 import io.cognitionbox.petra.config.ExecMode;
 
@@ -109,8 +110,8 @@ public class BackReferencesDetectionTest extends BaseExecutionModesTest {
   @Test(expected = StackOverflowError.class)
   public void testBackReferencesDetection() {
 
-    io.cognitionbox.petra.lang.PGraphComputer<A, A> lc = getGraphComputer();
-    A result = lc.computeWithInput(new g(), new A(1));
+    PComputer<A, A> lc = getGraphComputer();
+    A result = lc.eval(new g(), new A(1));
   }
 
 }

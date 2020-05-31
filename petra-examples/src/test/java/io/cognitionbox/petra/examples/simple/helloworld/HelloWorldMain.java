@@ -19,7 +19,7 @@
 package io.cognitionbox.petra.examples.simple.helloworld;
 
 import io.cognitionbox.petra.config.ExecMode;
-import io.cognitionbox.petra.lang.PGraphComputer;
+import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,7 +41,7 @@ public class HelloWorldMain extends BaseExecutionModesTest {
      */
     @Test
     public void test(){
-        A output = new PGraphComputer<A, A>().computeWithInput(new AtoAGraph(),new A(""));
+        A output = new PComputer<A, A>().eval(new AtoAGraph(),new A(""));
         System.out.println("OUTPUT: "+output.value);
         assertThat(output.value).isEqualTo("hello world.");
     }

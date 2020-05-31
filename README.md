@@ -206,7 +206,7 @@ package io.cognitionbox.petra.examples.simple.compose;
 
 import io.cognitionbox.petra.lang.config.PetraConfig;
 import io.cognitionbox.petra.lang.Void;
-import io.cognitionbox.petra.lang.PGraphComputer;
+import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.examples.simple.common.A;
 
 public class PetraExample {
@@ -217,7 +217,7 @@ public class PetraExample {
         
         // The line below kicks of a Petra graph named DependancyGraph which takes A as input and
         // rt Void as output.
-        Void result = new PGraphComputer<A, Void>().computeWithInput(new DependancyGraph(),new A());
+        Void result = new PComputer<A, Void>().computeWithInput(new DependancyGraph(),new A());
         System.out.println(result);
     }
 }

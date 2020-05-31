@@ -70,7 +70,7 @@ public class StaticsDetectionTest extends BaseExecutionModesTest {
 
   @Test(expected = AssertionError.class)
   public void testStaticsDetection() {
-    A result = (A) getGraphComputer().computeWithInput(new g(), new A(1));
+    A result = (A) getGraphComputer().eval(new g(), new A(1));
   }
 
 }

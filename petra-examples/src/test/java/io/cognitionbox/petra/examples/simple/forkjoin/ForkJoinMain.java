@@ -19,7 +19,7 @@
 package io.cognitionbox.petra.examples.simple.forkjoin;
 
 import io.cognitionbox.petra.config.ExecMode;
-import io.cognitionbox.petra.lang.PGraphComputer;
+import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,7 +51,7 @@ public class ForkJoinMain extends BaseExecutionModesTest {
      */
     @Test
     public void test(){
-        AB output = new PGraphComputer<AB, AB>().computeWithInput(new ABtoAB(),new AB(new A(),new B()));
+        AB output = new PComputer<AB, AB>().eval(new ABtoAB(),new AB(new A(),new B()));
         assertThat(output.getA().value).isEqualTo(10);
         assertThat(output.getB().value).isEqualTo(10);
     }

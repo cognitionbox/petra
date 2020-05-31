@@ -36,14 +36,12 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.config.IPetraConfig;
-import io.cognitionbox.petra.config.PetraHazelcastConfig;
 import io.cognitionbox.petra.factory.PetraHazelcastComponentsFactory;
 import io.cognitionbox.petra.factory.PetraParallelComponentsFactory;
 import io.cognitionbox.petra.factory.PetraSequentialComponentsFactory;
-import io.cognitionbox.petra.lang.PGraphComputer;
+import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.RGraphComputer;
 import io.cognitionbox.petra.lang.config.PetraHazelcastTestConfig;
-import io.cognitionbox.petra.lang.config.PetraTestConfig;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runners.Parameterized;
@@ -79,11 +77,11 @@ public class BaseExecutionModesTest extends BaseTest {
 
   private long millisToWait = 1000;
 
-  final protected io.cognitionbox.petra.lang.PGraphComputer getGraphComputer() {
-    return PGraphComputer;
+  final protected PComputer getGraphComputer() {
+    return PComputer;
   }
 
-  protected PGraphComputer PGraphComputer;
+  protected PComputer PComputer;
   private HazelcastInstance instance;
   @Before
   public void setup(){
@@ -114,13 +112,13 @@ public class BaseExecutionModesTest extends BaseTest {
       config.addRingBufferConfig(rbConfig2);
       instance = Hazelcast.newHazelcastInstance(config);
     }
-    PGraphComputer = new PGraphComputer();
+    PComputer = new PComputer();
   }
 
   @After
   public void tearDown(){
-    PGraphComputer.shutdown();
-    PGraphComputer = null;
+    PComputer.shutdown();
+    PComputer = null;
     if (instance!=null){
 //      if (RGraphComputer.getConfig() instanceof PetraHazelcastTestConfig){
 //        PetraHazelcastTestConfig c = (PetraHazelcastTestConfig) RGraphComputer.getConfig();

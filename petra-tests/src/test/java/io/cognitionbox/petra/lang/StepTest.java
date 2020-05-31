@@ -22,7 +22,6 @@ import io.cognitionbox.petra.exceptions.IterationsTimeoutException;
 import io.cognitionbox.petra.exceptions.JoinException;
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.core.engine.petri.impl.Token;
-import io.cognitionbox.petra.util.Petra;
 import org.javatuples.Pair;
 import org.junit.*;
 import org.slf4j.Logger;
@@ -92,14 +91,14 @@ public abstract class StepTest<I> extends BaseExecutionModesTest {
         }
         private void execute(){
             if (step instanceof PGraph && execMode.isDIS()) {
-                io.cognitionbox.petra.lang.PGraphComputer computer;
-                computer = new PGraphComputer<>();
-                out = (I) computer.computeWithInput((RGraph) step, in);
+                PComputer computer;
+                computer = new PComputer<>();
+                out = (I) computer.eval((RGraph) step, in);
                 computer.shutdown();
             } else if (step instanceof PEdge && execMode.isDIS()){
-                io.cognitionbox.petra.lang.PGraphComputer computer;
-                computer = new PGraphComputer<>();
-                out = (I) computer.computeWithInput(new EdgePGraph((PEdge) step), in);
+                PComputer computer;
+                computer = new PComputer<>();
+                out = (I) computer.eval(new EdgePGraph((PEdge) step), in);
                 computer.shutdown();
             } else {
                 step.setInput(new Token(in));

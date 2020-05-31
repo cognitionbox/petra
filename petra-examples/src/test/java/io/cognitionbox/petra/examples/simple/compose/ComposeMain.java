@@ -20,9 +20,7 @@ package io.cognitionbox.petra.examples.simple.compose;
 
 
 import io.cognitionbox.petra.config.ExecMode;
-import io.cognitionbox.petra.examples.simple.common.A;
-import io.cognitionbox.petra.lang.PGraphComputer;
-import io.cognitionbox.petra.lang.Void;
+import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,8 +49,8 @@ public class ComposeMain extends BaseExecutionModesTest {
 
     @Test
     public void test(){
-        PGraphComputer.getConfig().enableStatesLogging();
-        X result = new PGraphComputer<X, X>().computeWithInput(new DependancyGraph(),new X());
+        PComputer.getConfig().enableStatesLogging();
+        X result = new PComputer<X, X>().eval(new DependancyGraph(),new X());
         System.out.println(result);
     }
 }

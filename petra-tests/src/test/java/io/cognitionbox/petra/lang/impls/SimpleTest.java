@@ -17,16 +17,13 @@ package io.cognitionbox.petra.lang.impls;
 
 
 import io.cognitionbox.petra.config.ExecMode;
-import io.cognitionbox.petra.exceptions.GraphException;
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.PGraph;
-import io.cognitionbox.petra.util.Petra;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.io.Serializable;
-import java.util.concurrent.TimeoutException;
 
 import static io.cognitionbox.petra.util.Petra.rt;
 import static io.cognitionbox.petra.util.Petra.rw;
@@ -82,7 +79,7 @@ public class SimpleTest extends BaseExecutionModesTest {
 
     getGraphComputer().getConfig().setDeadLockRecovery(true);
     getGraphComputer().getConfig().setDefensiveCopyAllInputsExceptForEffectedInputs(true);
-    A res = (A) getGraphComputer().computeWithInput(new g(), new A(1));
+    A res = (A) getGraphComputer().eval(new g(), new A(1));
     assertThat(res.value).isEqualTo(222);
   }
 

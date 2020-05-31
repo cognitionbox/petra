@@ -38,7 +38,7 @@ public class PGraphSingleHandledThrowableFlowTest extends BaseExecutionModesTest
   @Test
   public void testThrowableFlow() {
 
-    Object result = getGraphComputer().computeWithInput(new MainLoop(),0);
+    Object result = getGraphComputer().eval(new MainLoop(),0);
     assertThat(result).isInstanceOf(Integer.class);
     assertThat(result).isEqualTo(3);
   }
@@ -46,7 +46,7 @@ public class PGraphSingleHandledThrowableFlowTest extends BaseExecutionModesTest
   @Test
   public void testThrowableFlowWithDirectStepHandledThrowable() {
 
-    Object result = getGraphComputer().computeWithInput(new MainLoopWithDirectStepHandledThrowable(),0);
+    Object result = getGraphComputer().eval(new MainLoopWithDirectStepHandledThrowable(),0);
     assertThat(result).isInstanceOf(Integer.class);
     assertThat(result).isEqualTo(3);
   }

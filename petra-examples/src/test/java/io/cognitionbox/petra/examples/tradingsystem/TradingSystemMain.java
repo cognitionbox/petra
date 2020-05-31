@@ -21,7 +21,7 @@ package io.cognitionbox.petra.examples.tradingsystem;
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.examples.tradingsystem.objects.*;
 import io.cognitionbox.petra.examples.tradingsystem.steps.TradingSystem;
-import io.cognitionbox.petra.lang.PGraphComputer;
+import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,12 +49,12 @@ public class TradingSystemMain extends BaseExecutionModesTest {
      */
    @Test
    public void test() {
-       PGraphComputer.getConfig()
+       PComputer.getConfig()
                .enableStatesLogging()
                         .setConstructionGuaranteeChecks(true)
                         .setStrictModeExtraConstructionGuarantee(true);
 
-        PGraphComputer<State,State> lc = new PGraphComputer();
+        PComputer<State,State> lc = new PComputer();
 
         Feeds feeds = new Feeds();
         feeds.add(new RandomFeed(InstrumentId.DAX));
@@ -66,7 +66,7 @@ public class TradingSystemMain extends BaseExecutionModesTest {
         state.addTrader(new RandomTrader(TraderId.C, InstrumentId.FTSE));
         state.addTrader(new RandomTrader(TraderId.D, InstrumentId.DAX));
 
-        State output = lc.computeWithInput(new TradingSystem(), state);
+        State output = lc.eval(new TradingSystem(), state);
 
         assertThat(output.currentExp().get()).isEqualTo(200);
     }

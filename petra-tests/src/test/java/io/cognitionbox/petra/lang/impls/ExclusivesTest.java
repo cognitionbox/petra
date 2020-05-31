@@ -30,6 +30,7 @@
  */
 package io.cognitionbox.petra.lang.impls;
 
+import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.annotations.Exclusive;
 import io.cognitionbox.petra.lang.annotations.Feedback;
 import io.cognitionbox.petra.config.ExecMode;
@@ -109,8 +110,8 @@ public class ExclusivesTest extends BaseExecutionModesTest {
   @Test
   public void testExclusives() {
 
-    io.cognitionbox.petra.lang.PGraphComputer<A, A> lc = getGraphComputer();
-    A result = lc.computeWithInput(new g(), new A());
+    PComputer<A, A> lc = getGraphComputer();
+    A result = lc.eval(new g(), new A());
     assertThat(result.integer.get()).isEqualTo(10);
   }
 

@@ -31,6 +31,7 @@
 package io.cognitionbox.petra.lang.impls;
 
 import io.cognitionbox.petra.config.ExecMode;
+import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.RGraphComputer;
 import io.cognitionbox.petra.lang.config.IPetraTestConfig;
 import io.cognitionbox.petra.lang.PEdge;
@@ -107,9 +108,9 @@ public class DeadLockRecoveryTest extends BaseExecutionModesTest {
 
     RGraphComputer.getConfig().setDeadLockRecovery(true);
     ((IPetraTestConfig) RGraphComputer.getConfig()).disableExceptionsPassthrough();
-    io.cognitionbox.petra.lang.PGraphComputer<A, A> lc = getGraphComputer();
+    PComputer<A, A> lc = getGraphComputer();
     g g = new g();
-    A result = lc.computeWithInput(g, new A(1));
+    A result = lc.eval(g, new A(1));
   }
 
   public static Object Lock1 = new Object();
