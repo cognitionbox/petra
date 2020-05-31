@@ -26,13 +26,13 @@ import static io.cognitionbox.petra.util.Petra.rw;
 import static io.cognitionbox.petra.util.Petra.rt;
 
 
-public class AtoA extends PEdge<A,A> {
+public class AtoA extends PEdge<A> {
     {
-       pre(rw(A.class, a->a.value.equals("")));
+       pre(A.class, a->a.value.equals(""));
        func(a->{
            a.value = "hello world.";
            return a;
        });
-       post(rt(A.class, a->a.value.equals("hello world.")));
+       post(A.class, a->a.value.equals("hello world."));
     }
 }

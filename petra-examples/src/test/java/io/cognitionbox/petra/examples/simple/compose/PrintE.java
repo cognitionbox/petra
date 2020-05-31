@@ -27,13 +27,13 @@ import static io.cognitionbox.petra.lang.Void.vd;
 import static io.cognitionbox.petra.util.Petra.*;
 
 
-public class PrintE extends PEdge<roE,rwE> {
+public class PrintE extends PEdge<rwE> {
     {
-       pre(rw(roE.class, e->true));
+       pre(rwE.class, e->true);
        func(e->{
             e.printMe();
             return e;
        });
-       post(rt(roE.class, e->true));
+       post(rwE.class, e->true);
     }
 }

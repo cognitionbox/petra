@@ -17,4 +17,4 @@ package io.cognitionbox.petra.guarantees;
 
 import io.cognitionbox.petra.lang.PEdge;
 
-public interface EdgeCheck extends Check<PEdge<?,?>> {}
+public interface EdgeCheck extends Check<PEdge<?>> {}

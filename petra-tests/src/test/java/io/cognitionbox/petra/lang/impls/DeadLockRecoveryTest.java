@@ -72,9 +72,9 @@ public class DeadLockRecoveryTest extends BaseExecutionModesTest {
     }
   }
 
-  public static class AtoA extends PEdge<A,A> {
+  public static class AtoA extends PEdge<A> {
     {
-      pre(rw(A.class, a->a.value==1));
+      pre(A.class, a->a.value==1);
       func(a->{
         if (Math.random()>0.2){
           ThreadDemo1 T1 = new ThreadDemo1();
@@ -94,7 +94,7 @@ public class DeadLockRecoveryTest extends BaseExecutionModesTest {
     }
   }
 
-  public static class g extends PGraph<A,A> {
+  public static class g extends PGraph<A> {
     {
       pre(rw(A.class, a->a.value==1));
       post(rt(A.class, a->a.value==222));
@@ -108,7 +108,7 @@ public class DeadLockRecoveryTest extends BaseExecutionModesTest {
 
     RGraphComputer.getConfig().setDeadLockRecovery(true);
     ((IPetraTestConfig) RGraphComputer.getConfig()).disableExceptionsPassthrough();
-    PComputer<A, A> lc = getGraphComputer();
+    PComputer<A> lc = getGraphComputer();
     g g = new g();
     A result = lc.eval(g, new A(1));
   }

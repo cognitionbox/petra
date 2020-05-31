@@ -55,7 +55,7 @@ public class TradingSystemMain extends BaseExecutionModesTest {
                         .setConstructionGuaranteeChecks(true)
                         .setStrictModeExtraConstructionGuarantee(true);
 
-        PComputer<StateOk,State> lc = new PComputer();
+        PComputer<State> lc = new PComputer();
 
         Feeds feeds = new Feeds();
         feeds.add(new RandomFeed(InstrumentId.DAX));

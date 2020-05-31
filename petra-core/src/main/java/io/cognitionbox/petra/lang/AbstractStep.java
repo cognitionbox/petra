@@ -24,15 +24,15 @@ import io.cognitionbox.petra.util.function.IPredicate;
 
 import java.io.IOException;
 
-public abstract class AbstractStep<R,W extends R> extends Identifyable implements ICallable<W>, IStep<R> {
+public abstract class AbstractStep<X> extends Identifyable implements ICallable<X>, IStep<X> {
 
-    public IToken<W> getInput() {
+    public IToken<X> getInput() {
         return inputToken;
     }
 
-    private IToken<W> inputToken;
+    private IToken<X> inputToken;
 
-    public void setInput(IToken<W> input) {
+    public void setInput(IToken<X> input) {
         this.inputToken = input;
     }
 
@@ -46,17 +46,17 @@ public abstract class AbstractStep<R,W extends R> extends Identifyable implement
         this.clazz = aClass;
     }
 
-    protected Guard<R> p = null;
+    protected Guard<X> p = null;
 
-    protected GuardXOR<R> q = null;
+    protected GuardXOR<X> q = null;
 
-    protected void setP(Guard<R> p) {
+    protected void setP(Guard<X> p) {
         assertNotNull(p);
         assertNull(this.p());
         this.p = p;
     }
 
-    protected void setQ(GuardXOR<R> q) {
+    protected void setQ(GuardXOR<X> q) {
         assertNotNull(q);
         //assertNull(this.q());
         this.q = q;
@@ -94,26 +94,26 @@ public abstract class AbstractStep<R,W extends R> extends Identifyable implement
     }
 
     @Override
-    final public boolean evalP(R e) {
+    final public boolean evalP(X e) {
         if (p == null)
             return false;
         return p.test(e);
     }
 
     @Override
-    final public boolean evalQ(R output) {
+    final public boolean evalQ(X output) {
         if (q == null)
             return false;
         return q.test(output);
     }
 
     @Override
-    public Guard<R> p() {
+    public Guard<X> p() {
         return p;
     }
 
     @Override
-    public GuardXOR<R> q() {
+    public GuardXOR<X> q() {
         return q;
     }
 
@@ -122,7 +122,7 @@ public abstract class AbstractStep<R,W extends R> extends Identifyable implement
     private boolean sleepOk = true;
     private boolean failureDetected = false;
     private int milliSecondSretryDelay = 0;
-    public AbstractStep<R,W> retryDelay(int milliSeconds){
+    public AbstractStep<X> retryDelay(int milliSeconds){
         this.milliSecondSretryDelay = milliSeconds;
         return this;
     }
@@ -154,22 +154,22 @@ public abstract class AbstractStep<R,W extends R> extends Identifyable implement
 
     private boolean isEffect = false;
 
-    final GuardXOR<R> returnType =  new GuardXOR<R>(OperationType.RETURN);
+    final GuardXOR<X> returnType = new GuardXOR<X>(OperationType.RETURN);
 
-    public void pre(GuardInput<R> p) {
-        setP((GuardInput<R>) p);
+    public void pre(GuardInput<X> p) {
+        setP(p);
     }
 
-    public void pre(Class<R> p, IPredicate<R> predicate) {
+    public void pre(Class<X> p, IPredicate<X> predicate) {
         setP(new GuardWrite(p, predicate));
     }
 
-    public void post(GuardReturn<? extends R> q) {
+    public void post(GuardReturn<X> q) {
         returnType.addChoice(new Guard(q.getTypeClass(),q.predicate,OperationType.RETURN));
         setQ(returnType);
     }
 
-    public <Q extends R> void post(Class<Q> p, IPredicate<Q> predicate) {
+    public void post(Class<X> p, IPredicate<X> predicate) {
         returnType.addChoice(new Guard(p,predicate,OperationType.RETURN));
         setQ(returnType);
     }

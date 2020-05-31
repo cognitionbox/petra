@@ -50,7 +50,7 @@ public class ComposeMain extends BaseExecutionModesTest {
     @Test
     public void test(){
         PComputer.getConfig().enableStatesLogging();
-        X result = new PComputer<X, X>().eval(new DependancyGraph(),new X());
+        X result = new PComputer<X>().eval(new DependancyGraph(),new X());
         System.out.println(result);
     }
 }

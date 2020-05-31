@@ -4,7 +4,7 @@ import io.cognitionbox.petra.lang.annotations.Extract;
 
 import java.io.Serializable;
 
-class X implements Serializable, Yone, Ytwo{
+class X implements Serializable {
     Y y1;
     Y y2;
 
@@ -13,12 +13,10 @@ class X implements Serializable, Yone, Ytwo{
         y2 = new Y(state);
     }
 
-    @Override
     public Y y1() {
         return y1;
     }
 
-    @Override
     public Y y2() {
         return y2;
     }

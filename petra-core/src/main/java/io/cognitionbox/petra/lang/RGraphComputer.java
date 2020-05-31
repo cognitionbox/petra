@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 
 import static io.cognitionbox.petra.util.Petra.ref;
 
-public class RGraphComputer<R extends D, W extends R, D> implements Serializable {
+public class RGraphComputer<X extends D, D> implements Serializable {
 
   public static IPetraConfig getConfig() {
     return config;
@@ -67,7 +67,7 @@ public class RGraphComputer<R extends D, W extends R, D> implements Serializable
   final static Logger LOG = LoggerFactory.getLogger(RGraphComputer.class);
 
   private boolean invoked = false;
-  Ref<R> result;
+  Ref<X> result;
   private transient Lock initializerLock;
   private transient Lock masterLock;
   private String dotDiagram;
@@ -91,8 +91,8 @@ public class RGraphComputer<R extends D, W extends R, D> implements Serializable
 
   }
 
-  private RGraph<R, W, D> rootGraph;
-  synchronized public R eval(RGraph<R, W, D> xGraphSafe, R input) {
+  private RGraph<X, D> rootGraph;
+  synchronized public X eval(RGraph<X, D> xGraphSafe, X input) {
     this.rootGraph = xGraphSafe;
 
     taskQueue = Petra.getFactory().createRingbuffer("tasks");
@@ -141,7 +141,7 @@ public class RGraphComputer<R extends D, W extends R, D> implements Serializable
 
   public static boolean isMaster = false;
 
-  private R handle(R input) {
+  private X handle(X input) {
     try {
       return tryAquireLoopAndExecute(this.rootGraph,input);
     } finally {
@@ -149,7 +149,7 @@ public class RGraphComputer<R extends D, W extends R, D> implements Serializable
     }
   }
 
-  private R tryAquireLoopAndExecute(RGraph xGraphSafe, R input) {
+  private X tryAquireLoopAndExecute(RGraph xGraphSafe, X input) {
       if (result.get()!=null){
         return result.get();
       }
@@ -157,12 +157,12 @@ public class RGraphComputer<R extends D, W extends R, D> implements Serializable
         waitForInput(xGraphSafe, input);
         xGraphSafe.setInput(new Token(input));
         xGraphSafe.initInput();
-        R out = startMasterLoop(); // one nodes wins and keeps the lock
+        X out = startMasterLoop(); // one nodes wins and keeps the lock
         result.set(out);
       } else {
         try {
           masterLock.lock();
-          R out = startMasterLoop(); // the rest lose and just work the iterations
+          X out = startMasterLoop(); // the rest lose and just work the iterations
           result.set(out);
         } finally {
           // what if node fails and therefore does not unlock, need to tidy locks after node failures
@@ -172,11 +172,11 @@ public class RGraphComputer<R extends D, W extends R, D> implements Serializable
       return result.get();
   }
 
-  private R startMasterLoop(){
-    return (R) this.rootGraph.executeMatchingLoopUntilPostCondition();
+  private X startMasterLoop(){
+    return (X) this.rootGraph.executeMatchingLoopUntilPostCondition();
   }
 
-  private void waitForInput(RGraph xGraphSafe, R input){
+  private void waitForInput(RGraph xGraphSafe, X input){
     while (!xGraphSafe.evalP(input)){
       try {
         Thread.sleep(100);

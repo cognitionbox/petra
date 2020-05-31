@@ -43,7 +43,7 @@ public class LoopMain extends BaseExecutionModesTest {
      */
     @Test
     public void test(){
-        A output = new PComputer<A, A>().eval(new AtoA(),new A());
+        A output = new PComputer<A>().eval(new AtoA(),new A());
         System.out.println("OUTPUT: "+output.value);
         assertThat(output.value).isEqualTo(10);
     }

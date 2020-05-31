@@ -26,11 +26,11 @@ import io.cognitionbox.petra.util.Petra;
 import static io.cognitionbox.petra.util.Petra.rw;
 import static io.cognitionbox.petra.util.Petra.rt;
 
-public class ABtoAB extends PGraph<AB,AB> {
+public class ABtoAB extends PGraph<AB> {
     {
-       pre(rw(AB.class, x->true));
+       pre(AB.class, x->true);
        step(new IncrementA());
        step(new IncrementB());
-       post(Petra.rt(AB.class, x->x.getA().value==10 && x.getB().value==10));
+       post(AB.class, x->x.getA().value==10 && x.getB().value==10);
     }
 }

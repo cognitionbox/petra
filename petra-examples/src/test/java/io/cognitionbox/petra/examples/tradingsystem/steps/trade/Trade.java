@@ -29,7 +29,7 @@ import io.cognitionbox.petra.util.Petra;
 import static io.cognitionbox.petra.util.Petra.*;
 
 
-public class Trade extends PEdge<Trader,Trader> {
+public class Trade extends PEdge<Trader> {
     {
        pre(Trader.class, x->x.isEnabled() && x.getDecisions().size()>=0);
        func(

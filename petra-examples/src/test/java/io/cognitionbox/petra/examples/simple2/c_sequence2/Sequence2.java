@@ -51,7 +51,7 @@ public class Sequence2 extends BaseExecutionModesTest {
     @Test
     public void test(){
 
-        class SeqEdge1 extends PEdge<X,X> {
+        class SeqEdge1 extends PEdge<X> {
             {
                 pre(X.class, x -> x.isA());
                 func(x ->{
@@ -61,7 +61,7 @@ public class Sequence2 extends BaseExecutionModesTest {
                 post(X.class, x -> x.isB());
             }
         }
-        class SeqEdge2 extends PEdge<X,X> {
+        class SeqEdge2 extends PEdge<X> {
             {
                 pre(X.class, x ->x.isB());
                 func(x ->{
@@ -72,7 +72,7 @@ public class Sequence2 extends BaseExecutionModesTest {
             }
         }
 
-        class SeqGraph extends PGraph<X,X> {
+        class SeqGraph extends PGraph<X> {
             {
                 pre(X.class, x->x.isABC());
                 lc(x -> x.isA() ^ x.isB());
@@ -82,7 +82,7 @@ public class Sequence2 extends BaseExecutionModesTest {
             }
         }
 
-        X output = new PComputer<X, X>().eval(new SeqGraph(),new X(State.A));
+        X output = new PComputer<X>().eval(new SeqGraph(),new X(State.A));
         assertThat(output.state).isEqualTo(State.C);
 
 

@@ -49,6 +49,6 @@ public class ExtractionMain extends BaseExecutionModesTest {
      */
     @Test
     public void test(){
-        AB result = new PComputer<AB, AB>().eval(new ExtractAB(),new AB(new A(),new B()));
+        AB result = new PComputer<AB>().eval(new ExtractAB(),new AB(new A(),new B()));
     }
 }

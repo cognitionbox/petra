@@ -23,13 +23,13 @@ import static io.cognitionbox.petra.util.Petra.rw;
 import static io.cognitionbox.petra.util.Petra.rt;
 
 
-public class BtoC extends PEdge<roBC,rwBC> {
+public class BtoC extends PEdge<rwBC> {
     {
-       pre(roBC.class, b ->true);
+       pre(rwBC.class, b ->true);
        func(b ->{
            b.c(new C());
            return b;
        });
-       post(roBC.class, b->true);
+       post(rwBC.class, b->true);
     }
 }

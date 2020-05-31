@@ -76,7 +76,7 @@ public class ResourceConflictTest extends BaseExecutionModesTest {
     }
   }
 
-  public static class AtoA extends PEdge<A,A> {
+  public static class AtoA extends PEdge<A> {
     {
       pre(rw(A.class, x->true));
       func(a->new A(222));
@@ -84,7 +84,7 @@ public class ResourceConflictTest extends BaseExecutionModesTest {
     }
   }
 
-  public static class g extends PGraph<A,A> {
+  public static class g extends PGraph<A> {
     {
       pre(rw(A.class, x->true));
       post(Petra.rt(A.class, x->true));
@@ -96,7 +96,7 @@ public class ResourceConflictTest extends BaseExecutionModesTest {
   @Test(expected = AssertionError.class)
   public void testResourceConflict() {
 
-    PComputer<A, A> lc = getGraphComputer();
+    PComputer<A> lc = getGraphComputer();
     A result = lc.eval(new g(), new A(1));
   }
 

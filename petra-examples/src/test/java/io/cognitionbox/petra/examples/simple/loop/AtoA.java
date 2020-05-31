@@ -25,10 +25,10 @@ import static io.cognitionbox.petra.util.Petra.rw;
 import static io.cognitionbox.petra.util.Petra.rt;
 
 
-public class AtoA extends PGraph<A,A> {
+public class AtoA extends PGraph<A> {
     {
-        pre(rw(A.class, a->a.value<10));
+        pre(A.class, a->a.value<10);
         step(new IncrementA());
-        post(Petra.rt(A.class, a->a.value==10));
+        post(A.class, a->a.value==10);
     }
 }

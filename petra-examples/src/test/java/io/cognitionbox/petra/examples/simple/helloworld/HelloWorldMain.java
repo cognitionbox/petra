@@ -41,7 +41,7 @@ public class HelloWorldMain extends BaseExecutionModesTest {
      */
     @Test
     public void test(){
-        A output = new PComputer<A, A>().eval(new AtoAGraph(),new A(""));
+        A output = new PComputer<A>().eval(new AtoAGraph(),new A(""));
         System.out.println("OUTPUT: "+output.value);
         assertThat(output.value).isEqualTo("hello world.");
     }

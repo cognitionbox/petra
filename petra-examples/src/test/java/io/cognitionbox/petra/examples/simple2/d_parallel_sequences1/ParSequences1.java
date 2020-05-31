@@ -51,7 +51,7 @@ public class ParSequences1 extends BaseExecutionModesTest {
     @Test
     public void test(){
 
-        class SeqEdge extends PEdge<Y,Y> {
+        class SeqEdge extends PEdge<Y> {
             {
                 pre(Y.class, y -> y.isA() ^ y.isB());
                 func(y ->{
@@ -62,7 +62,7 @@ public class ParSequences1 extends BaseExecutionModesTest {
             }
         }
 
-        class SeqGraph extends PGraph<X,X> {
+        class SeqGraph extends PGraph<X> {
             {
                 pre(X.class, x->x.y1.isABC() && x.y2.isABC());
                 lc(x -> (x.y1.isA() ^ x.y1.isB()) && (x.y2.isA() ^ x.y2.isB()));
@@ -71,7 +71,7 @@ public class ParSequences1 extends BaseExecutionModesTest {
             }
         }
 
-        X output = new PComputer<X, X>().eval(new SeqGraph(),new X(State.A));
+        X output = new PComputer<X>().eval(new SeqGraph(),new X(State.A));
         assertThat(output.y1.state).isEqualTo(State.C);
         assertThat(output.y2.state).isEqualTo(State.C);
 

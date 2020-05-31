@@ -24,11 +24,11 @@ import static io.cognitionbox.petra.util.Petra.rt;
 import static io.cognitionbox.petra.util.Petra.rw;
 
 
-public class AtoC extends PGraph<roABC,rwABC> {
+public class AtoC extends PGraph<rwABC> {
     {
-        pre(rw(roABC.class, a->true));
+        pre(rwABC.class, a->true);
         step(new BtoC());
         step(new AtoB());
-        post(rt(roABC.class, c->true));
+        post(rwABC.class, c->true);
     }
 }

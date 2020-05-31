@@ -51,7 +51,7 @@ public class ForkJoinMain extends BaseExecutionModesTest {
      */
     @Test
     public void test(){
-        AB output = new PComputer<AB, AB>().eval(new ABtoAB(),new AB(new A(),new B()));
+        AB output = new PComputer<AB>().eval(new ABtoAB(),new AB(new A(),new B()));
         assertThat(output.getA().value).isEqualTo(10);
         assertThat(output.getB().value).isEqualTo(10);
     }

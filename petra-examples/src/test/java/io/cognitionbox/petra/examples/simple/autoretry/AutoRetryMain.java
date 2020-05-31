@@ -45,7 +45,7 @@ public class AutoRetryMain extends BaseExecutionModesTest {
      */
     @Test
     public void test(){
-        AB result = new PComputer<AB, AB>()
+        AB result = new PComputer<AB>()
                 .eval(new ABtoAB(),new AB(new A(),new B()));
 
         assertThat(result.getA().value).isEqualTo(10);

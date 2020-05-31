@@ -22,9 +22,9 @@ import io.cognitionbox.petra.core.IJoin;
 
 import java.util.function.Predicate;
 
-public class GraphJoinsHaveAfunctionAndAllTheirPrePostConditions implements Predicate<RGraph<?, ?, ?>> {
+public class GraphJoinsHaveAfunctionAndAllTheirPrePostConditions implements Predicate<RGraph<?, ?>> {
         @Override
-        public boolean test(RGraph<?, ?, ?> graphSafe) {
+        public boolean test(RGraph<?, ?> graphSafe) {
             boolean ok = true;
             for (IJoin j : graphSafe.getJoinTypes()) {
                 if (j instanceof PJoin) {

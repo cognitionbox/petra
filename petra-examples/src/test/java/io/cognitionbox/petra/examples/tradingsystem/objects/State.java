@@ -102,13 +102,11 @@ public class State implements Serializable, GetTraders, StateOk, MaxExposure, Be
         }
         return true;
     }
-    static final Logger LOG = LoggerFactory.getLogger(TradingSystem.class);
+
     public void updateExposure(){
         lastExp().set(currentExp().get());
         currentExp().set(
                 traders().stream()
                         .flatMap(d -> d.getDecisions().stream()).mapToDouble(d->d.exposure()).sum());
-        LOG.info("time: " + getTimeInSeconds());
-        LOG.info("currentExp: " + currentExp());
     }
 }

@@ -52,7 +52,7 @@ public class HelloWorld extends BaseExecutionModesTest {
     @Test
     public void test(){
 
-        class AtoA extends PEdge<X,X> {
+        class AtoA extends PEdge<X> {
             {
                 pre(X.class, x -> x.isBlankOrHelloWorld());
                 func(x ->{
@@ -63,7 +63,7 @@ public class HelloWorld extends BaseExecutionModesTest {
             }
         }
 
-        class AtoAGraph extends PGraph<X,X> {
+        class AtoAGraph extends PGraph<X> {
             {
                 pre(X.class, x -> x.isBlankOrHelloWorld());
                 lc(x -> x.isBlank());
@@ -72,7 +72,7 @@ public class HelloWorld extends BaseExecutionModesTest {
             }
         }
 
-        X output = new PComputer<X, X>().eval(new AtoAGraph(),new X(""));
+        X output = new PComputer<X>().eval(new AtoAGraph(),new X(""));
         assertThat(output.value).isEqualTo("hello world.");
 
     }

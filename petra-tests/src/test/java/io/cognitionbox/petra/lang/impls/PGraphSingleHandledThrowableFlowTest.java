@@ -51,42 +51,42 @@ public class PGraphSingleHandledThrowableFlowTest extends BaseExecutionModesTest
     assertThat(result).isEqualTo(3);
   }
 
-  public static class MainLoop extends PGraph<Integer,Integer> {
+  public static class MainLoop extends PGraph<Integer> {
     {
-      pre(rw(Integer.class, x->x==0));
-      post(Petra.rt(Integer.class, x->x==3));
+      pre(Integer.class, x->x==0);
+      post(Integer.class, x->x==3);
       step(new Nesting());
     }
   }
 
-  public static class Nesting extends PGraph<Integer,Integer> {
+  public static class Nesting extends PGraph<Integer> {
     {
-      pre(rw(Integer.class, x -> x == 0));
-      post(Petra.rt(Integer.class, x->x==1 || x==3));
+      pre(Integer.class, x -> x == 0);
+      post(Integer.class, x->x==1 || x==3);
       step(new PlusOne());
     }
   }
 
-  public static class MainLoopWithDirectStepHandledThrowable extends PGraph<Integer,Integer> {
+  public static class MainLoopWithDirectStepHandledThrowable extends PGraph<Integer> {
     {
-      pre(rw(Integer.class, x->x==0));
-      post(Petra.rt(Integer.class, x->x==3));
+      pre(Integer.class, x->x==0);
+      post(Integer.class, x->x==3);
       step(new NestingWithDirectStepHandledThrowable());
     }
   }
 
-  public static class NestingWithDirectStepHandledThrowable extends PGraph<Integer,Integer> {
+  public static class NestingWithDirectStepHandledThrowable extends PGraph<Integer> {
     {
-      pre(rw(Integer.class, x -> x == 0));
-      post(rt(Integer.class, x -> x == 3));
+      pre(Integer.class, x -> x == 0);
+      post(Integer.class, x -> x == 3);
       step(new PlusOne());
     }
   }
 
-  public static class PlusOne extends PEdge<Integer,Integer> {
+  public static class PlusOne extends PEdge<Integer> {
    {
-      pre(rw(Integer.class, x->x==0));
-      post(Petra.rt(Integer.class, x->x==1 || x==3));
+      pre(Integer.class, x->x==0);
+      post(Integer.class, x->x==1 || x==3);
       func(x->{
         try {
           int y = 1/0;

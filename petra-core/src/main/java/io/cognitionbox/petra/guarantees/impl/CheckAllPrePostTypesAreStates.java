@@ -43,10 +43,10 @@ public class CheckAllPrePostTypesAreStates implements GraphCheck {
         public boolean test(IGraph<?> step) {
             if (step instanceof RGraph) {
                 boolean ok = true;
-                for (IStep<?> s : ((RGraph<?, ?, ?>) step).getParallizable()) {
+                for (IStep<?> s : ((RGraph<?, ?>) step).getParallizable()) {
                     ok = ok && checkPType(s.p()) && checkPType(s.q());
                 }
-                for (IJoin j : ((RGraph<?, ?, ?>) step).getJoinTypes()) {
+                for (IJoin j : ((RGraph<?, ?>) step).getJoinTypes()) {
                     if (j instanceof PJoin) {
                         ok = ok && checkPType(((PJoin) j).a()) && checkPType(((PJoin) j).r());
                     } else if (j instanceof PJoin2) {

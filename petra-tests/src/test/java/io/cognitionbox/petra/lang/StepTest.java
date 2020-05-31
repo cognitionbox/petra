@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 
-public abstract class StepTest<R,W extends R> extends BaseExecutionModesTest {
+public abstract class StepTest<X> extends BaseExecutionModesTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(StepTest.class);
     private static PGraphDotDiagramRendererImpl2 renderer;
@@ -59,7 +59,7 @@ public abstract class StepTest<R,W extends R> extends BaseExecutionModesTest {
         stepFixture = new StepFixture(stepSupplier().get(),getExecMode());
     }
 
-    public static class EdgePGraph extends PGraph<Object,Object> {
+    public static class EdgePGraph extends PGraph<Object> {
         EdgePGraph(PEdge PEdge){
             pre(Object.class, x->true);
             step(PEdge);
@@ -67,25 +67,25 @@ public abstract class StepTest<R,W extends R> extends BaseExecutionModesTest {
         }
     }
 
-    public static class StepFixture<R,W extends R> {
-        private AbstractStep<R,W> step;
-        private R in;
-        private R out;
+    public static class StepFixture<X> {
+        private AbstractStep<X> step;
+        private X in;
+        private X out;
 
-        private void setInput(R in) {
+        private void setInput(X in) {
             this.in = in;
         }
 
-        private R getOutput() {
+        private X getOutput() {
             return out;
         }
 
-        private R getInput() {
+        private X getInput() {
             return in;
         }
 
         ExecMode execMode;
-        private StepFixture(AbstractStep<R,W> step, ExecMode execMode) {
+        private StepFixture(AbstractStep<X> step, ExecMode execMode) {
             this.step = step;
             this.execMode = execMode;
         }
@@ -93,17 +93,17 @@ public abstract class StepTest<R,W extends R> extends BaseExecutionModesTest {
             if (step instanceof PGraph && execMode.isDIS()) {
                 PComputer computer;
                 computer = new PComputer<>();
-                out = (R) computer.eval((RGraph) step, in);
+                out = (X) computer.eval((RGraph) step, in);
                 computer.shutdown();
             } else if (step instanceof PEdge && execMode.isDIS()){
                 PComputer computer;
                 computer = new PComputer<>();
-                out = (R) computer.eval(new EdgePGraph((PEdge) step), in);
+                out = (X) computer.eval(new EdgePGraph((PEdge) step), in);
                 computer.shutdown();
             } else {
                 step.setInput(new Token(in));
                 try {
-                    out = (R) step.call();
+                    out = (X) step.call();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -117,14 +117,14 @@ public abstract class StepTest<R,W extends R> extends BaseExecutionModesTest {
             }
         }
     }
-    private StepFixture<R,W> stepFixture;
+    private StepFixture<X> stepFixture;
 
-    protected void setInput(R input){
+    protected void setInput(X input){
         stepFixture.setInput(input);
     }
 
-    private Predicate<R> expectation;
-    protected void setExpectation(Predicate<R> expectation){
+    private Predicate<X> expectation;
+    protected void setExpectation(Predicate<X> expectation){
         if (stepFixture.getInput()==null){
             throw new IllegalStateException("no input set!");
         }
@@ -132,7 +132,7 @@ public abstract class StepTest<R,W extends R> extends BaseExecutionModesTest {
         stepFixture.execute();
     }
 
-    abstract Supplier<AbstractStep<R,W>> stepSupplier();
+    abstract Supplier<AbstractStep<X>> stepSupplier();
 
     public static int comp(String s1, String s2) {
         if (s1.contains("red") && !s2.contains("red")){
@@ -153,7 +153,7 @@ public abstract class StepTest<R,W extends R> extends BaseExecutionModesTest {
 
     @After
     public void after(){
-        R out = stepFixture.getOutput();
+        X out = stepFixture.getOutput();
         if (out==null){
             fail("output is null");
         }

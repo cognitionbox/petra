@@ -50,6 +50,6 @@ public class DynamicStepParallelismMain extends BaseExecutionModesTest {
      */
     @Test
     public void test(){
-        X result = new PComputer<X, X>().eval(new PrintAGraph(),new X());
+        X result = new PComputer<X>().eval(new PrintAGraph(),new X());
     }
 }

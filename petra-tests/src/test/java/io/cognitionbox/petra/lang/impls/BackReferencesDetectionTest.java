@@ -90,18 +90,18 @@ public class BackReferencesDetectionTest extends BaseExecutionModesTest {
     }
   }
 
-  public static class AtoA extends PEdge<A,A> {
+  public static class AtoA extends PEdge<A> {
     {
-      pre(rw(A.class, x->true));
+      pre(A.class, x->true);
       func(a->new A(222));
-      post(Petra.rt(A.class, x->true));
+      post(A.class, x->true);
     }
   }
 
-  public static class g extends PGraph<A,A> {
+  public static class g extends PGraph<A> {
     {
-      pre(rw(A.class, x->true));
-      post(Petra.rt(A.class, x->true));
+      pre(A.class, x->true);
+      post(A.class, x->true);
       step(AtoA.class);
     }
   }
@@ -110,7 +110,7 @@ public class BackReferencesDetectionTest extends BaseExecutionModesTest {
   @Test(expected = StackOverflowError.class)
   public void testBackReferencesDetection() {
 
-    PComputer<A, A> lc = getGraphComputer();
+    PComputer<A> lc = getGraphComputer();
     A result = lc.eval(new g(), new A(1));
   }
 

@@ -46,7 +46,7 @@ public class ParallelLoopMain extends BaseExecutionModesTest {
      */
     @Test
     public void test(){
-        AB result = new PComputer<AB, AB>().eval(new ABtoAB(),new AB(new A(),new B()));
+        AB result = new PComputer<AB>().eval(new ABtoAB(),new AB(new A(),new B()));
         assertThat(result.getA().value).isEqualTo(10);
         assertThat(result.getB().value).isEqualTo(10);
     }

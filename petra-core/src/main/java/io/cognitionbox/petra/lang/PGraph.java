@@ -15,7 +15,7 @@
  */
 package io.cognitionbox.petra.lang;
 
-public class PGraph<R,W extends R> extends RGraph<R,W, Object> {
+public class PGraph<X> extends RGraph<X, Object> {
     public PGraph(String description, boolean isEffect) {
         super(description, isEffect);
     }

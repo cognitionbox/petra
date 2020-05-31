@@ -26,11 +26,11 @@ import io.cognitionbox.petra.lang.Void;
 import static io.cognitionbox.petra.util.Petra.rt;
 import static io.cognitionbox.petra.util.Petra.rw;
 
-public class ExtractAB extends PGraph<AB,AB> {
+public class ExtractAB extends PGraph<AB> {
    {
-       pre(rw(AB.class, x->true));
+       pre(AB.class, x->true);
        step(new PrintA());
        step(new PrintB());
-       post(rt(AB.class, x->true));
+       post(AB.class, x->true);
     }
 }

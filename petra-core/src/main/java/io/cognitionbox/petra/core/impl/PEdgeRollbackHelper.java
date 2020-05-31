@@ -35,7 +35,7 @@ public class PEdgeRollbackHelper implements Serializable {
         } catch (Exception e){}
     }
 
-    public void capture(Object input, AbstractStep<?,?> abstractStep){
+    public void capture(Object input, AbstractStep<?> abstractStep){
         if (abstractStep instanceof IRollback){
             while(true){
                 try {
@@ -52,7 +52,7 @@ public class PEdgeRollbackHelper implements Serializable {
         }
     }
 
-    public void rollback(Object input, AbstractStep<?,?> abstractStep){
+    public void rollback(Object input, AbstractStep<?> abstractStep){
         if (abstractStep instanceof IRollback){
             while(true){
                 try {

@@ -112,10 +112,10 @@ public class Petra {
         return new GuardReturn<>(eventClazz, x -> true);
     }
 
-    public static <R,W extends R> PEdge<R,W> anonymous(Guard<R> p,
-                                               IFunction<W, W> function,
-                                               Guard<R>... qs) {
-        GuardXOR<R> pTypeXOR = new GuardXOR<>(OperationType.RETURN);
+    public static <X> PEdge<X> anonymous(Guard<X> p,
+                                               IFunction<X, X> function,
+                                               Guard<X>... qs) {
+        GuardXOR<X> pTypeXOR = new GuardXOR<>(OperationType.RETURN);
         for (Guard q : qs) {
             pTypeXOR.addChoice(q);
         }

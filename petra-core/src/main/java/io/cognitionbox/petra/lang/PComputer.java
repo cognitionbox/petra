@@ -15,6 +15,6 @@
  */
 package io.cognitionbox.petra.lang;
 
-public class PComputer<I, O extends I> extends RGraphComputer<I,O,Object> {
+public class PComputer<X> extends RGraphComputer<X,Object> {
     public PComputer(){}
 }
