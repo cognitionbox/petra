@@ -38,6 +38,12 @@ public class RandomTrader implements Trader {
 
 
     private Decisions decisions = new Decisions();
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
     @Override
     public Decisions getDecisions() {
         return decisions;

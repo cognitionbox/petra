@@ -19,6 +19,7 @@
 package io.cognitionbox.petra.examples.tradingsystem.steps;
 
 import io.cognitionbox.petra.examples.tradingsystem.objects.State;
+import io.cognitionbox.petra.examples.tradingsystem.objects.Trader;
 import io.cognitionbox.petra.examples.tradingsystem.steps.trade.Trade;
 import io.cognitionbox.petra.lang.PGraph;
 import org.slf4j.Logger;
@@ -29,7 +30,8 @@ import static io.cognitionbox.petra.util.Petra.*;
 public class TradingSystem extends PGraph<State> {
     {
         setSleepPeriod(1000);
-        pre(StateOk.class, x->x.currentExp().get()>=0 && x.currentExp().get()<=200);
+        pre(StateOk.class, x->x.currentExp().get()>=0 && x.currentExp().get()<=200 &&
+                forAll(Trader.class,x.traders(),t->t.isEnabled()));
         lc(x->
                 x.currentExp().get()==0 ^ x.currentExp().get()==40 ^ x.currentExp().get()==80
                         ^ x.currentExp().get()==120 ^ x.currentExp().get()==160);

@@ -7,6 +7,8 @@ import java.io.Serializable;
 
 public interface Trader extends Serializable, TraderOk {
 
+    boolean isEnabled();
+
     Decisions getDecisions();
 
     void addDecision(Decision d);

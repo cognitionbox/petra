@@ -96,6 +96,10 @@ public class Petra {
         }
     }
 
+    public static <T> boolean forAll(Class<T> eventClazz, Collection<? extends T> collection, IPredicate<T> predicate) {
+        return collection.stream().allMatch(predicate);
+    }
+
     public static <T> GuardWrite<T> rw(Class<T> eventClazz, IPredicate<T> predicate) {
         return new GuardWrite<>(eventClazz, predicate);
     }
