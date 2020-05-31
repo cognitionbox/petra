@@ -28,7 +28,7 @@ import static io.cognitionbox.petra.util.Petra.rw;
 import static io.cognitionbox.petra.util.Petra.rt;
 
 @Feedback
-public class IncrementB extends PEdge<GetB> implements IRollback<B> {
+public class IncrementB extends PEdge<GetB,GetB> implements IRollback<B> {
     {
        pre(rw(GetB.class, b->b.b().value<10));
        func(b->{

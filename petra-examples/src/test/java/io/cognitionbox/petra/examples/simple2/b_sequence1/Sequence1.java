@@ -51,7 +51,7 @@ public class Sequence1 extends BaseExecutionModesTest {
     @Test
     public void test(){
 
-        class SeqEdge extends PEdge<X> {
+        class SeqEdge extends PEdge<X,X> {
             {
                 pre(X.class, x -> x.isA() ^ x.isB());
                 func(x ->{
@@ -62,7 +62,7 @@ public class Sequence1 extends BaseExecutionModesTest {
             }
         }
 
-        class SeqGraph extends PGraph<X> {
+        class SeqGraph extends PGraph<X,X> {
             {
                 pre(X.class, x->x.isABC());
                 lc(x -> x.isA() ^ x.isB());

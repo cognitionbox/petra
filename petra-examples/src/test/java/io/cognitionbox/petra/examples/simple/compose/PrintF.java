@@ -23,7 +23,7 @@ import io.cognitionbox.petra.lang.PEdge;
 import static io.cognitionbox.petra.util.Petra.*;
 
 
-public class PrintF extends PEdge<rwF> {
+public class PrintF extends PEdge<roF,rwF> {
     {
        pre(rw(roF.class, f->true));
        func(f->{

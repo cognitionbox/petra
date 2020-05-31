@@ -27,7 +27,7 @@ import static io.cognitionbox.petra.util.Petra.rt;
 import static io.cognitionbox.petra.util.Petra.rw;
 
 
-public class PrintAGraph extends PGraph<X> {
+public class PrintAGraph extends PGraph<X,X> {
     {
        pre(rw(X.class, x->true));
        step(new PrintA());

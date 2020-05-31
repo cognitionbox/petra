@@ -24,9 +24,9 @@ import java.util.function.Predicate;
 
 import static io.cognitionbox.petra.guarantees.impl.ConstructionGuarantees.isSideEffect;
 
-public class JoinsWithOverlappingInputAndOutputTypesMustBeSideEffects implements Predicate<RGraph<?, ?>> {
+public class JoinsWithOverlappingInputAndOutputTypesMustBeSideEffects implements Predicate<RGraph<?, ?, ?>> {
         @Override
-        public boolean test(RGraph<?, ?> step) {
+        public boolean test(RGraph<?, ?, ?> step) {
             boolean ok = true;
             for (IJoin j : step.getJoinTypes()) {
                 if (j instanceof PJoin) {

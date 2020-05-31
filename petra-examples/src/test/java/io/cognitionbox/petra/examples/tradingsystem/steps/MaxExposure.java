@@ -20,6 +20,8 @@ package io.cognitionbox.petra.examples.tradingsystem.steps;
 
 import io.cognitionbox.petra.examples.tradingsystem.steps.risk.Exposure;
 
-public interface StopAtMaxExposure extends Exposure {
-
+public interface MaxExposure extends StateOk {
+    default boolean isAtMaxExposure(){
+        return currentExp().get()==200;
+    }
 }

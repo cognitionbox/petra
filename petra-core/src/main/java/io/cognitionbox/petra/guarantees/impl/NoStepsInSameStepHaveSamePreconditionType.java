@@ -24,8 +24,8 @@ public class NoStepsInSameStepHaveSamePreconditionType implements StepCheck {
         @Override
         public boolean test(IStep<?> step) {
             if (step instanceof RGraph) {
-                for (IStep<?> s1 : ((RGraph<?, ?>) step).getParallizable()) {
-                    for (IStep<?> s2 : ((RGraph<?, ?>) step).getParallizable()) {
+                for (IStep<?> s1 : ((RGraph<?, ?, ?>) step).getParallizable()) {
+                    for (IStep<?> s2 : ((RGraph<?, ?, ?>) step).getParallizable()) {
                         if (s1.getStepClazz().equals(s2.getStepClazz())) {
                             continue;
                         }

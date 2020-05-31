@@ -51,7 +51,7 @@ public class FlagSwitch extends BaseExecutionModesTest {
     @Test
     public void test(){
 
-        class FlagEdge extends PEdge<X> {
+        class FlagEdge extends PEdge<X,X> {
             {
                 pre(X.class, x -> x.isFalse());
                 func(x ->{
@@ -62,7 +62,7 @@ public class FlagSwitch extends BaseExecutionModesTest {
             }
         }
 
-        class FlagGraph extends PGraph<X> {
+        class FlagGraph extends PGraph<X,X> {
             {
                 pre(X.class, x -> x.isTrueOrFalse());
                 lc(x -> x.isFalse());

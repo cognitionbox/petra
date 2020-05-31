@@ -90,7 +90,7 @@ public class BackReferencesDetectionTest extends BaseExecutionModesTest {
     }
   }
 
-  public static class AtoA extends PEdge<A> {
+  public static class AtoA extends PEdge<A,A> {
     {
       pre(rw(A.class, x->true));
       func(a->new A(222));
@@ -98,7 +98,7 @@ public class BackReferencesDetectionTest extends BaseExecutionModesTest {
     }
   }
 
-  public static class g extends PGraph<A> {
+  public static class g extends PGraph<A,A> {
     {
       pre(rw(A.class, x->true));
       post(Petra.rt(A.class, x->true));

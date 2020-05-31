@@ -52,7 +52,7 @@ public class HelloWorld extends BaseExecutionModesTest {
     @Test
     public void test(){
 
-        class AtoA extends PEdge<X> {
+        class AtoA extends PEdge<X,X> {
             {
                 pre(X.class, x -> x.isBlankOrHelloWorld());
                 func(x ->{
@@ -63,7 +63,7 @@ public class HelloWorld extends BaseExecutionModesTest {
             }
         }
 
-        class AtoAGraph extends PGraph<X> {
+        class AtoAGraph extends PGraph<X,X> {
             {
                 pre(X.class, x -> x.isBlankOrHelloWorld());
                 lc(x -> x.isBlank());

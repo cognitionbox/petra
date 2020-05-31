@@ -55,7 +55,7 @@ import static io.cognitionbox.petra.lang.Void.vd;
 import static io.cognitionbox.petra.util.Petra.rt;
 import static java.lang.Math.min;
 
-public class RGraph<I extends D,D> extends AbstractStep<I> implements IGraph<I> {
+public class RGraph<R extends D,W extends R,D> extends AbstractStep<R,W> implements IGraph<R> {
 
     final static Logger LOG = LoggerFactory.getLogger(RGraph.class);
     List<StepCallable> callables = new ArrayList<>();
@@ -63,7 +63,7 @@ public class RGraph<I extends D,D> extends AbstractStep<I> implements IGraph<I> 
     private List<IStep> parallizable = new ArrayList<>();
     private transient IEdgeDotLogger stepDotLogger = new PEdgeDotLoggerImpl();
     private List<IJoin> joinsTypes = new ArrayList<>();
-    private List<Triplet<Guard<IPredicate<? super I>>,IConsumer<I>,Guard<IPredicate<? super I>>>> newJoins = new ArrayList<>();
+    private List<Triplet<Guard<IPredicate<R>>,IConsumer<W>,Guard<IPredicate<R>>>> newJoins = new ArrayList<>();
     private List<IBiConsumer<Collection<IToken>, RGraph>> joins =
             new ArrayList<>();
     private Set lastStates;
@@ -107,12 +107,12 @@ public class RGraph<I extends D,D> extends AbstractStep<I> implements IGraph<I> 
         }
     }
 
-    I executeMatchingLoopUntilPostCondition() {
+    W executeMatchingLoopUntilPostCondition() {
         currentIteration = 0;
         while (evalP(getInput().getValue()) && this.loopCondition.test(getInput().getValue())) {
             try {
                 Lg();
-                I out = iteration();
+                W out = iteration();
                 if (out!=null){
                     return out;
                 }
@@ -126,11 +126,11 @@ public class RGraph<I extends D,D> extends AbstractStep<I> implements IGraph<I> 
         throw new PostConditionFailure();
     }
 
-    I iteration(){
+    W iteration(){
         if (currentIteration > getMaxIterations()) {
             // if we go past the max iterations, we have failed to meet the post cons
             putState(new IterationsTimeoutException());
-            return (I) new IterationsTimeoutException();
+            return (W) new IterationsTimeoutException();
         } else {
             if (sleepPeriod>0) {
                 sleep(sleepPeriod);
@@ -156,7 +156,7 @@ public class RGraph<I extends D,D> extends AbstractStep<I> implements IGraph<I> 
             Jn();
             Object toReturn = Rt();
             if (toReturn != null) {
-                return (I) toReturn;
+                return (W) toReturn;
             } else {
                 return null;
             }
@@ -175,8 +175,8 @@ public class RGraph<I extends D,D> extends AbstractStep<I> implements IGraph<I> 
         addParallizable(computation);
     }
 
-    private IPredicate<? super I> loopCondition = x->true;
-    public void lc(IPredicate<? super I> loopCondition) {
+    private IPredicate<? super W> loopCondition = x->true;
+    public void lc(IPredicate<? super W> loopCondition) {
         this.loopCondition = loopCondition;
     }
 
@@ -197,15 +197,15 @@ public class RGraph<I extends D,D> extends AbstractStep<I> implements IGraph<I> 
         throw new UnsupportedOperationException();
     }
 
-    public <A extends D, B extends D, R extends D> void join(IPredicate<? super I> pre,
-                                                             IConsumer<I> joinEdge,
-                                                             IPredicate<? super I> post) {
+    public <A extends D, B extends D, R extends D> void join(IPredicate<? super W> pre,
+                                                             IConsumer<W> joinEdge,
+                                                             IPredicate<? super W> post) {
         this.newJoins.add(Triplet.with(new GuardWrite(Object.class, pre),joinEdge,new GuardWrite(Object.class, post)));
     }
 
-    public <A extends D, B extends D, R extends D> void join(Class<? super I> preType, IPredicate<? super I> pre,
-                                                             IConsumer<I> joinEdge,
-                                                             Class<? super I> postType, IPredicate<? super I> post) {
+    public <A extends D, B extends D, R extends D> void join(Class<? super W> preType, IPredicate<? super W> pre,
+                                                             IConsumer<W> joinEdge,
+                                                             Class<? super W> postType, IPredicate<? super W> post) {
         this.newJoins.add(Triplet.with(new GuardWrite(preType, pre),joinEdge,new GuardWrite(postType, post)));
     }
 
@@ -439,7 +439,7 @@ public class RGraph<I extends D,D> extends AbstractStep<I> implements IGraph<I> 
         for (IBiConsumer<Collection<IToken>, RGraph> t : this.joins) {
             t.accept(getWorkingStatesToUse(), this);
         }
-        for (Triplet<Guard<IPredicate<? super I>>,IConsumer<I>,Guard<IPredicate<? super I>>> t : this.newJoins) {
+        for (Triplet<Guard<IPredicate<R>>,IConsumer<W>,Guard<IPredicate<R>>> t : this.newJoins) {
             if (t.getValue0().test(getInput().getValue())){
                 t.getValue1().accept(this.getInput().getValue());
                 if (t.getValue2().test(getInput().getValue())){
@@ -470,7 +470,7 @@ public class RGraph<I extends D,D> extends AbstractStep<I> implements IGraph<I> 
                 .collect(Collectors.toCollection(() -> new PList<>()));
     }
 
-    I Rt() {
+    W Rt() {
         List<PetraException> exceptions = exceptions();
         if (!exceptions.isEmpty()) {
             for (PetraException petraException : exceptions) {
@@ -479,11 +479,11 @@ public class RGraph<I extends D,D> extends AbstractStep<I> implements IGraph<I> 
                     t.printStackTrace();
                 }
             }
-            return (I) new GraphException((I) this.getInput().getValue(), null, exceptions);
+            return (W) new GraphException((W) this.getInput().getValue(), null, exceptions);
         }
         if (checkOutput(getInput().getValue())) {
             if (this.getPlace().size() == 0) {
-                return (I) new IllegalStateException("cannot have zero tokens in place and not return void.");
+                return (W) new IllegalStateException("cannot have zero tokens in place and not return void.");
             }
             Object obj = getInput().getValue();
             /*
@@ -493,20 +493,20 @@ public class RGraph<I extends D,D> extends AbstractStep<I> implements IGraph<I> 
              * Arpad's Kotlin Hack
              */
             if (this.q().getTypeClass().equals(int.class) && Integer.class.isInstance(obj)) {
-                if (this.evalQ((I) obj)) {
-                    return (I) obj;
+                if (this.evalQ((W) obj)) {
+                    return (W) obj;
                 }
             }
 
             if (this.q().getTypeClass().equals(int.class)) {
                 if (Integer.class.isInstance(obj)) {
-                    if (this.evalQ((I) obj)) {
-                        return (I) obj;
+                    if (this.evalQ((W) obj)) {
+                        return (W) obj;
                     }
                 }
             }
             if (checkOutput(obj)) {
-                return (I) obj;
+                return (W) obj;
             }
         }
         return null;
@@ -973,7 +973,7 @@ public class RGraph<I extends D,D> extends AbstractStep<I> implements IGraph<I> 
     }
 
     @Override
-    public I call() throws Exception {
+    public W call() throws Exception {
         initInput();
         return executeMatchingLoopUntilPostCondition();
     }

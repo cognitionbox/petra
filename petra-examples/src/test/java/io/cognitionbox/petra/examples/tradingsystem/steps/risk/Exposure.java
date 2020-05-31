@@ -18,6 +18,7 @@
  */
 package io.cognitionbox.petra.examples.tradingsystem.steps.risk;
 
+import io.cognitionbox.petra.examples.tradingsystem.steps.StateOk;
 import io.cognitionbox.petra.lang.Ref;
 
 public interface Exposure {

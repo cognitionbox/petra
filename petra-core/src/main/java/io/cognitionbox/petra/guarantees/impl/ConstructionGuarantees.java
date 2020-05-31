@@ -113,7 +113,7 @@ public class ConstructionGuarantees {
         }
     }
 
-    public static boolean isSideEffect(AbstractStep<?> step) {
+    public static boolean isSideEffect(AbstractStep<?,?> step) {
         if (step.isEffect()) {// || step instanceof EffectG){
             return true;
         } else {

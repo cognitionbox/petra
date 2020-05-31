@@ -22,12 +22,10 @@ import io.cognitionbox.petra.examples.tradingsystem.objects.State;
 import io.cognitionbox.petra.examples.tradingsystem.objects.Trader;
 import io.cognitionbox.petra.examples.tradingsystem.steps.trade.Trade;
 import io.cognitionbox.petra.lang.PGraph;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static io.cognitionbox.petra.util.Petra.*;
 
-public class TradingSystem extends PGraph<State> {
+public class TradingSystem extends PGraph<StateOk,State> {
     {
         setSleepPeriod(1000);
         pre(StateOk.class, x->x.currentExp().get()>=0 && x.currentExp().get()<=200 &&
@@ -39,6 +37,6 @@ public class TradingSystem extends PGraph<State> {
         join(state->true,
             state->state.updateExposure(),
             state->true);
-        post(StopAtMaxExposure.class, x->x.currentExp().get()==200);
+        post(MaxExposure.class, x->x.isAtMaxExposure());
     }
 }

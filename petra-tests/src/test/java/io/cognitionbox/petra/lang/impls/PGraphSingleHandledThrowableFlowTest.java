@@ -51,7 +51,7 @@ public class PGraphSingleHandledThrowableFlowTest extends BaseExecutionModesTest
     assertThat(result).isEqualTo(3);
   }
 
-  public static class MainLoop extends PGraph<Integer> {
+  public static class MainLoop extends PGraph<Integer,Integer> {
     {
       pre(rw(Integer.class, x->x==0));
       post(Petra.rt(Integer.class, x->x==3));
@@ -59,7 +59,7 @@ public class PGraphSingleHandledThrowableFlowTest extends BaseExecutionModesTest
     }
   }
 
-  public static class Nesting extends PGraph<Integer> {
+  public static class Nesting extends PGraph<Integer,Integer> {
     {
       pre(rw(Integer.class, x -> x == 0));
       post(Petra.rt(Integer.class, x->x==1 || x==3));
@@ -67,7 +67,7 @@ public class PGraphSingleHandledThrowableFlowTest extends BaseExecutionModesTest
     }
   }
 
-  public static class MainLoopWithDirectStepHandledThrowable extends PGraph<Integer> {
+  public static class MainLoopWithDirectStepHandledThrowable extends PGraph<Integer,Integer> {
     {
       pre(rw(Integer.class, x->x==0));
       post(Petra.rt(Integer.class, x->x==3));
@@ -75,7 +75,7 @@ public class PGraphSingleHandledThrowableFlowTest extends BaseExecutionModesTest
     }
   }
 
-  public static class NestingWithDirectStepHandledThrowable extends PGraph<Integer> {
+  public static class NestingWithDirectStepHandledThrowable extends PGraph<Integer,Integer> {
     {
       pre(rw(Integer.class, x -> x == 0));
       post(rt(Integer.class, x -> x == 3));
@@ -83,7 +83,7 @@ public class PGraphSingleHandledThrowableFlowTest extends BaseExecutionModesTest
     }
   }
 
-  public static class PlusOne extends PEdge<Integer> {
+  public static class PlusOne extends PEdge<Integer,Integer> {
    {
       pre(rw(Integer.class, x->x==0));
       post(Petra.rt(Integer.class, x->x==1 || x==3));

@@ -22,7 +22,7 @@ package io.cognitionbox.petra.examples.simple.compose;
 import io.cognitionbox.petra.lang.PEdge;
 import static io.cognitionbox.petra.util.Petra.*;
 
-public class CtoD extends PEdge<rwCD> {
+public class CtoD extends PEdge<roCD,rwCD> {
     {
        pre(rw(roCD.class, cd->true));
        func(cd->{

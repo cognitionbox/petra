@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 
-public abstract class StepTest<I> extends BaseExecutionModesTest {
+public abstract class StepTest<R,W extends R> extends BaseExecutionModesTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(StepTest.class);
     private static PGraphDotDiagramRendererImpl2 renderer;
@@ -59,33 +59,33 @@ public abstract class StepTest<I> extends BaseExecutionModesTest {
         stepFixture = new StepFixture(stepSupplier().get(),getExecMode());
     }
 
-    public static class EdgePGraph extends PGraph<Object> {
+    public static class EdgePGraph extends PGraph<Object,Object> {
         EdgePGraph(PEdge PEdge){
-            pre(rw(Object.class, x->true));
+            pre(Object.class, x->true);
             step(PEdge);
-            post(rt(Object.class, x->true));
+            post(Object.class, x->true);
         }
     }
 
-    public static class StepFixture<I> {
-        private AbstractStep<I> step;
-        private I in;
-        private I out;
+    public static class StepFixture<R,W extends R> {
+        private AbstractStep<R,W> step;
+        private R in;
+        private R out;
 
-        private void setInput(I in) {
+        private void setInput(R in) {
             this.in = in;
         }
 
-        private I getOutput() {
+        private R getOutput() {
             return out;
         }
 
-        private I getInput() {
+        private R getInput() {
             return in;
         }
 
         ExecMode execMode;
-        private StepFixture(AbstractStep<I> step, ExecMode execMode) {
+        private StepFixture(AbstractStep<R,W> step, ExecMode execMode) {
             this.step = step;
             this.execMode = execMode;
         }
@@ -93,17 +93,17 @@ public abstract class StepTest<I> extends BaseExecutionModesTest {
             if (step instanceof PGraph && execMode.isDIS()) {
                 PComputer computer;
                 computer = new PComputer<>();
-                out = (I) computer.eval((RGraph) step, in);
+                out = (R) computer.eval((RGraph) step, in);
                 computer.shutdown();
             } else if (step instanceof PEdge && execMode.isDIS()){
                 PComputer computer;
                 computer = new PComputer<>();
-                out = (I) computer.eval(new EdgePGraph((PEdge) step), in);
+                out = (R) computer.eval(new EdgePGraph((PEdge) step), in);
                 computer.shutdown();
             } else {
                 step.setInput(new Token(in));
                 try {
-                    out = step.call();
+                    out = (R) step.call();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -117,14 +117,14 @@ public abstract class StepTest<I> extends BaseExecutionModesTest {
             }
         }
     }
-    private StepFixture<I> stepFixture;
+    private StepFixture<R,W> stepFixture;
 
-    protected void setInput(I input){
+    protected void setInput(R input){
         stepFixture.setInput(input);
     }
 
-    private Predicate<? super I> expectation;
-    protected void setExpectation(Predicate<I> expectation){
+    private Predicate<R> expectation;
+    protected void setExpectation(Predicate<R> expectation){
         if (stepFixture.getInput()==null){
             throw new IllegalStateException("no input set!");
         }
@@ -132,7 +132,7 @@ public abstract class StepTest<I> extends BaseExecutionModesTest {
         stepFixture.execute();
     }
 
-    abstract Supplier<AbstractStep<I>> stepSupplier();
+    abstract Supplier<AbstractStep<R,W>> stepSupplier();
 
     public static int comp(String s1, String s2) {
         if (s1.contains("red") && !s2.contains("red")){
@@ -153,7 +153,7 @@ public abstract class StepTest<I> extends BaseExecutionModesTest {
 
     @After
     public void after(){
-        I out = stepFixture.getOutput();
+        R out = stepFixture.getOutput();
         if (out==null){
             fail("output is null");
         }

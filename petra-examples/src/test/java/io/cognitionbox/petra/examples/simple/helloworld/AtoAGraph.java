@@ -25,7 +25,7 @@ import static io.cognitionbox.petra.util.Petra.rw;
 import static io.cognitionbox.petra.util.Petra.rt;
 
 
-public class AtoAGraph extends PGraph<A> {
+public class AtoAGraph extends PGraph<A,A> {
     {
        pre(rw(A.class, x->true));
        step(new AtoA());

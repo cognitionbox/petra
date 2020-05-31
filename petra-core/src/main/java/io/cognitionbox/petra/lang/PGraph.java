@@ -15,9 +15,7 @@
  */
 package io.cognitionbox.petra.lang;
 
-import io.cognitionbox.petra.core.IStep;
-
-public class PGraph<I> extends RGraph<I, Object> {
+public class PGraph<R,W extends R> extends RGraph<R,W, Object> {
     public PGraph(String description, boolean isEffect) {
         super(description, isEffect);
     }

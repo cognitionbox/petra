@@ -9,7 +9,7 @@ import static io.cognitionbox.petra.util.Petra.*;
  * which means we only need to use the framework to create thread per parallel run,
  * as apposed to creating threads per deconstructed object.
  */
-public class DependancyGraph extends PGraph<X> {
+public class DependancyGraph extends PGraph<X,X> {
     {
        pre(rw(X.class, a->true));
        step(new AtoC());

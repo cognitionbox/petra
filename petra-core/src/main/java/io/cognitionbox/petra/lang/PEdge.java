@@ -42,11 +42,11 @@ import static io.cognitionbox.petra.lang.Void.vd;
 import static io.cognitionbox.petra.util.Petra.throwRandomException;
 
 
-public class PEdge<I> extends AbstractStep<I> implements Serializable {
+public class PEdge<R,W extends R> extends AbstractStep<R,W> implements Serializable {
 
     final static Logger LOG = LoggerFactory.getLogger(PEdge.class);
     protected boolean feedback = false;
-    private IFunction<I, I> function;
+    private IFunction<W, W> function;
     private io.cognitionbox.petra.core.impl.PEdgeRollbackHelper PEdgeRollbackHelper = new PEdgeRollbackHelper(100);
     private ObjectCopyerViaSerialization copyer = new ObjectCopyerViaSerialization();
     private List<Class<? extends Exception>> throwsRandomly = new ArrayList<>();
@@ -59,7 +59,7 @@ public class PEdge<I> extends AbstractStep<I> implements Serializable {
         super(description,isEffect);
     }
 
-    public PEdge(Guard<? super I> p, IFunction<I, I> function, GuardXOR<I> q) {
+    public PEdge(Guard<R> p, IFunction<W, W> function, GuardXOR<R> q) {
         this.p = p;
         this.function = function;
         this.q = q;
@@ -69,11 +69,11 @@ public class PEdge<I> extends AbstractStep<I> implements Serializable {
         return LoggerFactory.getLogger(this.getStepClazz());
     }
 
-    public IFunction<I, I> getFunction() {
+    public IFunction<W, W> getFunction() {
         return function;
     }
 
-    public PEdge<I> func(IFunction<I, I> function) {
+    public PEdge<R,W> func(IFunction<W, W> function) {
         this.function = function;
         return this;
     }
@@ -82,18 +82,18 @@ public class PEdge<I> extends AbstractStep<I> implements Serializable {
         this.PEdgeRollbackHelper = new PEdgeRollbackHelper(millisBeforeRetry);
     }
 
-    private void Lg_ALL_STATES(String desc, I value) {
+    private void Lg_ALL_STATES(String desc, W value) {
         if (RGraphComputer.getConfig().isAllStatesLoggingEnabled()) {
             LOG.info(desc + " " + RGraphComputer.getConfig().getMode() + " " + " " + this.getPartitionKey() + " " + " thread=" + Thread.currentThread().getId() + " -> " + value);
         }
     }
 
     @Override
-    public I call() {
-        I input = getInput().getValue();
+    public W call() {
+        W input = getInput().getValue();
         Lg_ALL_STATES("[Eg in]",input);
         if (!p().test(input)) {
-            return (I) input;
+            return (W) input;
         }
         Set<Class<?>> classesLockKey = null;
         try {
@@ -114,21 +114,21 @@ public class PEdge<I> extends AbstractStep<I> implements Serializable {
                 if (classesLockKey != null && !classesLockKey.isEmpty() && getEffectType().isPresent() && Exclusives.tryAquireExclusive(classesLockKey)) {
                     Exclusives.load(input, getEffectType().get());
                 } else {
-                    return (I) input;
+                    return (W) input;
                 }
             }
 
             PEdgeRollbackHelper.capture(input, this);
             boolean inputMatchesPostConditionBeforeRunning = q().test(input);
-            I res = null;
+            W res = null;
             if (RGraphComputer.getConfig().isDeadLockRecoveryActive()) {
                 final ExecutorService executor = Executors.newSingleThreadExecutor();
-                final Future<I> future = executor.submit(() -> {
+                final Future<W> future = executor.submit(() -> {
                     synchronized (this) { // memory-barrier to ensure all updates are visible before and after func is applied.
                         if (!isEffect() && RGraphComputer.getConfig().isDefensiveCopyAllInputsExceptForEffectedInputs()) {
-                            return (I) function.apply(copyer.copy(input));
+                            return (W) function.apply(copyer.copy(input));
                         } else {
-                            return (I) function.apply(input);
+                            return (W) function.apply(input);
                         }
                     }
                 });
@@ -138,14 +138,14 @@ public class PEdge<I> extends AbstractStep<I> implements Serializable {
             } else {
                 synchronized (this) { // memory-barrier to ensure all updates are visible before and after func is applied.
                     if (!isEffect() && RGraphComputer.getConfig().isDefensiveCopyAllInputsExceptForEffectedInputs()) {
-                        res = (I) function.apply(copyer.copy(input));
+                        res = (W) function.apply(copyer.copy(input));
                     } else {
-                        res = (I) function.apply(input);
+                        res = (W) function.apply(input);
                     }
                 }
             }
             if (res == null) {
-                return (I) vd;
+                return (W) vd;
             } else {
                 boolean postConditionOk = q().test(res) || (isFeedback() && p().test(res));
                 boolean isNotSideEffectAndDidChangeInput = !isEffect() && !p().test(input);
@@ -160,47 +160,47 @@ public class PEdge<I> extends AbstractStep<I> implements Serializable {
                 } else if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
 
                     if (inputMatchesPostConditionBeforeRunning) {
-                        return (I) new EdgeException(input, res, new PreConditionFailure());
+                        return (W) new EdgeException(input, res, new PreConditionFailure());
                     }
 
                     if (isNotSideEffectAndDidChangeInput) {
-                        return (I) new EdgeException(input, res, new IsNotSideEffectAndDidChangeInput());
+                        return (W) new EdgeException(input, res, new IsNotSideEffectAndDidChangeInput());
                     }
 
                     if (isSideEffectAndDidNotChangeInput) {
-                        return (I) new EdgeException(input, res, new IsSideEffectAndDidNotChangeInput());
+                        return (W) new EdgeException(input, res, new IsSideEffectAndDidNotChangeInput());
                     }
 
                     if (!postConditionOk) {
-                        return (I) new EdgeException(input, res, new PostConditionFailure());
+                        return (W) new EdgeException(input, res, new PostConditionFailure());
                     }
 
-                    return (I) new EdgeException(input, res, new UnknownEdgeFailure());
+                    return (W) new EdgeException(input, res, new UnknownEdgeFailure());
 
                 } else {
                     PEdgeRollbackHelper.rollback(input, this);
-                    return (I) input;
+                    return (W) input;
                 }
             }
         } catch (Exclusives.ExclusivesLoadException e) {
             LOG.error(this.getUniqueId(), e);
             if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
                 // required for Exhaust Petra to highlight errors
-                return (I) new EdgeException(input, null, e);
+                return (W) new EdgeException(input, null, e);
             } else {
                 // no rollback as load happens before input is transformed
-                return (I) input;
+                return (W) input;
             }
         } catch (Exception e) {
             LOG.error(this.getUniqueId(), e);
             if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
                 // required for Exhaust Petra to highlight errors
-                return (I) new EdgeException(input, null, e);
+                return (W) new EdgeException(input, null, e);
             } else {
                 // swallow exception in production so retry will be triggered
 
                 PEdgeRollbackHelper.rollback(input, this);
-                return (I) input;
+                return (W) input;
             }
         } finally {
             if (classesLockKey != null && !classesLockKey.isEmpty() && this.getEffectType().isPresent()) {// && this.p().getTypeClass().isAnnotationPresent(Exclusive.class)){
@@ -225,7 +225,7 @@ public class PEdge<I> extends AbstractStep<I> implements Serializable {
         return PEdge;
     }
 
-    public PEdge<I> throwsRandom(Class<? extends Exception> clazz) {
+    public PEdge<R,W> throwsRandom(Class<? extends Exception> clazz) {
         throwsRandomly.add(clazz);
         return this;
     }

@@ -20,6 +20,7 @@ package io.cognitionbox.petra.examples.tradingsystem;
 
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.examples.tradingsystem.objects.*;
+import io.cognitionbox.petra.examples.tradingsystem.steps.StateOk;
 import io.cognitionbox.petra.examples.tradingsystem.steps.TradingSystem;
 import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
@@ -54,7 +55,7 @@ public class TradingSystemMain extends BaseExecutionModesTest {
                         .setConstructionGuaranteeChecks(true)
                         .setStrictModeExtraConstructionGuarantee(true);
 
-        PComputer<State,State> lc = new PComputer();
+        PComputer<StateOk,State> lc = new PComputer();
 
         Feeds feeds = new Feeds();
         feeds.add(new RandomFeed(InstrumentId.DAX));
@@ -66,7 +67,7 @@ public class TradingSystemMain extends BaseExecutionModesTest {
         state.addTrader(new RandomTrader(TraderId.C, InstrumentId.FTSE));
         state.addTrader(new RandomTrader(TraderId.D, InstrumentId.DAX));
 
-        State output = lc.eval(new TradingSystem(), state);
+       StateOk output = lc.eval(new TradingSystem(), state);
 
         assertThat(output.currentExp().get()).isEqualTo(200);
     }

@@ -22,7 +22,7 @@ import io.cognitionbox.petra.lang.PEdge;
 
 import static io.cognitionbox.petra.util.Petra.*;
 
-public class AtoB extends PEdge<rwAB> {
+public class AtoB extends PEdge<roAB,rwAB> {
     {
        pre(rw(roAB.class, IAB ->true));
        func(ab ->{

@@ -26,7 +26,7 @@ import static io.cognitionbox.petra.util.Petra.rw;
 import static io.cognitionbox.petra.util.Petra.rt;
 
 
-public class AtoA extends PEdge<A> {
+public class AtoA extends PEdge<A,A> {
     {
        pre(rw(A.class, a->a.value.equals("")));
        func(a->{
