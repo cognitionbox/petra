@@ -25,6 +25,7 @@ import io.cognitionbox.petra.exceptions.conditions.PreConditionFailure;
 import io.cognitionbox.petra.exceptions.sideeffects.IsNotSideEffectAndDidChangeInput;
 import io.cognitionbox.petra.exceptions.sideeffects.IsSideEffectAndDidNotChangeInput;
 import io.cognitionbox.petra.util.function.IFunction;
+import io.cognitionbox.petra.util.function.IPredicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -233,5 +234,23 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
     @Override
     public boolean isDoesNotTerminate() {
         return false;
+    }
+
+    public void pc(GuardInput<X> p) {
+        setP(p);
+    }
+
+    public void pc(Class<X> p, IPredicate<X> predicate) {
+        setP(new GuardWrite(p, predicate));
+    }
+
+    public void qc(GuardReturn<X> q) {
+        returnType.addChoice(new Guard(q.getTypeClass(),q.predicate,OperationType.RETURN));
+        setQ(returnType);
+    }
+
+    public void qc(Class<X> p, IPredicate<X> predicate) {
+        returnType.addChoice(new Guard(p,predicate,OperationType.RETURN));
+        setQ(returnType);
     }
 }

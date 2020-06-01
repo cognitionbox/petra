@@ -19,21 +19,18 @@
 package io.cognitionbox.petra.examples.simple.paralleloop;
 
 import io.cognitionbox.petra.examples.simple.common.AB;
-import io.cognitionbox.petra.examples.simple.common.AB_Result;
 import io.cognitionbox.petra.examples.simple.common.IncrementA;
 import io.cognitionbox.petra.examples.simple.common.IncrementB;
 import io.cognitionbox.petra.lang.PGraph;
-import io.cognitionbox.petra.util.Petra;
 
-import static io.cognitionbox.petra.util.Petra.rw;
 import static io.cognitionbox.petra.util.Petra.rt;
 
 
 public class ABtoAB extends PGraph<AB> {
     {
-        pre(AB.class, x->true);
+        pi(AB.class, x->true);
         step(new IncrementA());
         step(new IncrementB());
-        post(AB.class, x->x.getA().value==10 && x.getB().value==10);
+        qi(AB.class, x->x.getA().value==10 && x.getB().value==10);
     }
 }

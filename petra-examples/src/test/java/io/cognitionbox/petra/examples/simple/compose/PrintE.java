@@ -19,21 +19,16 @@
 package io.cognitionbox.petra.examples.simple.compose;
 
 
-import io.cognitionbox.petra.examples.simple.common.E;
 import io.cognitionbox.petra.lang.PEdge;
-import io.cognitionbox.petra.lang.Void;
-
-import static io.cognitionbox.petra.lang.Void.vd;
-import static io.cognitionbox.petra.util.Petra.*;
 
 
 public class PrintE extends PEdge<rwE> {
     {
-       pre(rwE.class, e->true);
+       pc(rwE.class, e->true);
        func(e->{
             e.printMe();
             return e;
        });
-       post(rwE.class, e->true);
+       qc(rwE.class, e->true);
     }
 }

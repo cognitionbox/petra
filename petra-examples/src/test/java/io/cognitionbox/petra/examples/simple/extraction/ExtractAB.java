@@ -21,16 +21,14 @@ package io.cognitionbox.petra.examples.simple.extraction;
 
 import io.cognitionbox.petra.examples.simple.common.AB;
 import io.cognitionbox.petra.lang.PGraph;
-import io.cognitionbox.petra.lang.Void;
 
 import static io.cognitionbox.petra.util.Petra.rt;
-import static io.cognitionbox.petra.util.Petra.rw;
 
 public class ExtractAB extends PGraph<AB> {
    {
-       pre(AB.class, x->true);
+       pi(AB.class, x->true);
        step(new PrintA());
        step(new PrintB());
-       post(AB.class, x->true);
+       qi(AB.class, x->true);
     }
 }

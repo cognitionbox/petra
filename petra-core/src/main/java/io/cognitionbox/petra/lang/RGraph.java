@@ -962,7 +962,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
                 joins.get(iFinal).accept((Collection<IToken>) list, (RGraph) toWrite);
             });
         }
-        returnType.getChoices().forEach(q -> copy.post(new GuardReturn(q.getTypeClass(), q.predicate)));
+        returnType.getChoices().forEach(q -> copy.qi(new GuardReturn(q.getTypeClass(), q.predicate)));
         return copy;
     }
 
@@ -970,5 +970,23 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
     public X call() throws Exception {
         initInput();
         return executeMatchingLoopUntilPostCondition();
+    }
+
+    public void pi(GuardInput<X> p) {
+        setP(p);
+    }
+
+    public void pi(Class<X> p, IPredicate<X> predicate) {
+        setP(new GuardWrite(p, predicate));
+    }
+
+    public void qi(GuardReturn<X> q) {
+        returnType.addChoice(new Guard(q.getTypeClass(),q.predicate,OperationType.RETURN));
+        setQ(returnType);
+    }
+
+    public void qi(Class<X> p, IPredicate<X> predicate) {
+        returnType.addChoice(new Guard(p,predicate,OperationType.RETURN));
+        setQ(returnType);
     }
 }

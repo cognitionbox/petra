@@ -20,16 +20,14 @@ package io.cognitionbox.petra.examples.simple.compose;
 
 import io.cognitionbox.petra.lang.PEdge;
 
-import static io.cognitionbox.petra.util.Petra.*;
-
 
 public class PrintF extends PEdge<rwF> {
     {
-       pre(rwF.class, f->true);
+       pc(rwF.class, f->true);
        func(f->{
             f.printF();
             return f;
        });
-       post(rwF.class, f->true);
+       qc(rwF.class, f->true);
     }
 }

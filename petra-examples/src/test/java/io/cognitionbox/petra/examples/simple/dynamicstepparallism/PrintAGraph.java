@@ -21,16 +21,14 @@ package io.cognitionbox.petra.examples.simple.dynamicstepparallism;
 
 import io.cognitionbox.petra.examples.simple.extraction.PrintA;
 import io.cognitionbox.petra.lang.PGraph;
-import io.cognitionbox.petra.lang.Void;
 
 import static io.cognitionbox.petra.util.Petra.rt;
-import static io.cognitionbox.petra.util.Petra.rw;
 
 
 public class PrintAGraph extends PGraph<X> {
     {
-       pre(X.class, x->true);
+       pi(X.class, x->true);
        step(new PrintA());
-       post(X.class, x->true);
+       qi(X.class, x->true);
     }
 }

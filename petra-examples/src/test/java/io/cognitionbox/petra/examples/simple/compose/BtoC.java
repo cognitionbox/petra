@@ -19,17 +19,16 @@
 package io.cognitionbox.petra.examples.simple.compose;
 import io.cognitionbox.petra.lang.PEdge;
 
-import static io.cognitionbox.petra.util.Petra.rw;
 import static io.cognitionbox.petra.util.Petra.rt;
 
 
 public class BtoC extends PEdge<rwBC> {
     {
-       pre(rwBC.class, b ->true);
+       pc(rwBC.class, b ->true);
        func(b ->{
            b.c(new C());
            return b;
        });
-       post(rwBC.class, b->true);
+       qc(rwBC.class, b->true);
     }
 }

@@ -156,26 +156,4 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
 
     final GuardXOR<X> returnType = new GuardXOR<X>(OperationType.RETURN);
 
-    public void pre(GuardInput<X> p) {
-        setP(p);
-    }
-
-    public void pre(Class<X> p, IPredicate<X> predicate) {
-        setP(new GuardWrite(p, predicate));
-    }
-
-    public void post(GuardReturn<X> q) {
-        returnType.addChoice(new Guard(q.getTypeClass(),q.predicate,OperationType.RETURN));
-        setQ(returnType);
-    }
-
-    public void post(Class<X> p, IPredicate<X> predicate) {
-        returnType.addChoice(new Guard(p,predicate,OperationType.RETURN));
-        setQ(returnType);
-    }
-
-    public void postVoid() {
-        post(new GuardReturn(Void.class, x->true));
-    }
-
 }

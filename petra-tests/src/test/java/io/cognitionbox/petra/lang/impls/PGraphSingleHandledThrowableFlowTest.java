@@ -18,12 +18,10 @@ package io.cognitionbox.petra.lang.impls;
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.PGraph;
-import io.cognitionbox.petra.util.Petra;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import static io.cognitionbox.petra.util.Petra.rw;
 import static io.cognitionbox.petra.util.Petra.rt;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -53,40 +51,40 @@ public class PGraphSingleHandledThrowableFlowTest extends BaseExecutionModesTest
 
   public static class MainLoop extends PGraph<Integer> {
     {
-      pre(Integer.class, x->x==0);
-      post(Integer.class, x->x==3);
+      pi(Integer.class, x->x==0);
+      qi(Integer.class, x->x==3);
       step(new Nesting());
     }
   }
 
   public static class Nesting extends PGraph<Integer> {
     {
-      pre(Integer.class, x -> x == 0);
-      post(Integer.class, x->x==1 || x==3);
+      pi(Integer.class, x -> x == 0);
+      qi(Integer.class, x->x==1 || x==3);
       step(new PlusOne());
     }
   }
 
   public static class MainLoopWithDirectStepHandledThrowable extends PGraph<Integer> {
     {
-      pre(Integer.class, x->x==0);
-      post(Integer.class, x->x==3);
+      pi(Integer.class, x->x==0);
+      qi(Integer.class, x->x==3);
       step(new NestingWithDirectStepHandledThrowable());
     }
   }
 
   public static class NestingWithDirectStepHandledThrowable extends PGraph<Integer> {
     {
-      pre(Integer.class, x -> x == 0);
-      post(Integer.class, x -> x == 3);
+      pi(Integer.class, x -> x == 0);
+      qi(Integer.class, x -> x == 3);
       step(new PlusOne());
     }
   }
 
   public static class PlusOne extends PEdge<Integer> {
    {
-      pre(Integer.class, x->x==0);
-      post(Integer.class, x->x==1 || x==3);
+      pc(Integer.class, x->x==0);
+      qc(Integer.class, x->x==1 || x==3);
       func(x->{
         try {
           int y = 1/0;

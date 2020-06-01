@@ -20,19 +20,17 @@ package io.cognitionbox.petra.examples.simple.helloworld;
 
 
 import io.cognitionbox.petra.lang.PEdge;
-import io.cognitionbox.petra.util.Petra;
 
-import static io.cognitionbox.petra.util.Petra.rw;
 import static io.cognitionbox.petra.util.Petra.rt;
 
 
 public class AtoA extends PEdge<A> {
     {
-       pre(A.class, a->a.value.equals(""));
+       pc(A.class, a->a.value.equals(""));
        func(a->{
            a.value = "hello world.";
            return a;
        });
-       post(A.class, a->a.value.equals("hello world."));
+       qc(A.class, a->a.value.equals("hello world."));
     }
 }

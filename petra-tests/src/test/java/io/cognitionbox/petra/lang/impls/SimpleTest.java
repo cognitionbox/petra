@@ -56,19 +56,19 @@ public class SimpleTest extends BaseExecutionModesTest {
 
   public static class AtoA extends PEdge<A> {
     {
-      pre(rw(A.class, a->a.value==1));
+      pc(rw(A.class, a->a.value==1));
       func(a->{
         a.value = 222;
         return a;
       });
-      post(rt(A.class, a->a.value==222));
+      qc(rt(A.class, a->a.value==222));
     }
   }
 
   public static class g extends PGraph<A> {
     {
-      pre(A.class, a->a.value==1);
-      post(A.class, a->a.value==222);
+      pi(A.class, a->a.value==1);
+      qi(A.class, a->a.value==222);
       step(AtoA.class);
     }
   }

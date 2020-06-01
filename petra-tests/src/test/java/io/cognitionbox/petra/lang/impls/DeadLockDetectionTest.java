@@ -28,7 +28,6 @@ import org.junit.runners.Parameterized;
 import java.io.Serializable;
 import java.util.concurrent.TimeoutException;
 
-import static io.cognitionbox.petra.util.Petra.rw;
 import static io.cognitionbox.petra.util.Petra.rt;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -60,7 +59,7 @@ public class DeadLockDetectionTest extends BaseExecutionModesTest {
 
   public static class AtoA extends PEdge<A> {
     {
-      pre(A.class, a->a.value==1);
+      pc(A.class, a->a.value==1);
       func(a->{
         ThreadDemo1 T1 = new ThreadDemo1();
         ThreadDemo2 T2 = new ThreadDemo2();
@@ -76,15 +75,15 @@ public class DeadLockDetectionTest extends BaseExecutionModesTest {
         a.value = 222;
         return a;
       });
-      post(rt(A.class, a->a.value==222));
+      qc(rt(A.class, a->a.value==222));
     }
   }
 
   //@Effect
   public static class g extends PGraph<A> {
     {
-      pre(A.class, a->a.value==1);
-      post(A.class, a->a.value==222);
+      pi(A.class, a->a.value==1);
+      qi(A.class, a->a.value==222);
       step(AtoA.class);
     }
   }

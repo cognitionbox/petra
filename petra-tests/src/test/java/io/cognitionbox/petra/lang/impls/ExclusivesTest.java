@@ -45,7 +45,6 @@ import org.junit.runners.Parameterized;
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static io.cognitionbox.petra.util.Petra.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Ignore
@@ -79,8 +78,8 @@ public class ExclusivesTest extends BaseExecutionModesTest {
   @Feedback
   public static class AtoA extends PEdge<A> implements IRollback<A> {
     {
-      pre(A.class, a->a.integer.get()==0 || a.integer.get()!=10);
-      post(A.class, a->a.integer.get()==10);
+      pc(A.class, a->a.integer.get()==0 || a.integer.get()!=10);
+      qc(A.class, a->a.integer.get()==10);
       func(a->{
         a.integer.incrementAndGet();
         return a;
@@ -100,8 +99,8 @@ public class ExclusivesTest extends BaseExecutionModesTest {
 
   public static class g extends PGraph<A> {
     {
-      pre(A.class, a->a.integer.get()==0);
-      post(A.class, a->a.integer.get()==10);
+      pi(A.class, a->a.integer.get()==0);
+      qi(A.class, a->a.integer.get()==10);
       step(AtoA.class);
     }
   }

@@ -22,22 +22,20 @@ import io.cognitionbox.petra.core.IRollback;
 import io.cognitionbox.petra.examples.simple.forkjoin.GetA;
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.annotations.Feedback;
-import io.cognitionbox.petra.util.Petra;
 
-import static io.cognitionbox.petra.util.Petra.rw;
 import static io.cognitionbox.petra.util.Petra.rt;
 
 
 @Feedback
 public class IncrementA extends PEdge<GetA> implements IRollback<A> {
     {
-       pre(GetA.class, a->a.a().value<10);
+       pc(GetA.class, a->a.a().value<10);
        func(a->{
            a.a().value++;
             System.out.println("A="+a.a().value);
             return a;
        });
-       post(GetA.class, a->a.a().value==10);
+       qc(GetA.class, a->a.a().value==10);
     }
 
     @Override

@@ -1,16 +1,14 @@
 package io.cognitionbox.petra.examples.driverlesscars.steps;
 
-import io.cognitionbox.petra.examples.driverlesscars.SignalState;
 import io.cognitionbox.petra.examples.driverlesscars.Simlulation;
 import io.cognitionbox.petra.examples.driverlesscars.objects.car.Car;
 import io.cognitionbox.petra.lang.PEdge;
 
-import static io.cognitionbox.petra.util.Petra.forAll;
 import static io.cognitionbox.petra.util.Petra.thereExists;
 
 public class MoveCarIntoJunction extends PEdge<Simlulation> {
     {
-        pre(Simlulation.class, x->!x.carsInJunction() &&
+        pc(Simlulation.class, x->!x.carsInJunction() &&
                 thereExists(Car.class,x.getCars(),c->c.getSignal().isGREEN() &&
                 !x.carInJunction(c)));
         func(x->{
@@ -21,6 +19,6 @@ public class MoveCarIntoJunction extends PEdge<Simlulation> {
             System.out.println("getNoOfCarsInJunction = "+x.getNoOfCarsInJunction());
             return x;
         });
-        post(Simlulation.class,x->x.getCars().stream().filter(c->x.carInJunction(c)).count()==1);
+        qc(Simlulation.class, x->x.getCars().stream().filter(c->x.carInJunction(c)).count()==1);
     }
 }

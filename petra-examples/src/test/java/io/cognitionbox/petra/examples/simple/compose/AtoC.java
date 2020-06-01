@@ -21,14 +21,13 @@ package io.cognitionbox.petra.examples.simple.compose;
 import io.cognitionbox.petra.lang.PGraph;
 
 import static io.cognitionbox.petra.util.Petra.rt;
-import static io.cognitionbox.petra.util.Petra.rw;
 
 
 public class AtoC extends PGraph<rwABC> {
     {
-        pre(rwABC.class, a->true);
+        pi(rwABC.class, a->true);
         step(new BtoC());
         step(new AtoB());
-        post(rwABC.class, c->true);
+        qi(rwABC.class, c->true);
     }
 }

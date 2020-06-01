@@ -20,15 +20,13 @@ package io.cognitionbox.petra.examples.simple.compose;
 
 import io.cognitionbox.petra.lang.PEdge;
 
-import static io.cognitionbox.petra.util.Petra.*;
-
 public class AtoB extends PEdge<rwAB> {
     {
-       pre(rwAB.class, IAB ->true);
+       pc(rwAB.class, IAB ->true);
        func(ab ->{
            ab.b(new B());
            return ab;
        });
-       post(rwAB.class, IAB ->true);
+       qc(rwAB.class, IAB ->true);
     }
 }

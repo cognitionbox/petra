@@ -19,16 +19,14 @@
 package io.cognitionbox.petra.examples.simple.helloworld;
 
 import io.cognitionbox.petra.lang.PGraph;
-import io.cognitionbox.petra.util.Petra;
 
-import static io.cognitionbox.petra.util.Petra.rw;
 import static io.cognitionbox.petra.util.Petra.rt;
 
 
 public class AtoAGraph extends PGraph<A> {
     {
-       pre(A.class, x->true);
+       pi(A.class, x->true);
        step(new AtoA());
-       post(A.class, x->true);
+       qi(A.class, x->true);
     }
 }

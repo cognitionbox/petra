@@ -74,7 +74,7 @@ public class DeadLockRecoveryTest extends BaseExecutionModesTest {
 
   public static class AtoA extends PEdge<A> {
     {
-      pre(A.class, a->a.value==1);
+      pc(A.class, a->a.value==1);
       func(a->{
         if (Math.random()>0.2){
           ThreadDemo1 T1 = new ThreadDemo1();
@@ -90,14 +90,14 @@ public class DeadLockRecoveryTest extends BaseExecutionModesTest {
         }
         return new A(222);
       });
-      post(Petra.rt(A.class, a->a.value==222));
+      qc(Petra.rt(A.class, a->a.value==222));
     }
   }
 
   public static class g extends PGraph<A> {
     {
-      pre(rw(A.class, a->a.value==1));
-      post(rt(A.class, a->a.value==222));
+      pi(rw(A.class, a->a.value==1));
+      qi(rt(A.class, a->a.value==222));
       step(AtoA.class);
     }
   }
