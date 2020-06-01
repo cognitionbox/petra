@@ -100,6 +100,10 @@ public class Petra {
         return collection.stream().allMatch(predicate);
     }
 
+    public static <T> boolean thereExists(Class<T> eventClazz, Collection<? extends T> collection, IPredicate<T> predicate) {
+        return collection.stream().anyMatch(predicate);
+    }
+
     public static <T> GuardWrite<T> rw(Class<T> eventClazz, IPredicate<T> predicate) {
         return new GuardWrite<>(eventClazz, predicate);
     }
