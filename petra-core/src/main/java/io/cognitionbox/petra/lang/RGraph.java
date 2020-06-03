@@ -146,9 +146,9 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 //                }
 //            }
 //            if ((b && c)) {
-                if (p().getTypeClass().isAnnotationPresent(Extract.class)){
-                    deconstruct(getInput());
-                }
+//                if (p().getTypeClass().isAnnotationPresent(Extract.class)){
+//                    deconstruct(getInput());
+//                }
 //            }
 
             //De();
