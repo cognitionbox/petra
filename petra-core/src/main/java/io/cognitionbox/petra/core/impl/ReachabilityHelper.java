@@ -79,7 +79,7 @@ public class ReachabilityHelper {
     public void deconstruct(Set<Class<?>> resourceTypes, OperationType opp, Class<?> type, Set<Class<?>> types, int depth){
         deconstructImpl(resourceTypes, opp, type, types, depth);
         Extract ext = type.getAnnotation(Extract.class);
-        if (ext!=null && ext.keepRoot()){
+        if (ext!=null){
             addState(type,types);
         }
     }
@@ -117,7 +117,7 @@ public class ReachabilityHelper {
                             selectedClazz = (Class<?>) pt.getActualTypeArguments()[0];
                             deconstruct(resourceTypes,null,selectedClazz,types,depth+1);
                             Extract ext = m.getAnnotation(Extract.class);
-                            if (ext!=null && ext.keepRoot()){
+                            if (ext!=null){
                                 addState(type,types);
                             }
                         } else {
@@ -131,7 +131,7 @@ public class ReachabilityHelper {
                             }
                             deconstruct(resourceTypes,null,selectedClazz,types,depth+1);
                             Extract ext = m.getAnnotation(Extract.class);
-                            if (ext!=null && ext.keepRoot()){
+                            if (ext!=null){
                                 addState(type,types);
                             }
                         }

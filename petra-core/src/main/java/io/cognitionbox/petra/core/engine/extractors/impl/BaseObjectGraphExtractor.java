@@ -42,7 +42,7 @@ public abstract class BaseObjectGraphExtractor<E>  extends AbstractValueExtracto
                         AbstractRootValueExtractor extractor = new SequentialRootValueExtractor();
                         extractor.extractToPlace(new Token(field),place,extractedStore,extractIfMatches);
                         Extract ext = m.getAnnotation(Extract.class);
-                        if (ext!=null && ext.keepRoot()){
+                        if (ext!=null){
                             place.addValue(field);
                         }
                     } catch (InvocationTargetException e) {

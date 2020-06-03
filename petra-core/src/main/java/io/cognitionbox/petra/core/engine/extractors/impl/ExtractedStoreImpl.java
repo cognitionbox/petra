@@ -14,7 +14,7 @@ public class ExtractedStoreImpl extends Identifyable implements ExtractedStore {
     @Override
     public boolean isExtracted(IToken token) {
         Extract ext = token.getValue().getClass().getAnnotation(Extract.class);
-        boolean b = ext!=null && ext.mode()== Extract.Mode.ALWAYS;
+        boolean b = ext!=null;
         return extracted.containsKey(token.getUniqueId()) && !b;
     }
 

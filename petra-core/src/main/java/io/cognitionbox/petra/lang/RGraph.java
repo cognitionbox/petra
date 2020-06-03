@@ -934,7 +934,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         Extract extract = s.getValue().getClass().getAnnotation(Extract.class);
         rootValueExtractor.extractToPlace(s,place,extractedStore,extractIfMatches);
         Extract ext = s.getClass().getAnnotation(Extract.class);
-        if (ext!=null && ext.keepRoot() && !extractedStore.isExtracted(s)){
+        if (ext!=null && !extractedStore.isExtracted(s)){
             place.addValue(s.getValue());
         }
     }

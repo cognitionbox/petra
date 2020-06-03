@@ -23,10 +23,4 @@ import java.lang.annotation.*;
 @Inherited
 
 public @interface Extract {
-    boolean keepRoot() default false;
-    Mode mode() default Mode.ONCE;
-    enum Mode {
-        ONCE,
-        ALWAYS
-    }
 }
