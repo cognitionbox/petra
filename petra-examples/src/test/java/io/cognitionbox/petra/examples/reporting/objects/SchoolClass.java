@@ -1,8 +1,11 @@
 package io.cognitionbox.petra.examples.reporting.objects;
 
+import io.cognitionbox.petra.lang.annotations.Extract;
+
 import java.util.List;
 
-public class Class {
+@Extract
+public class SchoolClass {
     private Teacher teacher;
     private List<Pupil> pupils;
 
@@ -10,11 +13,11 @@ public class Class {
         return teacher;
     }
 
-    public List<Pupil> getPupils() {
+    @Extract public List<Pupil> getPupils() {
         return pupils;
     }
 
-    public Class(Teacher teacher, List<Pupil> pupils) {
+    public SchoolClass(Teacher teacher, List<Pupil> pupils) {
         this.teacher = teacher;
         this.pupils = pupils;
     }

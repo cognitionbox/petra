@@ -14,7 +14,15 @@ class X implements Serializable {
         this.value = value;
     }
 
-    Boolean value;
+    public Boolean value() {
+        return value;
+    }
+
+    public void value(Boolean value) {
+        this.value = value;
+    }
+
+    private Boolean value;
 
     public boolean isTrue(){
        return value==true;

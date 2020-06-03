@@ -6,10 +6,10 @@ import java.io.Serializable;
 
 @Extract
 class X implements Serializable {
-    Y y1;
-    Y y2;
-    @Extract public Y getY1() { return y1; }
-    @Extract public Y getY2() { return y2; }
+    private Y y1;
+    private Y y2;
+    @Extract public Y y1() { return y1; }
+    @Extract public Y y2() { return y2; }
 
     public X(State state) {
         y1 = new Y(state);

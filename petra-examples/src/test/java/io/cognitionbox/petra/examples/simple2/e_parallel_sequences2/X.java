@@ -5,8 +5,8 @@ import io.cognitionbox.petra.lang.annotations.Extract;
 import java.io.Serializable;
 
 class X implements Serializable {
-    Y y1;
-    Y y2;
+    private Y y1;
+    private Y y2;
 
     public X(State state) {
         y1 = new Y(state);

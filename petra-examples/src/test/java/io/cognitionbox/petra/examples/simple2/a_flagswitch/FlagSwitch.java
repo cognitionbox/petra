@@ -55,7 +55,7 @@ public class FlagSwitch extends BaseExecutionModesTest {
             {
                 pc(X.class, x -> x.isFalse());
                 func(x ->{
-                    x.value = true;
+                    x.value(true);
                     return x;
                 });
                 qc(X.class, x -> x.isTrue());
@@ -72,7 +72,7 @@ public class FlagSwitch extends BaseExecutionModesTest {
         }
 
         X output = new PComputer<X>().eval(new FlagGraph(),new X(false));
-        assertThat(output.value).isEqualTo(true);
+        assertThat(output.value()).isEqualTo(true);
 
     }
 }

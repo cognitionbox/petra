@@ -16,9 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with Petra.  If not, see <https://www.gnu.org/licenses/>.
  */
-package io.cognitionbox.petra.examples.tradingsystem;
+package io.cognitionbox.petra.examples.reporting;
 
 import io.cognitionbox.petra.config.ExecMode;
+import io.cognitionbox.petra.examples.reporting.objects.*;
+import io.cognitionbox.petra.examples.reporting.steps.ProcessSchool;
 import io.cognitionbox.petra.examples.tradingsystem.objects.*;
 import io.cognitionbox.petra.examples.tradingsystem.steps.StateOk;
 import io.cognitionbox.petra.examples.tradingsystem.steps.TradingSystem;
@@ -28,47 +30,31 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import java.util.Arrays;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
-public class TradingSystemMain extends BaseExecutionModesTest {
-    public TradingSystemMain(ExecMode execMode) {
+public class ReportingMain extends BaseExecutionModesTest {
+    public ReportingMain(ExecMode execMode) {
         super(execMode);
     }
-
-    /*
-     * Here we have a scalable algorithmic trading system which
-     * supports multiple parallel trading strategies.
-     *
-     * For this example we have 4 random traders, randomly buying or selling.
-     * Each trader is bound to a data feed, FTSE or DAX.
-     *
-     * The system works by polling the feeds for ticks every 5 seconds and
-     * produces a tick for each trading strategy. Each tick has a destination field
-     * and an instrument field so that the tick its consumed by the correct trader.
-     *
-     */
    @Test
    public void test() {
        PComputer.getConfig()
                .enableStatesLogging()
-                        .setConstructionGuaranteeChecks(true)
+                        .setConstructionGuaranteeChecks(false)
                         .setStrictModeExtraConstructionGuarantee(true);
 
-        PComputer<State> lc = new PComputer();
+       PComputer<School> lc = new PComputer();
 
-        Feeds feeds = new Feeds();
-        feeds.add(new RandomFeed(InstrumentId.DAX));
-        feeds.add(new RandomFeed(InstrumentId.FTSE));
-        State state = new State(feeds);
-
-        state.addTrader(new RandomTrader(TraderId.A, InstrumentId.FTSE));
-        state.addTrader(new RandomTrader(TraderId.B, InstrumentId.DAX));
-        state.addTrader(new RandomTrader(TraderId.C, InstrumentId.FTSE));
-        state.addTrader(new RandomTrader(TraderId.D, InstrumentId.DAX));
-
-       StateOk output = lc.eval(new TradingSystem(), state);
-
-        assertThat(output.currentExp().get()).isEqualTo(200);
+       Teacher teacher1 = new Teacher("Sam","Bloggs",31);
+       SchoolClass classA = new SchoolClass(teacher1, Arrays.asList(
+               new Pupil("Adam","Johnson",11),
+               new Pupil("Aobby","Jimbo",12)));
+       YearGroup year7 = new YearGroup(Arrays.asList(classA));
+       School school = new School(Arrays.asList(year7));
+       School output = lc.eval(new ProcessSchool(), school);
+       assertThat(output.getAverageScore()).isEqualTo(1);
     }
 }

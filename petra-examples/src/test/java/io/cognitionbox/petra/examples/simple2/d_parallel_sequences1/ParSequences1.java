@@ -55,7 +55,7 @@ public class ParSequences1 extends BaseExecutionModesTest {
             {
                 pc(Y.class, y -> y.isA() ^ y.isB());
                 func(y ->{
-                    y.state = State.values()[y.state.ordinal() + 1];
+                    y.state(State.values()[y.state().ordinal() + 1]);
                     return y;
                 });
                 qc(Y.class, y -> y.isB() ^ y.isC());
@@ -64,16 +64,16 @@ public class ParSequences1 extends BaseExecutionModesTest {
 
         class SeqGraph extends PGraph<X> {
             {
-                pi(X.class, x->x.y1.isABC() && x.y2.isABC());
-                lc(x -> (x.y1.isA() ^ x.y1.isB()) && (x.y2.isA() ^ x.y2.isB()));
+                pi(X.class, x->x.y1().isABC() && x.y2().isABC());
+                lc(x -> (x.y1().isA() ^ x.y1().isB()) && (x.y2().isA() ^ x.y2().isB()));
                 step(new SeqEdge());
-                qi(X.class, x->x.y1.isC() && x.y2.isC());
+                qi(X.class, x->x.y1().isC() && x.y2().isC());
             }
         }
 
         X output = new PComputer<X>().eval(new SeqGraph(),new X(State.A));
-        assertThat(output.y1.state).isEqualTo(State.C);
-        assertThat(output.y2.state).isEqualTo(State.C);
+        assertThat(output.y1().state()).isEqualTo(State.C);
+        assertThat(output.y2().state()).isEqualTo(State.C);
 
     }
 }

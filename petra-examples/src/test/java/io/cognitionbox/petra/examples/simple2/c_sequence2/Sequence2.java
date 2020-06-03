@@ -55,7 +55,7 @@ public class Sequence2 extends BaseExecutionModesTest {
             {
                 pc(X.class, x -> x.isA());
                 func(x ->{
-                    x.state = State.B;
+                    x.state(State.B);
                     return x;
                 });
                 qc(X.class, x -> x.isB());
@@ -65,7 +65,7 @@ public class Sequence2 extends BaseExecutionModesTest {
             {
                 pc(X.class, x ->x.isB());
                 func(x ->{
-                    x.state = State.C;
+                    x.state(State.C);
                     return x;
                 });
                 qc(X.class, x -> x.isC());
@@ -83,7 +83,7 @@ public class Sequence2 extends BaseExecutionModesTest {
         }
 
         X output = new PComputer<X>().eval(new SeqGraph(),new X(State.A));
-        assertThat(output.state).isEqualTo(State.C);
+        assertThat(output.state()).isEqualTo(State.C);
 
 
     }

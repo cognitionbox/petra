@@ -7,10 +7,11 @@ import io.cognitionbox.petra.lang.PGraph;
 import static io.cognitionbox.petra.util.Petra.forAll;
 import static io.cognitionbox.petra.util.Petra.thereExists;
 
-public class EndOfYearExams extends PGraph<Pupil> {
+public class ProcessExamResults extends PGraph<Pupil> {
     {
         pi(Pupil.class,p->p.firstNameStartsWithA());
-        lc(p->p.firstNameStartsWithA() && thereExists(Exam.class,p.getExams(),e->!e.isMarked()));
+        lc(p->p.firstNameStartsWithA() && forAll(Exam.class,p.getExams(),e->!e.isMarked()));
+        decon(Pupil.class);
         step(new ScoreAveraged());
         step(new MarkExam());
         qi(Pupil.class,p->p.hasAverage() && p.firstNameStartsWithA() && forAll(Exam.class,p.getExams(),e->e.isMarked()));

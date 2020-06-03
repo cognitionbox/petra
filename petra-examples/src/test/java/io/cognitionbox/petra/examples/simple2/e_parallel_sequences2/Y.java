@@ -12,7 +12,15 @@ public class Y {
         this.state = state;
     }
 
-    State state;
+    public State state() {
+        return state;
+    }
+
+    public void state(State state) {
+        this.state = state;
+    }
+
+    private State state;
 
     public boolean isA(){ return state== State.A; }
     public boolean isB(){ return state== State.B; }

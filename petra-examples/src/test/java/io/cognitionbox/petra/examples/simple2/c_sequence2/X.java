@@ -15,7 +15,15 @@ class X implements Serializable {
         this.state = state;
     }
 
-    State state;
+    private State state;
+
+    public State state() {
+        return state;
+    }
+
+    public void state(State state) {
+        this.state = state;
+    }
 
     public boolean isA(){ return state== State.A; }
     public boolean isB(){ return state== State.B; }

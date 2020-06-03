@@ -32,8 +32,8 @@ import static io.cognitionbox.petra.util.Petra.forAll;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
-public class ParSequences1 extends BaseExecutionModesTest {
-    public ParSequences1(ExecMode execMode) {
+public class ParSequences3 extends BaseExecutionModesTest {
+    public ParSequences3(ExecMode execMode) {
         super(execMode);
     }
     /*
