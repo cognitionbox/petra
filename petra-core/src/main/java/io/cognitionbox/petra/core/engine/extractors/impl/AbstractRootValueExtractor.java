@@ -50,21 +50,21 @@ public abstract class AbstractRootValueExtractor extends AbstractValueExtractor<
         if (value instanceof Ref) {
             return;
         }
-        if (isValueExtractable(value,extractedStore,extractIfMatches)) {
-            if (value.getValue() instanceof Map) {
-                mapExtractor.extractToPlace((IToken) value, place,extractedStore,extractIfMatches);
-            } else if (value.getValue() instanceof Collection) {
-                collectionExtractor.extractToPlace((IToken) value, place,extractedStore,extractIfMatches);
-            } else if (value.getValue() instanceof Iterable) {
-                iterableExtractor.extractToPlace((IToken) value, place,extractedStore,extractIfMatches);
-            } else {
-                objectGraphExtractor.extractToPlace(value, place, extractedStore,extractIfMatches);
-            }
-            extractedStore.markAsExtracted(value);
+        if (value.getValue() instanceof Map) {
+            mapExtractor.extractToPlace((IToken) value, place,extractedStore,extractIfMatches);
+        } else if (value.getValue() instanceof Collection) {
+            collectionExtractor.extractToPlace((IToken) value, place,extractedStore,extractIfMatches);
+        } else if (value.getValue() instanceof Iterable) {
+            iterableExtractor.extractToPlace((IToken) value, place,extractedStore,extractIfMatches);
         } else {
-            if (!extractedStore.isExtracted(value)){
-                place.addValue(value.getValue());
+            if (isValueExtractable(value,extractedStore,extractIfMatches)) {
+                objectGraphExtractor.extractToPlace(value, place, extractedStore,extractIfMatches);
+            } else {
+                if (!extractedStore.isExtracted(value)){
+                    place.addValue(value.getValue());
+                }
             }
         }
+        extractedStore.markAsExtracted(value);
     }
 }
