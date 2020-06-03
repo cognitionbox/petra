@@ -13,9 +13,10 @@ public class ExtractedStoreImpl extends Identifyable implements ExtractedStore {
     private Map<String,Boolean> extracted = new PMap<>();
     @Override
     public boolean isExtracted(IToken token) {
-        Extract ext = token.getValue().getClass().getAnnotation(Extract.class);
-        boolean b = ext!=null;
-        return extracted.containsKey(token.getUniqueId()) && !b;
+//        Extract ext = token.getValue().getClass().getAnnotation(Extract.class);
+//        boolean b = ext!=null;
+//        return extracted.containsKey(token.getUniqueId()) && !b;
+        return false;
     }
 
     @Override

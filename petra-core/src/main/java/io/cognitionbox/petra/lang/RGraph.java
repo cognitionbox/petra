@@ -49,6 +49,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static io.cognitionbox.petra.lang.Void.vd;
@@ -146,9 +147,10 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 //                }
 //            }
 //            if ((b && c)) {
-//                if (p().getTypeClass().isAnnotationPresent(Extract.class)){
-//                    deconstruct(getInput());
-//                }
+                place.reset();
+                //if (p().getTypeClass().isAnnotationPresent(Extract.class)){
+                    deconstruct(getInput());
+                //}
 //            }
 
             //De();
@@ -173,6 +175,13 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 
     public void step(IStep<?> computation) {
         addParallizable(computation);
+    }
+
+    private Set<Class<?>> deconstructable = new HashSet<>();
+    public  <T> void decon(Class<T>... types) {
+        deconstructable.addAll(Arrays.asList(types));
+        // allows the extract to happen in the graph, kind of like scoping.
+        // decons one level
     }
 
     private IPredicate<X> loopCondition = x->true;

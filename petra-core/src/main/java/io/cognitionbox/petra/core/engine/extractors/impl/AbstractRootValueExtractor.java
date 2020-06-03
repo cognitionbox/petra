@@ -59,6 +59,7 @@ public abstract class AbstractRootValueExtractor extends AbstractValueExtractor<
         } else {
             if (isValueExtractable(value,extractedStore,extractIfMatches)) {
                 objectGraphExtractor.extractToPlace(value, place, extractedStore,extractIfMatches);
+                place.addValue(value.getValue());
             } else {
                 if (!extractedStore.isExtracted(value)){
                     place.addValue(value.getValue());

@@ -19,6 +19,7 @@ import io.cognitionbox.petra.core.engine.extractors.ExtractedStore;
 import io.cognitionbox.petra.core.engine.extractors.MapExtractor;
 import io.cognitionbox.petra.core.engine.petri.IToken;
 import io.cognitionbox.petra.core.engine.petri.Place;
+import io.cognitionbox.petra.core.engine.petri.impl.Token;
 
 import java.util.Map;
 import java.util.function.Predicate;
@@ -27,6 +28,8 @@ public class MapExtractorImpl extends AbstractValueExtractor<Map> implements Map
 
     @Override
     public void extractToPlace(IToken<Map> value, Place place, ExtractedStore extractedStore, Predicate<IToken> extractIfMatches) {
-        value.getValue().entrySet().forEach(e->place.addValue(e));
+        value.getValue().entrySet().forEach(e->
+                //place.addValue(e)
+        new SequentialRootValueExtractor().extractToPlace(new Token(e),place,extractedStore,extractIfMatches));
     }
 }

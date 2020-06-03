@@ -19,6 +19,7 @@ import io.cognitionbox.petra.core.engine.extractors.CollectionExtractor;
 import io.cognitionbox.petra.core.engine.extractors.ExtractedStore;
 import io.cognitionbox.petra.core.engine.petri.IToken;
 import io.cognitionbox.petra.core.engine.petri.Place;
+import io.cognitionbox.petra.core.engine.petri.impl.Token;
 
 import java.util.Collection;
 import java.util.Map;
@@ -28,6 +29,8 @@ public class ParallelCollectionExtractor extends AbstractValueExtractor<Collecti
 
     @Override
     public void extractToPlace(IToken<Collection> collection, Place place, ExtractedStore extractedStore, Predicate<IToken> extractIfMatches) {
-        collection.getValue().parallelStream().forEach(e->place.addValue(e));
+        collection.getValue().parallelStream().forEach(e->
+        //        place.addValue(e)
+                new SequentialRootValueExtractor().extractToPlace(new Token(e),place,extractedStore,extractIfMatches));
     }
 }

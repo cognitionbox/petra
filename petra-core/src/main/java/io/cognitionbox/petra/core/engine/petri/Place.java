@@ -29,4 +29,5 @@ public interface Place {
     Collection<IToken> filterTokensByValue(IPredicate<Object> filter);
     Optional<IToken> findAny();
     boolean tokensMatchedByUniqueStepPreconditions(List<IStep> steps);
+    void reset();
 }

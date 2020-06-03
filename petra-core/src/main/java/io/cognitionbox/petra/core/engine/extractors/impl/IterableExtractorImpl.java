@@ -19,6 +19,7 @@ import io.cognitionbox.petra.core.engine.extractors.ExtractedStore;
 import io.cognitionbox.petra.core.engine.petri.IToken;
 import io.cognitionbox.petra.core.engine.extractors.IterableExtractor;
 import io.cognitionbox.petra.core.engine.petri.Place;
+import io.cognitionbox.petra.core.engine.petri.impl.Token;
 
 import java.util.function.Predicate;
 
@@ -27,7 +28,8 @@ public class IterableExtractorImpl extends AbstractValueExtractor<Iterable> impl
     @Override
     public void extractToPlace(IToken<Iterable> iterable, Place place, ExtractedStore extractedStore, Predicate<IToken> extractIfMatches) {
         for (Object e : iterable.getValue()){
-            place.addValue(e);
+            new SequentialRootValueExtractor().extractToPlace(new Token(e),place,extractedStore,extractIfMatches);
+            //place.addValue(e);
         }
     }
 }

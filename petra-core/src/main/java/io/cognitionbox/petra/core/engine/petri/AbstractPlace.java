@@ -32,6 +32,10 @@ public abstract class AbstractPlace<M extends Map<String,IToken>> extends Identi
         super(name);
     }
 
+    public void reset(){
+        getBackingMap().clear();
+    }
+
     private Lock tokensLock = new PLock();
 
     private <T> T tryLockThenRunnableFinallyUnlock(Supplier<T> supplier) {
