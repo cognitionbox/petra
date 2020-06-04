@@ -53,26 +53,27 @@ public class FlagSwitch extends BaseExecutionModesTest {
 
         class FlagEdge extends PEdge<X> {
             {
-                pc(X.class, x -> x.isFalse());
+                pc(X.class, x -> x.value==false);
                 func(x ->{
-                    x.value(true);
+                    x.value=true;
                     return x;
                 });
-                qc(X.class, x -> x.isTrue());
+                qc(X.class, x -> x.value==true);
             }
         }
 
         class FlagGraph extends PGraph<X> {
             {
-                pi(X.class, x -> x.isTrueOrFalse());
-                lc(x -> x.isFalse());
+                pi(X.class, x -> x.value==true ^ x.value==false);
+                lc(x -> x.value==false);
                 step(new FlagEdge());
-                qi(X.class, x -> x.isTrue());
+                qi(X.class, x -> x.value==true);
             }
         }
 
         X output = new PComputer<X>().eval(new FlagGraph(),new X(false));
-        assertThat(output.value()).isEqualTo(true);
+
+        assertThat(output.value).isEqualTo(true);
 
     }
 }

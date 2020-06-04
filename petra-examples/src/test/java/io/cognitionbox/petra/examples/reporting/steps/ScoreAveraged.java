@@ -9,11 +9,12 @@ import static io.cognitionbox.petra.util.Petra.thereExists;
 
 public class ScoreAveraged extends PEdge<Pupil> {
     {
-        pc(Pupil.class, p -> (!p.hasAverage() ^ p.hasAverage()) && p.firstNameStartsWithA() && forAll(Exam.class, p.getExams(), e -> e.isMarked()));
+        pc(Pupil.class, p -> !p.hasAverage() &&
+                forAll(Exam.class, p.getExams(), e -> e.isMarked()));
         func(p -> {
             p.setAverage(p.getExams().stream().mapToDouble(e -> e.getResult()).average().getAsDouble());
             return p;
         });
-        qc(Pupil.class, p -> p.hasAverage() && p.firstNameStartsWithA() && forAll(Exam.class, p.getExams(), e -> e.isMarked()));
+        qc(Pupil.class, p -> p.hasAverage());
     }
 }

@@ -26,7 +26,7 @@ public class Person {
         return age;
     }
 
-    public boolean firstNameStartsWithA(){
-        return getFirstName().startsWith("A");
-    }
+//    public boolean firstNameStartsWithA(){
+//        return getFirstName().startsWith("A");
+//    }
 }

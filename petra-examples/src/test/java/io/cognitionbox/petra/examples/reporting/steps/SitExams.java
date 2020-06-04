@@ -8,13 +8,13 @@ import static io.cognitionbox.petra.util.Petra.forAll;
 
 public class SitExams extends PEdge<Pupil> {
     {
-        pc(Pupil.class,p->p.firstNameStartsWithA() && p.getExams().isEmpty());
+        pc(Pupil.class,p->p.getExams().isEmpty());
         func(p->{
             p.sitExam(new Exam());
             p.sitExam(new Exam());
             p.sitExam(new Exam());
             return p;
         });
-        qc(Pupil.class,p->p.firstNameStartsWithA() && !p.getExams().isEmpty());
+        qc(Pupil.class,p->!p.getExams().isEmpty());
     }
 }
