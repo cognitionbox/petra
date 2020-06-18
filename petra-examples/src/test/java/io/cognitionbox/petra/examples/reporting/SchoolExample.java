@@ -35,8 +35,8 @@ import java.util.Arrays;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
-public class ReportingMain extends BaseExecutionModesTest {
-    public ReportingMain(ExecMode execMode) {
+public class SchoolExample extends BaseExecutionModesTest {
+    public SchoolExample(ExecMode execMode) {
         super(execMode);
     }
    @Test
@@ -54,7 +54,10 @@ public class ReportingMain extends BaseExecutionModesTest {
                new Pupil("Aobby","Jimbo",12)));
        YearGroup year7 = new YearGroup(Arrays.asList(classA));
        School school = new School(Arrays.asList(year7));
+
+
        School output = lc.eval(new ProcessSchool(), school);
+
        assertThat(output.getAverageScore()).isEqualTo(1);
     }
 }

@@ -5,8 +5,7 @@ import io.cognitionbox.petra.lang.annotations.Extract;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.cognitionbox.petra.util.Petra.forAll;
-import static io.cognitionbox.petra.util.Petra.ref;
+import static io.cognitionbox.petra.util.Petra.*;
 
 @Extract
 public class School {
@@ -20,12 +19,24 @@ public class School {
         this.yearGroups = yearGroups;
     }
 
-    public boolean isProcessed(){
+    public boolean hasPupils(){
+        return thereExists(YearGroup.class,getYearGroups(),yearGroup -> {
+            return thereExists(SchoolClass.class,yearGroup.getSchoolClasses(),schoolClass -> {
+                return !schoolClass.getPupils().isEmpty();
+            });
+        });
+    }
+
+    public boolean allPupilsHaveAverage(){
         return forAll(YearGroup.class,getYearGroups(),yearGroup -> {
             return forAll(SchoolClass.class,yearGroup.getSchoolClasses(),schoolClass -> {
                 return forAll(Pupil.class,schoolClass.getPupils(),p->p.hasAverage());
             });
         });
+    }
+
+    public boolean notAllPupilsHaveAverage(){
+        return !allPupilsHaveAverage();
     }
 
     public Double getAverageScore(){

@@ -25,6 +25,10 @@ public class Pupil extends Person {
         return this.average!=null;
     }
 
+    public boolean hasNoAverage(){
+        return !hasAverage();
+    }
+
     public void sitExam(Exam exam){
         exams.add(exam);
     }
@@ -38,5 +42,13 @@ public class Pupil extends Person {
                 "exams=" + exams +
                 ", average=" + average +
                 '}';
+    }
+
+    public boolean takenNoExams() {
+        return getExams().isEmpty();
+    }
+
+    public boolean takenExams() {
+        return !getExams().isEmpty();
     }
 }

@@ -8,10 +8,10 @@ public class ProcessSchool extends PGraph<School> {
         // we need the pre-invariant set to contain the post-invariant set so we can
         // set safety properties that are always checked
 
-        pi(School.class, p->!p.isProcessed() ^ p.isProcessed());
-        lc(p->!p.isProcessed());
+        pi(School.class, p->p.hasPupils());
+        lc(p->p.notAllPupilsHaveAverage());
         step(new ProcessExamResults());
         step(new SitExams());
-        qi(School.class,p->p.isProcessed());
+        qi(School.class,p->p.allPupilsHaveAverage());
     }
 }
