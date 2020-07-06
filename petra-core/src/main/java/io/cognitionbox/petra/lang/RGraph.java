@@ -172,6 +172,40 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 //        addParallizable(computation);
 //    }
 
+
+
+    private List<Forall> foralls = new ArrayList<>();
+    public <P> void step(IFunction<X,Iterable<P>> iterableTransformer, IStep<P> step){
+        foralls.add(new Forall(iterableTransformer, (AbstractStep) step));
+    }
+
+    private void prepareForalls(){
+        for (Forall<X,?> f : foralls){
+            boolean ok = true;
+            Iterable<?> iterable = f.getIterableTransformer().apply(getInput().getValue());
+            for(Object o : iterable){
+                if (!f.getStep().p().test(o)){
+                    ok = false;
+                    break;
+                }
+            }
+            iterable = f.getIterableTransformer().apply(getInput().getValue());
+            // if all match run steps against the elements
+            if (ok){
+                for(Object o : iterable){
+                    try {
+                        f.getStep().setInput(new Token(o));
+                        AbstractStep copy = f.getStep().copy();
+                        copy.setInput(new Token(o));
+                        collectCallable(new StepCallable(this,copy), callables);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
     public void step(IStep<?> computation) {
         addParallizable(computation);
     }
@@ -406,6 +440,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 
     private void matchComputationsToStatesAndExecute(List<IStep> steps) {
         callables.clear();
+        prepareForalls();
         for (int index = 0; index < steps.size(); index = index + 1) {
             IStep c = steps.get(index);
             for (Object token : place.filterTokensByValue(c.p())) {
@@ -962,6 +997,9 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         // copy steps
         for (IStep edge : parallizable) {
             copy.step(edge);
+        }
+        for (Forall forall : foralls) {
+            copy.foralls.add(forall);
         }
         // copy joins one by one as with the steps above
         for (int i = 0; i < joins.size(); i++) {

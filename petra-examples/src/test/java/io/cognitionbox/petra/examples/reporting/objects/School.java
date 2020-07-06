@@ -3,11 +3,13 @@ package io.cognitionbox.petra.examples.reporting.objects;
 import io.cognitionbox.petra.lang.annotations.Extract;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static io.cognitionbox.petra.util.Petra.*;
 
-@Extract
+//@Extract
 public class School {
     @Extract public List<YearGroup> getYearGroups() {
         return yearGroups;
@@ -35,14 +37,20 @@ public class School {
         });
     }
 
-    public boolean notAllPupilsHaveAverage(){
-        return !allPupilsHaveAverage();
-    }
-
     public Double getAverageScore(){
         return getYearGroups().stream()
                 .flatMap(y->y.getSchoolClasses().stream())
                 .flatMap(y->y.getPupils().stream())
                 .mapToDouble(p->p.getAverage()).average().getAsDouble();
+    }
+
+    private Collection<Pupil> cached = null;
+    public Collection<Pupil> getAllPupils() {
+        if (cached==null){
+            cached = getYearGroups().stream()
+                    .flatMap(y->y.getSchoolClasses().stream())
+                    .flatMap(sc->sc.getPupils().stream()).collect(Collectors.toList());
+        }
+        return cached;
     }
 }

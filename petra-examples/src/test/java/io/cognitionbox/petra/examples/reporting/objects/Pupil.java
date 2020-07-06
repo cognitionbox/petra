@@ -5,7 +5,7 @@ import io.cognitionbox.petra.lang.annotations.Extract;
 import java.util.ArrayList;
 import java.util.List;
 
-@Extract
+//@Extract
 public class Pupil extends Person {
     public Pupil(String firstName, String sirName, Integer age) {
         super(firstName, sirName, age);
