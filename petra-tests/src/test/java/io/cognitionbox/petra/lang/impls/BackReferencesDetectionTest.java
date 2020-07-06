@@ -90,16 +90,18 @@ public class BackReferencesDetectionTest extends BaseExecutionModesTest {
 
   public static class AtoA extends PEdge<A> {
     {
-      pc(A.class, x->true);
+      type(A.class);
+      pc(x->true);
       func(a->new A(222));
-      qc(A.class, x->true);
+      qc(x->true);
     }
   }
 
   public static class g extends PGraph<A> {
     {
-      pc(A.class, x->true);
-      qc(A.class, x->true);
+      type(A.class);
+      pc(x->true);
+      qc(x->true);
       step(AtoA.class);
     }
   }

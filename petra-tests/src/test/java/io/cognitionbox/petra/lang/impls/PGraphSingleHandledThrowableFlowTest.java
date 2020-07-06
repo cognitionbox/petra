@@ -51,40 +51,45 @@ public class PGraphSingleHandledThrowableFlowTest extends BaseExecutionModesTest
 
   public static class MainLoop extends PGraph<Integer> {
     {
-      pc(Integer.class, x->x==0);
-      qc(Integer.class, x->x==3);
+      type(Integer.class);
+      pc(x->x==0);
+      qc(x->x==3);
       step(new Nesting());
     }
   }
 
   public static class Nesting extends PGraph<Integer> {
     {
-      pc(Integer.class, x -> x == 0);
-      qc(Integer.class, x->x==1 || x==3);
+      type(Integer.class);
+      pc(x -> x == 0);
+      qc(x->x==1 || x==3);
       step(new PlusOne());
     }
   }
 
   public static class MainLoopWithDirectStepHandledThrowable extends PGraph<Integer> {
     {
-      pc(Integer.class, x->x==0);
-      qc(Integer.class, x->x==3);
+      type(Integer.class);
+      pc(x->x==0);
+      qc(x->x==3);
       step(new NestingWithDirectStepHandledThrowable());
     }
   }
 
   public static class NestingWithDirectStepHandledThrowable extends PGraph<Integer> {
     {
-      pc(Integer.class, x -> x == 0);
-      qc(Integer.class, x -> x == 3);
+      type(Integer.class);
+      pc(x -> x == 0);
+      qc(x -> x == 3);
       step(new PlusOne());
     }
   }
 
   public static class PlusOne extends PEdge<Integer> {
    {
-      pc(Integer.class, x->x==0);
-      qc(Integer.class, x->x==1 || x==3);
+      type(Integer.class);
+      pc(x->x==0);
+      qc(x->x==1 || x==3);
       func(x->{
         try {
           int y = 1/0;

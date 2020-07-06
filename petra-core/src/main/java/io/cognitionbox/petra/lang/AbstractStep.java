@@ -156,4 +156,9 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
 
     final GuardXOR<X> returnType = new GuardXOR<X>(OperationType.RETURN);
 
+    Class<X> type = null;
+
+    public void type(Class<X> type) {
+        this.type = type;
+    }
 }

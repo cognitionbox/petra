@@ -28,9 +28,10 @@ import static io.cognitionbox.petra.util.Petra.rt;
 
 public class ABtoAB extends PGraph<AB> {
     {
-        pc(AB.class, x->true);
+        type(AB.class);
+        pc(x->true);
         step(new IncrementA());
         step(new IncrementB());
-        qc(AB.class, x->x.getA().value==10 && x.getB().value==10);
+        qc(x->x.getA().value==10 && x.getB().value==10);
     }
 }

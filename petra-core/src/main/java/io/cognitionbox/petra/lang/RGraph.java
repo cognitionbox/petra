@@ -1022,8 +1022,8 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         setP(p);
     }
 
-    public void pc(Class<X> p, IPredicate<X> predicate) {
-        setP(new GuardWrite(p, predicate));
+    public void pc(IPredicate<X> predicate) {
+        setP(new GuardWrite(type, predicate));
     }
 
     public void qc(GuardReturn<X> q) {
@@ -1031,8 +1031,8 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         setQ(returnType);
     }
 
-    public void qc(Class<X> p, IPredicate<X> predicate) {
-        returnType.addChoice(new Guard(p,predicate,OperationType.RETURN));
+    public void qc(IPredicate<X> predicate) {
+        returnType.addChoice(new Guard(type,predicate,OperationType.RETURN));
         setQ(returnType);
     }
 }

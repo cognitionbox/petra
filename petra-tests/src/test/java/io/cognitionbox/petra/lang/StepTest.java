@@ -60,9 +60,10 @@ public abstract class StepTest<X> extends BaseExecutionModesTest {
 
     public static class EdgePGraph extends PGraph<Object> {
         EdgePGraph(PEdge PEdge){
-            pc(Object.class, x->true);
+            type(Object.class);
+            pc(x->true);
             step(PEdge);
-            qc(Object.class, x->true);
+            qc(x->true);
         }
     }
 

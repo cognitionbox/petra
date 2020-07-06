@@ -27,11 +27,12 @@ import static io.cognitionbox.petra.util.Petra.rt;
 
 public class PrintB extends PEdge<B> {
     {
-       pc(B.class, b->true);
+       type(B.class);
+       pc(b->true);
        func(b->{
            System.out.println(b.getClass().getSimpleName());
            return b;
         });
-       qc(B.class, b->true);
+       qc(b->true);
     }
 }

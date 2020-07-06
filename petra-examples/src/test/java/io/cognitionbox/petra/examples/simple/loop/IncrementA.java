@@ -27,13 +27,14 @@ import static io.cognitionbox.petra.util.Petra.rt;
 @Feedback
 public class IncrementA extends PEdge<A> implements IRollback<A> {
     {
-       pc(A.class, a->a.value<10);
+       type(A.class);
+       pc(a->a.value<10);
        func(a->{
             a.value++;
             System.out.println("A="+a.value);
             return a;
        });
-       qc(A.class, a->a.value==10);
+       qc(a->a.value==10);
     }
 
     @Override

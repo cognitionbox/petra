@@ -25,8 +25,9 @@ import static io.cognitionbox.petra.util.Petra.rt;
 
 public class AtoA extends PGraph<A> {
     {
-        pc(A.class, a->a.value<10);
+        type(A.class);
+        pc(a->a.value<10);
         step(new IncrementA());
-        qc(A.class, a->a.value==10);
+        qc(a->a.value==10);
     }
 }

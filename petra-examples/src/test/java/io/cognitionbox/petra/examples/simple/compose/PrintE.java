@@ -24,11 +24,12 @@ import io.cognitionbox.petra.lang.PEdge;
 
 public class PrintE extends PEdge<rwE> {
     {
-       pc(rwE.class, e->true);
+       type(rwE.class);
+       pc(e->true);
        func(e->{
             e.printMe();
             return e;
        });
-       qc(rwE.class, e->true);
+       qc(e->true);
     }
 }

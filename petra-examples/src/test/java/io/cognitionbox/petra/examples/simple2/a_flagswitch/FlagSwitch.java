@@ -53,21 +53,23 @@ public class FlagSwitch extends BaseExecutionModesTest {
 
         class FlagEdge extends PEdge<X> {
             {
-                pc(X.class, x -> x.value==false);
+                type(X.class);
+                pc(x -> x.value==false);
                 func(x ->{
                     x.value=true;
                     return x;
                 });
-                qc(X.class, x -> x.value==true);
+                qc(x -> x.value==true);
             }
         }
 
         class FlagGraph extends PGraph<X> {
             {
+                type(X.class);
                 gi(x -> x.value==true ^ x.value==false);
-                pc(X.class, x -> x.value==false);
+                pc(x -> x.value==false);
                 step(new FlagEdge());
-                qc(X.class, x -> x.value==true);
+                qc(x -> x.value==true);
             }
         }
 

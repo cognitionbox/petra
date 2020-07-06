@@ -7,11 +7,12 @@ import static io.cognitionbox.petra.util.Petra.forAll;
 
 public class AverageScores extends PEdge<Pupil> {
     {
-        pc(Pupil.class, p -> p.hasNoAverage() && forAll(Exam.class, p.getExams(), e -> e.isMarked()));
+        type(Pupil.class);
+        pc(p -> p.hasNoAverage() && forAll(Exam.class, p.getExams(), e -> e.isMarked()));
         func(p -> {
             p.setAverage(p.getExams().stream().mapToDouble(e -> e.getResult()).average().getAsDouble());
             return p;
         });
-        qc(Pupil.class, p -> p.hasAverage());
+        qc(p -> p.hasAverage());
     }
 }
