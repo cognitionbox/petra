@@ -23,11 +23,11 @@ import io.cognitionbox.petra.lang.PEdge;
 public class AtoB extends PEdge<rwAB> {
     {
        type(rwAB.class);
-       pc(IAB ->true);
+       pre(IAB ->true);
        func(ab ->{
            ab.b(new B());
            return ab;
        });
-       qc(IAB ->true);
+       post(IAB ->true);
     }
 }

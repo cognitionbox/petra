@@ -27,11 +27,11 @@ import static io.cognitionbox.petra.util.Petra.rt;
 public class AtoA extends PEdge<A> {
     {
        type(A.class);
-       pc(a->a.value.equals(""));
+       pre(a->a.value.equals(""));
        func(a->{
            a.value = "hello world.";
            return a;
        });
-       qc(a->a.value.equals("hello world."));
+       post(a->a.value.equals("hello world."));
     }
 }

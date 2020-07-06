@@ -26,9 +26,9 @@ import static io.cognitionbox.petra.util.Petra.rt;
 public class AtoC extends PGraph<rwABC> {
     {
         type(rwABC.class);
-        pc(a->true);
+        pre(a->true);
         step(new BtoC());
         step(new AtoB());
-        qc(c->true);
+        post(c->true);
     }
 }

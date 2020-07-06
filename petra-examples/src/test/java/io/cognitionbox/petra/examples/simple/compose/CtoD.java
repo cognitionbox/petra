@@ -24,11 +24,11 @@ import io.cognitionbox.petra.lang.PEdge;
 public class CtoD extends PEdge<rwCD> {
     {
        type(rwCD.class);
-       pc(cd->true);
+       pre(cd->true);
        func(cd->{
            cd.d(new D(new E(),new F()));
            return cd;
        });
-       qc(d->true);
+       post(d->true);
     }
 }

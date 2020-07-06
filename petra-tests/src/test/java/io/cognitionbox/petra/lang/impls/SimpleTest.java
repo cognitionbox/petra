@@ -26,7 +26,6 @@ import org.junit.runners.Parameterized;
 import java.io.Serializable;
 
 import static io.cognitionbox.petra.util.Petra.rt;
-import static io.cognitionbox.petra.util.Petra.rw;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
@@ -57,20 +56,20 @@ public class SimpleTest extends BaseExecutionModesTest {
   public static class AtoA extends PEdge<A> {
     {
       type(A.class);
-      pc(a->a.value==1);
+      pre(a->a.value==1);
       func(a->{
         a.value = 222;
         return a;
       });
-      qc(a->a.value==222);
+      post(a->a.value==222);
     }
   }
 
   public static class g extends PGraph<A> {
     {
       type(A.class);
-      pc(a->a.value==1);
-      qc(a->a.value==222);
+      pre(a->a.value==1);
+      post(a->a.value==222);
       step(AtoA.class);
     }
   }

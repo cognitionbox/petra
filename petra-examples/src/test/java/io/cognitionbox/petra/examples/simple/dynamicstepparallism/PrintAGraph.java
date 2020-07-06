@@ -28,8 +28,8 @@ import static io.cognitionbox.petra.util.Petra.rt;
 public class PrintAGraph extends PGraph<X> {
     {
        type(X.class);
-       pc(x->true);
+       pre(x->true);
        step(new PrintA());
-       qc(x->true);
+       post(x->true);
     }
 }

@@ -19,7 +19,6 @@
 package io.cognitionbox.petra.examples.simple.autoretry;
 
 import io.cognitionbox.petra.core.IRollback;
-import io.cognitionbox.petra.examples.simple.common.A;
 import io.cognitionbox.petra.examples.simple.common.B;
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.annotations.Feedback;
@@ -30,7 +29,7 @@ import static io.cognitionbox.petra.util.Petra.rt;
 public class IncrementB extends PEdge<B> implements IRollback<B> {
     {
        type(B.class);
-       pc(a->a.value<10);
+       pre(a->a.value<10);
        func(b->{
             if (Math.random()>=0.5){
                 throw new IllegalStateException();
@@ -39,7 +38,7 @@ public class IncrementB extends PEdge<B> implements IRollback<B> {
             System.out.println("B="+b.value);
             return b;
         });
-        qc(b->b.value==10);
+        post(b->b.value==10);
     }
 
     @Override

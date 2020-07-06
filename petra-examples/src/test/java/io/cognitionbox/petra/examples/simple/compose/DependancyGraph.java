@@ -11,11 +11,11 @@ import io.cognitionbox.petra.lang.PGraph;
 public class DependancyGraph extends PGraph<X> {
     {
        type(X.class);
-       pc(a->true);
+       pre(a->true);
        step(new AtoC());
        step(new PrintF());
        step(new CtoD());
        step(new PrintE());
-       qc(a->true);
+       post(a->true);
     }
 }

@@ -9,7 +9,7 @@ import static io.cognitionbox.petra.util.Petra.thereExists;
 public class MoveCarIntoJunction extends PEdge<Simlulation> {
     {
         type(Simlulation.class);
-        pc(x->!x.carsInJunction() &&
+        pre(x->!x.carsInJunction() &&
                 thereExists(Car.class,x.getCars(),c->c.getSignal().isGREEN() &&
                 !x.carInJunction(c)));
         func(x->{
@@ -20,6 +20,6 @@ public class MoveCarIntoJunction extends PEdge<Simlulation> {
             System.out.println("getNoOfCarsInJunction = "+x.getNoOfCarsInJunction());
             return x;
         });
-        qc(x->x.getCars().stream().filter(c->x.carInJunction(c)).count()==1);
+        post(x->x.getCars().stream().filter(c->x.carInJunction(c)).count()==1);
     }
 }

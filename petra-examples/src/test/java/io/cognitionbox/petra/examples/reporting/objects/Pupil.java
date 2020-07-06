@@ -44,10 +44,6 @@ public class Pupil extends Person {
                 '}';
     }
 
-    public boolean takenNoExams() {
-        return getExams().isEmpty();
-    }
-
     public boolean takenExams() {
         return !getExams().isEmpty();
     }

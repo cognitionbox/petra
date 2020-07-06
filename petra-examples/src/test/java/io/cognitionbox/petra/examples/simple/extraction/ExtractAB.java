@@ -27,9 +27,9 @@ import static io.cognitionbox.petra.util.Petra.rt;
 public class ExtractAB extends PGraph<AB> {
    {
        type(AB.class);
-       pc(x->true);
+       pre(x->true);
        step(new PrintA());
        step(new PrintB());
-       qc(x->true);
+       post(x->true);
     }
 }

@@ -54,22 +54,22 @@ public class ParSequences1 extends BaseExecutionModesTest {
         class SeqEdge extends PEdge<Y> {
             {
                 type(Y.class);
-                pc(y -> y.isA() ^ y.isB());
+                pre(y -> y.isA() ^ y.isB());
                 func(y ->{
                     y.state(State.values()[y.state().ordinal() + 1]);
                     return y;
                 });
-                qc(y -> y.isB() ^ y.isC());
+                post(y -> y.isB() ^ y.isC());
             }
         }
 
         class SeqGraph extends PGraph<X> {
             {
                 type(X.class);
-                pc(x->(x.y1().isA() ^ x.y1().isB()) && (x.y2().isA() ^ x.y2().isB()));
-                gi(x -> x.y1().isABC() && x.y2().isABC());
+                pre(x->(x.y1().isA() ^ x.y1().isB()) && (x.y2().isA() ^ x.y2().isB()));
+                invariant(x -> x.y1().isABC() && x.y2().isABC());
                 step(new SeqEdge());
-                qc(x->x.y1().isC() && x.y2().isC());
+                post(x->x.y1().isC() && x.y2().isC());
             }
         }
 

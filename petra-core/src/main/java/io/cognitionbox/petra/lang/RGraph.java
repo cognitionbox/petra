@@ -218,7 +218,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
     }
 
     private IPredicate<X> graphInvariant = x->true;
-    public void gi(IPredicate<X> loopCondition) {
+    public void invariant(IPredicate<X> loopCondition) {
         this.graphInvariant = loopCondition;
     }
 
@@ -1008,7 +1008,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
                 joins.get(iFinal).accept((Collection<IToken>) list, (RGraph) toWrite);
             });
         }
-        returnType.getChoices().forEach(q -> copy.qc(new GuardReturn(q.getTypeClass(), q.predicate)));
+        returnType.getChoices().forEach(q -> copy.post(new GuardReturn(q.getTypeClass(), q.predicate)));
         return copy;
     }
 
@@ -1018,20 +1018,20 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         return executeMatchingLoopUntilPostCondition();
     }
 
-    public void pc(GuardInput<X> p) {
+    public void pre(GuardInput<X> p) {
         setP(p);
     }
 
-    public void pc(IPredicate<X> predicate) {
+    public void pre(IPredicate<X> predicate) {
         setP(new GuardWrite(type, predicate));
     }
 
-    public void qc(GuardReturn<X> q) {
+    public void post(GuardReturn<X> q) {
         returnType.addChoice(new Guard(q.getTypeClass(),q.predicate,OperationType.RETURN));
         setQ(returnType);
     }
 
-    public void qc(IPredicate<X> predicate) {
+    public void post(IPredicate<X> predicate) {
         returnType.addChoice(new Guard(type,predicate,OperationType.RETURN));
         setQ(returnType);
     }

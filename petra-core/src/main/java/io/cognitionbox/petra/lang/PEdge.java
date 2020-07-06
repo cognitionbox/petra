@@ -236,20 +236,20 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
         return false;
     }
 
-    public void pc(GuardInput<X> p) {
+    public void pre(GuardInput<X> p) {
         setP(p);
     }
 
-    public void pc(IPredicate<X> predicate) {
+    public void pre(IPredicate<X> predicate) {
         setP(new GuardWrite(type, predicate));
     }
 
-    public void qc(GuardReturn<X> q) {
+    public void post(GuardReturn<X> q) {
         returnType.addChoice(new Guard(q.getTypeClass(),q.predicate,OperationType.RETURN));
         setQ(returnType);
     }
 
-    public void qc(IPredicate<X> predicate) {
+    public void post(IPredicate<X> predicate) {
         returnType.addChoice(new Guard(type,predicate,OperationType.RETURN));
         setQ(returnType);
     }
