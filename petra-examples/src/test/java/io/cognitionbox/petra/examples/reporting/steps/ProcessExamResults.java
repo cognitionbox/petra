@@ -8,10 +8,9 @@ import static io.cognitionbox.petra.util.Petra.forAll;
 
 public class ProcessExamResults extends PGraph<Pupil> {
     {
-        pi(Pupil.class,p->p.takenExams());
-        lc(p->p.hasNoAverage() && forAll(Exam.class,p.getExams(),e->e.isNotMarked()));
+        pc(Pupil.class, p->p.takenExams() && p.hasNoAverage() && forAll(Exam.class,p.getExams(), e->e.isNotMarked()));
         step(new AverageScores());
         step(new MarkExam());
-        qi(Pupil.class,p->p.hasAverage());
+        qc(Pupil.class, p->p.hasAverage());
     }
 }

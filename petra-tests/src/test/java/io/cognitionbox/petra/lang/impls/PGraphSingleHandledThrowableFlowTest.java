@@ -51,32 +51,32 @@ public class PGraphSingleHandledThrowableFlowTest extends BaseExecutionModesTest
 
   public static class MainLoop extends PGraph<Integer> {
     {
-      pi(Integer.class, x->x==0);
-      qi(Integer.class, x->x==3);
+      pc(Integer.class, x->x==0);
+      qc(Integer.class, x->x==3);
       step(new Nesting());
     }
   }
 
   public static class Nesting extends PGraph<Integer> {
     {
-      pi(Integer.class, x -> x == 0);
-      qi(Integer.class, x->x==1 || x==3);
+      pc(Integer.class, x -> x == 0);
+      qc(Integer.class, x->x==1 || x==3);
       step(new PlusOne());
     }
   }
 
   public static class MainLoopWithDirectStepHandledThrowable extends PGraph<Integer> {
     {
-      pi(Integer.class, x->x==0);
-      qi(Integer.class, x->x==3);
+      pc(Integer.class, x->x==0);
+      qc(Integer.class, x->x==3);
       step(new NestingWithDirectStepHandledThrowable());
     }
   }
 
   public static class NestingWithDirectStepHandledThrowable extends PGraph<Integer> {
     {
-      pi(Integer.class, x -> x == 0);
-      qi(Integer.class, x -> x == 3);
+      pc(Integer.class, x -> x == 0);
+      qc(Integer.class, x -> x == 3);
       step(new PlusOne());
     }
   }

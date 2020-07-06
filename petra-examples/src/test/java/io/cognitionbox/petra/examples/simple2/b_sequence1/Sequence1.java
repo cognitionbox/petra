@@ -64,10 +64,10 @@ public class Sequence1 extends BaseExecutionModesTest {
 
         class SeqGraph extends PGraph<X> {
             {
-                pi(X.class, x->x.isABC());
-                lc(x -> x.isA() ^ x.isB());
+                gi(x -> x.isA() ^ x.isB() ^ x.isC());
+                pc(X.class, x->x.isABC());
                 step(new SeqEdge());
-                qi(X.class, x->x.isC());
+                qc(X.class, x->x.isC());
             }
         }
 

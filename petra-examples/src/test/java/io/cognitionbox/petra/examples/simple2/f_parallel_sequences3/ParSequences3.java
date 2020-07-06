@@ -23,7 +23,6 @@ import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.PGraph;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
-import io.cognitionbox.petra.util.Petra;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -66,10 +65,10 @@ public class ParSequences3 extends BaseExecutionModesTest {
 
         class SeqGraph extends PGraph<X> {
             {
-                pi(X.class, x->forAll(Y.class,x.ys(),y->y.isABC()));
-                lc(x ->forAll(Y.class,x.ys(),y->y.isA() ^ y.isB()));
+                gi(x ->forAll(Y.class,x.ys(), y->y.isA() ^ y.isB() ^ y.isC()));
+                pc(X.class, x->forAll(Y.class,x.ys(), y->y.isABC()));
                 step(new SeqEdge());
-                qi(X.class, x->forAll(Y.class,x.ys(),y->y.isC()));
+                qc(X.class, x->forAll(Y.class,x.ys(), y->y.isC()));
             }
         }
 

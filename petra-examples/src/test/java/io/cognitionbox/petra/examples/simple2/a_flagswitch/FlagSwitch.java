@@ -64,10 +64,10 @@ public class FlagSwitch extends BaseExecutionModesTest {
 
         class FlagGraph extends PGraph<X> {
             {
-                pi(X.class, x -> x.value==true ^ x.value==false);
-                lc(x -> x.value==false);
+                gi(x -> x.value==true ^ x.value==false);
+                pc(X.class, x -> x.value==false);
                 step(new FlagEdge());
-                qi(X.class, x -> x.value==true);
+                qc(X.class, x -> x.value==true);
             }
         }
 

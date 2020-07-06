@@ -65,10 +65,10 @@ public class HelloWorld extends BaseExecutionModesTest {
 
         class AtoAGraph extends PGraph<X> {
             {
-                pi(X.class, x -> x.isBlankOrHelloWorld());
-                lc(x -> x.isBlank());
+                gi(x -> x.isBlankOrHelloWorld());
+                pc(X.class, x -> x.isBlank());
                 step(new AtoA());
-                qi(X.class, x -> x.isHelloWorld());
+                qc(X.class, x -> x.isHelloWorld());
             }
         }
 

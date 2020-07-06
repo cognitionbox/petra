@@ -49,7 +49,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static io.cognitionbox.petra.lang.Void.vd;
@@ -110,7 +109,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 
     X executeMatchingLoopUntilPostCondition() {
         currentIteration = 0;
-        while (evalP(getInput().getValue()) && this.loopCondition.test(getInput().getValue())) {
+        while (this.graphInvariant.test(getInput().getValue())) {
             try {
                 Lg();
                 X out = iteration();
@@ -184,9 +183,9 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         // decons one level
     }
 
-    private IPredicate<X> loopCondition = x->true;
-    public void lc(IPredicate<X> loopCondition) {
-        this.loopCondition = loopCondition;
+    private IPredicate<X> graphInvariant = x->true;
+    public void gi(IPredicate<X> loopCondition) {
+        this.graphInvariant = loopCondition;
     }
 
     private void addJoinType(IJoin join) {
@@ -971,7 +970,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
                 joins.get(iFinal).accept((Collection<IToken>) list, (RGraph) toWrite);
             });
         }
-        returnType.getChoices().forEach(q -> copy.qi(new GuardReturn(q.getTypeClass(), q.predicate)));
+        returnType.getChoices().forEach(q -> copy.qc(new GuardReturn(q.getTypeClass(), q.predicate)));
         return copy;
     }
 
@@ -981,20 +980,20 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         return executeMatchingLoopUntilPostCondition();
     }
 
-    public void pi(GuardInput<X> p) {
+    public void pc(GuardInput<X> p) {
         setP(p);
     }
 
-    public void pi(Class<X> p, IPredicate<X> predicate) {
+    public void pc(Class<X> p, IPredicate<X> predicate) {
         setP(new GuardWrite(p, predicate));
     }
 
-    public void qi(GuardReturn<X> q) {
+    public void qc(GuardReturn<X> q) {
         returnType.addChoice(new Guard(q.getTypeClass(),q.predicate,OperationType.RETURN));
         setQ(returnType);
     }
 
-    public void qi(Class<X> p, IPredicate<X> predicate) {
+    public void qc(Class<X> p, IPredicate<X> predicate) {
         returnType.addChoice(new Guard(p,predicate,OperationType.RETURN));
         setQ(returnType);
     }

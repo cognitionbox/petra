@@ -61,8 +61,8 @@ public class StaticsDetectionTest extends BaseExecutionModesTest {
 
   public static class g extends PGraph<A> {
     {
-      pi(rw(A.class, a->true));
-      qi(Petra.rt(A.class, a->true));
+      pc(rw(A.class, a->true));
+      qc(Petra.rt(A.class, a->true));
       step(AtoA.class);
     }
   }

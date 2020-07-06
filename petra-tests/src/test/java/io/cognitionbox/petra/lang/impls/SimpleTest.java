@@ -67,8 +67,8 @@ public class SimpleTest extends BaseExecutionModesTest {
 
   public static class g extends PGraph<A> {
     {
-      pi(A.class, a->a.value==1);
-      qi(A.class, a->a.value==222);
+      pc(A.class, a->a.value==1);
+      qc(A.class, a->a.value==222);
       step(AtoA.class);
     }
   }

@@ -99,8 +99,8 @@ public class ExclusivesTest extends BaseExecutionModesTest {
 
   public static class g extends PGraph<A> {
     {
-      pi(A.class, a->a.integer.get()==0);
-      qi(A.class, a->a.integer.get()==10);
+      pc(A.class, a->a.integer.get()==0);
+      qc(A.class, a->a.integer.get()==10);
       step(AtoA.class);
     }
   }

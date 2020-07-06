@@ -86,8 +86,8 @@ public class ResourceConflictTest extends BaseExecutionModesTest {
 
   public static class g extends PGraph<A> {
     {
-      pi(rw(A.class, x->true));
-      qi(Petra.rt(A.class, x->true));
+      pc(rw(A.class, x->true));
+      qc(Petra.rt(A.class, x->true));
       step(AtoA.class);
     }
   }

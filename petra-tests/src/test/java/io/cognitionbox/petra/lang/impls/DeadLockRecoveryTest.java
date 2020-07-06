@@ -96,8 +96,8 @@ public class DeadLockRecoveryTest extends BaseExecutionModesTest {
 
   public static class g extends PGraph<A> {
     {
-      pi(rw(A.class, a->a.value==1));
-      qi(rt(A.class, a->a.value==222));
+      pc(rw(A.class, a->a.value==1));
+      qc(rt(A.class, a->a.value==222));
       step(AtoA.class);
     }
   }

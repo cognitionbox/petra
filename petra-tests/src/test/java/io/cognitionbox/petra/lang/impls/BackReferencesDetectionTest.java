@@ -98,8 +98,8 @@ public class BackReferencesDetectionTest extends BaseExecutionModesTest {
 
   public static class g extends PGraph<A> {
     {
-      pi(A.class, x->true);
-      qi(A.class, x->true);
+      pc(A.class, x->true);
+      qc(A.class, x->true);
       step(AtoA.class);
     }
   }

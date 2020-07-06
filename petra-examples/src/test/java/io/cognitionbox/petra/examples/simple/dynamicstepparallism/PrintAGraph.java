@@ -27,8 +27,8 @@ import static io.cognitionbox.petra.util.Petra.rt;
 
 public class PrintAGraph extends PGraph<X> {
     {
-       pi(X.class, x->true);
+       pc(X.class, x->true);
        step(new PrintA());
-       qi(X.class, x->true);
+       qc(X.class, x->true);
     }
 }
