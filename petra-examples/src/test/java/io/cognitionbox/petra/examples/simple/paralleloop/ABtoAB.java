@@ -30,8 +30,8 @@ public class ABtoAB extends PGraph<AB> {
     {
         type(AB.class);
         pre(x->true);
-        step(new IncrementA());
-        step(new IncrementB());
+        step(x->x.getA(),new IncrementA());
+        step(x->x.getB(),new IncrementB());
         post(x->x.getA().value==10 && x.getB().value==10);
     }
 }

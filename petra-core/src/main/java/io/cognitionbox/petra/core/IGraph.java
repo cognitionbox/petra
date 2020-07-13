@@ -19,7 +19,7 @@ import java.util.List;
 
 public interface IGraph<P> extends IStep<P> {
     List<IStep> getParallizable();
-
+    int getNoOfSteps();
     int getNoOfJoins();
 
     List<IJoin> getJoinTypes();

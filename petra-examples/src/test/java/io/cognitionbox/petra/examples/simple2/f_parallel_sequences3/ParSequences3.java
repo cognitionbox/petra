@@ -69,7 +69,7 @@ public class ParSequences3 extends BaseExecutionModesTest {
                 type(X.class);
                 invariant(x ->forAll(Y.class,x.ys(), y->y.isA() ^ y.isB() ^ y.isC()));
                 pre(x->forAll(Y.class,x.ys(), y->y.isABC()));
-                step(new SeqEdge());
+                stepForall(x->x.ys(),new SeqEdge());
                 post(x->forAll(Y.class,x.ys(), y->y.isC()));
             }
         }

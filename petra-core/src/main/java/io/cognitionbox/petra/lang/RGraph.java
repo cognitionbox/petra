@@ -164,8 +164,8 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         }
     }
 
-    public void step(Class<? extends IStep<?>> computation) {
-        step(Petra.createStep(computation));
+    public void step(Class<? extends IStep<X>> computation) {
+        step(x->x,Petra.createStep(computation));
     }
 
 //    public void step(IStep<? super I> computation) {
@@ -173,28 +173,43 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 //    }
 
 
-
-    private List<Forall> foralls = new ArrayList<>();
-    public <P> void step(IFunction<X,Iterable<P>> iterableTransformer, IStep<P> step){
-        foralls.add(new Forall(iterableTransformer, (AbstractStep) step));
+    private List<StateTransformerStep> stateTransformerSteps = new ArrayList<>();
+    private List<StateIterableTransformerStep> stateIterableTransformerSteps = new ArrayList<>();
+    public <P> void stepForall(IFunction<X,Iterable<P>> transformer, IStep<P> step){
+        stateIterableTransformerSteps.add(new StateIterableTransformerStep(transformer, (AbstractStep) step));
     }
-
+    public <P> void step(IFunction<X,P> transformer, IStep<P> step){
+        stateTransformerSteps.add(new StateTransformerStep(transformer, (AbstractStep) step));
+    }
+    private void prepareSteps(){
+        for (StateTransformerStep<X,?> f : stateTransformerSteps){
+            try {
+                Object value = f.getTransformer().apply(getInput().getValue());
+                if (f.getStep().evalP(value)){
+                    AbstractStep copy = f.getStep().copy();
+                    copy.setInput(new Token(value));
+                    collectCallable(new StepCallable(this,copy), callables);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
     private void prepareForalls(){
-        for (Forall<X,?> f : foralls){
+        for (StateIterableTransformerStep<X,?> f : stateIterableTransformerSteps){
             boolean ok = true;
-            Iterable<?> iterable = f.getIterableTransformer().apply(getInput().getValue());
+            Iterable<?> iterable = f.getTransformer().apply(getInput().getValue());
             for(Object o : iterable){
                 if (!f.getStep().p().test(o)){
                     ok = false;
                     break;
                 }
             }
-            iterable = f.getIterableTransformer().apply(getInput().getValue());
+            iterable = f.getTransformer().apply(getInput().getValue());
             // if all match run steps against the elements
             if (ok){
                 for(Object o : iterable){
                     try {
-                        f.getStep().setInput(new Token(o));
                         AbstractStep copy = f.getStep().copy();
                         copy.setInput(new Token(o));
                         collectCallable(new StepCallable(this,copy), callables);
@@ -206,8 +221,9 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         }
     }
 
-    public void step(IStep<?> computation) {
-        addParallizable(computation);
+    public void step(IStep<X> computation) {
+        step(x->x,computation);
+        //addParallizable(computation);
     }
 
     private Set<Class<?>> deconstructable = new HashSet<>();
@@ -360,6 +376,11 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         return parallizable;
     }
 
+    @Override
+    public int getNoOfSteps() {
+        return stateTransformerSteps.size()+stateIterableTransformerSteps.size();
+    }
+
     Collection<IToken> getPlace() {
         return place.getTokens();
     }
@@ -440,18 +461,19 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 
     private void matchComputationsToStatesAndExecute(List<IStep> steps) {
         callables.clear();
+        prepareSteps();
         prepareForalls();
-        for (int index = 0; index < steps.size(); index = index + 1) {
-            IStep c = steps.get(index);
-            for (Object token : place.filterTokensByValue(c.p())) {
-                AbstractStep copy = null;
-                if (c instanceof AbstractStep) {
-                    copy = ((AbstractStep) c).copy();
-                }
-                copy.setInput((IToken) token);
-                collectCallable(new StepCallable(this,copy), callables);
-            }
-        }
+//        for (int index = 0; index < steps.size(); index = index + 1) {
+//            IStep c = steps.get(index);
+//            for (Object token : place.filterTokensByValue(c.p())) {
+//                AbstractStep copy = null;
+//                if (c instanceof AbstractStep) {
+//                    copy = ((AbstractStep) c).copy();
+//                }
+//                copy.setInput((IToken) token);
+//                collectCallable(new StepCallable(this,copy), callables);
+//            }
+//        }
         forkAndJoinCallables(callables);
     }
 
@@ -992,15 +1014,10 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         copy.setClazz(getStepClazz());
         copy.setP(p());
 
-        // need to copy steps and joins
-
         // copy steps
-        for (IStep edge : parallizable) {
-            copy.step(edge);
-        }
-        for (Forall forall : foralls) {
-            copy.foralls.add(forall);
-        }
+        copy.stateTransformerSteps.addAll(stateTransformerSteps);
+        copy.stateIterableTransformerSteps.addAll(stateIterableTransformerSteps);
+
         // copy joins one by one as with the steps above
         for (int i = 0; i < joins.size(); i++) {
             int iFinal = i;

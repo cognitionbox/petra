@@ -28,8 +28,8 @@ public class ExtractAB extends PGraph<AB> {
    {
        type(AB.class);
        pre(x->true);
-       step(new PrintA());
-       step(new PrintB());
+       step(x->x.getA(),new PrintA());
+       step(x->x.getB(),new PrintB());
        post(x->true);
     }
 }

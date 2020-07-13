@@ -22,7 +22,7 @@ package io.cognitionbox.petra.examples.simple.dynamicstepparallism;
 import io.cognitionbox.petra.examples.simple.common.A;
 import io.cognitionbox.petra.lang.annotations.Extract;
 
-@Extract
+//@Extract
 class X{
     A a1 = new A();
     A a2 = new A();

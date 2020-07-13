@@ -19,6 +19,9 @@
 package io.cognitionbox.petra.examples.simple.forkjoin;
 
 import io.cognitionbox.petra.config.ExecMode;
+import io.cognitionbox.petra.examples.simple.common.A;
+import io.cognitionbox.petra.examples.simple.common.AB;
+import io.cognitionbox.petra.examples.simple.common.B;
 import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import org.junit.Test;

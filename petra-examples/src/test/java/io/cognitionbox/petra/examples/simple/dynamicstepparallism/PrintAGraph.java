@@ -29,7 +29,8 @@ public class PrintAGraph extends PGraph<X> {
     {
        type(X.class);
        pre(x->true);
-       step(new PrintA());
+       step(x->x.getA1(),new PrintA());
+       step(x->x.getA2(),new PrintA());
        post(x->true);
     }
 }

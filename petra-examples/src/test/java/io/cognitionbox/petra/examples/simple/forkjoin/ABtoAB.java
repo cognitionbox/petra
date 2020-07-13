@@ -18,6 +18,7 @@
  */
 package io.cognitionbox.petra.examples.simple.forkjoin;
 
+import io.cognitionbox.petra.examples.simple.common.AB;
 import io.cognitionbox.petra.examples.simple.common.IncrementA;
 import io.cognitionbox.petra.examples.simple.common.IncrementB;
 import io.cognitionbox.petra.lang.PGraph;
@@ -29,8 +30,8 @@ public class ABtoAB extends PGraph<AB> {
     {
         type(AB.class);
         pre(x->true);
-        step(new IncrementA());
-        step(new IncrementB());
+        step(x->x.getA(),new IncrementA());
+        step(x->x.getB(),new IncrementB());
         post(x->x.getA().value==10 && x.getB().value==10);
     }
 }

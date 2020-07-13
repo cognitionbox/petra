@@ -34,7 +34,7 @@ public class TradingSystem extends PGraph<State> {
                         ^ x.currentExp().get()==120 ^ x.currentExp().get()==160 ^ x.currentExp().get()==200);
         pre(x->x.currentExp().get()>=0 && x.currentExp().get()<=200 &&
                 forAll(Trader.class,x.traders(),t->t.isEnabled()));
-        step(new Trade());
+        stepForall(x->x.getTraders(),new Trade());
         join(state->true,
             state->state.updateExposure(),
             state->true);
