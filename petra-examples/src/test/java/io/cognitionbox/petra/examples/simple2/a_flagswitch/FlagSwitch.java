@@ -66,7 +66,7 @@ public class FlagSwitch extends BaseExecutionModesTest {
         class FlagGraph extends PGraph<X> {
             {
                 type(X.class);
-                invariant(x -> x.value==true ^ x.value==false);
+                //invariant(x -> x.value==true ^ x.value==false);
                 pre(x -> x.value==false);
                 step(new FlagEdge());
                 post(x -> x.value==true);

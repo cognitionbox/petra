@@ -109,18 +109,19 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 
     X executeMatchingLoopUntilPostCondition() {
         currentIteration = 0;
-        while (this.graphInvariant.test(getInput().getValue())) {
+        X out = null;
+        while (this.p().test(getInput().getValue())) {
+            iterationId.getAndIncrement();
+            currentIteration++;
             try {
                 Lg();
-                X out = iteration();
-                if (out!=null){
-                    return out;
-                }
+                out = iteration();
             } catch (Exception e){
                 e.printStackTrace();
             }
-            iterationId.getAndIncrement();
-            currentIteration++;
+        }
+        if (out!=null){
+            return out;
         }
         // loop terminated before post condition reached
         throw new PostConditionFailure();
@@ -231,11 +232,6 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         deconstructable.addAll(Arrays.asList(types));
         // allows the extract to happen in the graph, kind of like scoping.
         // decons one level
-    }
-
-    private IPredicate<X> graphInvariant = x->true;
-    public void invariant(IPredicate<X> loopCondition) {
-        this.graphInvariant = loopCondition;
     }
 
     private void addJoinType(IJoin join) {

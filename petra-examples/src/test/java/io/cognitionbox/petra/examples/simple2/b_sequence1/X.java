@@ -28,7 +28,7 @@ class X implements Serializable {
     public boolean isA(){ return state==State.A; }
     public boolean isB(){ return state==State.B; }
     public boolean isC(){ return state==State.C; }
-    public boolean isABC(){ return isA() ^ isB() ^ isC();}
+    public boolean isAB(){ return isA() ^ isB();}
 
 
 }

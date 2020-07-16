@@ -78,8 +78,7 @@ public class ParSequences2 extends BaseExecutionModesTest {
         class SeqGraph extends PGraph<X> {
             {
                 type(X.class);
-                invariant(x -> (x.y1().isA() ^ x.y1().isB()) && (x.y2().isA() ^ x.y2().isB()));
-                pre(x->x.y1().isABC() && x.y2().isABC());
+                pre(x->x.y1().isAB() && x.y2().isAB());
                 step(new SeqEdge2());
                 step(new SeqEdge1());
                 post(x->x.y1().isC() && x.y2().isC());

@@ -67,8 +67,7 @@ public class ParSequences3 extends BaseExecutionModesTest {
         class SeqGraph extends PGraph<X> {
             {
                 type(X.class);
-                invariant(x ->forAll(Y.class,x.ys(), y->y.isA() ^ y.isB() ^ y.isC()));
-                pre(x->forAll(Y.class,x.ys(), y->y.isABC()));
+                pre(x->forAll(Y.class,x.ys(), y->y.isAB()));
                 stepForall(x->x.ys(),new SeqEdge());
                 post(x->forAll(Y.class,x.ys(), y->y.isC()));
             }

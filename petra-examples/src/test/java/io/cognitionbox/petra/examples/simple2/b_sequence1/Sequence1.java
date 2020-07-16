@@ -66,8 +66,7 @@ public class Sequence1 extends BaseExecutionModesTest {
         class SeqGraph extends PGraph<X> {
             {
                 type(X.class);
-                invariant(x -> x.isA() ^ x.isB() ^ x.isC());
-                pre(x->x.isABC());
+                pre(x->x.isAB());
                 step(new SeqEdge());
                 post(x->x.isC());
             }
