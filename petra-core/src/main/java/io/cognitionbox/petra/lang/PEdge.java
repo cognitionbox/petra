@@ -24,6 +24,7 @@ import io.cognitionbox.petra.exceptions.conditions.PostConditionFailure;
 import io.cognitionbox.petra.exceptions.conditions.PreConditionFailure;
 import io.cognitionbox.petra.exceptions.sideeffects.IsNotSideEffectAndDidChangeInput;
 import io.cognitionbox.petra.exceptions.sideeffects.IsSideEffectAndDidNotChangeInput;
+import io.cognitionbox.petra.util.function.IBiPredicate;
 import io.cognitionbox.petra.util.function.IFunction;
 import io.cognitionbox.petra.util.function.IPredicate;
 import org.slf4j.Logger;
@@ -51,6 +52,7 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
     private io.cognitionbox.petra.core.impl.PEdgeRollbackHelper PEdgeRollbackHelper = new PEdgeRollbackHelper(100);
     private ObjectCopyerViaSerialization copyer = new ObjectCopyerViaSerialization();
     private List<Class<? extends Exception>> throwsRandomly = new ArrayList<>();
+    private ObjectTrans objectTrans = new ObjectTrans();
 
     public PEdge() {
         this.feedback = this.getStepClazz().getAnnotationsByType(Feedback.class).length > 0;
@@ -148,7 +150,7 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
             if (res == null) {
                 return (X) vd;
             } else {
-                boolean postConditionOk = q().test(res) || (isFeedback() && p().test(res));
+                boolean postConditionOk = (q().test(res) && isDeltaOk(res)) || (isFeedback() && p().test(res));
                 boolean isNotSideEffectAndDidChangeInput = !isEffect() && !p().test(input);
 
                 // after successfully completes check side effect, allows for looping on same inputs
@@ -252,5 +254,20 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
     public void post(IPredicate<X> predicate) {
         returnType.addChoice(new Guard(type,predicate,OperationType.RETURN));
         setQ(returnType);
+    }
+
+    private IBiPredicate<X,X> deltaPredicate = null;
+
+    public void delta(IBiPredicate<X,X> predicate) {
+        this.deltaPredicate = predicate;
+    }
+
+    private boolean isDeltaOk(X x){
+        if (this.deltaPredicate==null){
+            return true;
+        } else {
+            // need to plumb in old value using the object transaction restore
+            return this.deltaPredicate.test(x,x);
+        }
     }
 }

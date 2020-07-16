@@ -20,8 +20,13 @@ import org.reflections.Reflections;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class ReflectUtils {
@@ -71,6 +76,58 @@ public class ReflectUtils {
             }
         }
         return true;
+    }
+
+    static public <T> void actionAllFieldsAccessibleFromObjectInstance(Object value, BiConsumer<Field,Object> fieldConsumer) {
+            if (value==null){
+                return;
+            }
+            if (Boolean.class.isAssignableFrom(value.getClass()) || String.class.isAssignableFrom(value.getClass()) || Integer.class.isAssignableFrom(value.getClass())){
+                return;
+            }
+            Set<Field> fields = getAllFieldsAccessibleFromObject(value.getClass());
+            for (Field f : fields){
+                if (!(Boolean.class.isAssignableFrom(value.getClass()) || String.class.isAssignableFrom(value.getClass()) || Integer.class.isAssignableFrom(value.getClass()))){
+                    if (!Modifier.isStatic(f.getModifiers())){
+                        try {
+                            boolean isAccessable = f.isAccessible();
+                            f.setAccessible(true);
+                            Object v = f.get(value);
+                            actionAllFieldsAccessibleFromObjectInstance(v,fieldConsumer);
+                            f.setAccessible(isAccessable);
+                            fieldConsumer.accept(f,value);
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+    }
+
+    static public <T> void actionAllFieldsAccessibleFromObjectGraph(Class<?> t, Consumer<Field> fieldConsumer) {
+        if (!(Boolean.class.isAssignableFrom(t) || String.class.isAssignableFrom(t) || Integer.class.isAssignableFrom(t))){
+            Set<Field> fields = getAllFieldsAccessibleFromObject(t);
+            for (Field f : fields){
+                actionAllFieldsAccessibleFromObjectGraph(f.getType(),fieldConsumer);
+                fieldConsumer.accept(f);
+            }
+        }
+    }
+
+    static public <T> Set<Field> getAllFieldsAccessibleFromObjectGraph(Class<?> t) {
+        Set<Field> allFields = new HashSet<>();
+        addAllFieldsAccessibleFromObjectGraph(t,allFields);
+        return allFields;
+    }
+
+    private static <T> void addAllFieldsAccessibleFromObjectGraph(Class<?> t, Set<Field> allFields) {
+        if (!(Boolean.class.isAssignableFrom(t) || String.class.isAssignableFrom(t) || Integer.class.isAssignableFrom(t))){
+            Set<Field> fields = getAllFieldsAccessibleFromObject(t);
+            for (Field f : fields){
+                addAllFieldsAccessibleFromObjectGraph(f.getType(),allFields);
+            }
+            allFields.addAll(fields);
+        }
     }
 
     static public <T> Set<Field> getAllFieldsAccessibleFromObject(Class<?> t) {
