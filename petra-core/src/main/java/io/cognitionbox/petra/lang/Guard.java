@@ -200,7 +200,7 @@ public class Guard<E> implements IPredicate<E> {
                     }
                 } else
 
-                    if (RGraphComputer.getConfig().isDefensiveCopyAllInputsExceptForEffectedInputs()){
+                    if (RGraphComputer.getConfig().isDefensiveCopyAllInputs()){
                     try {
                         xToUse = copyer.copy(x);
                     } catch (Exception e){

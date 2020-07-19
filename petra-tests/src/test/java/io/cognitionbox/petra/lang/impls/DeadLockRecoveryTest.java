@@ -48,7 +48,6 @@ import static io.cognitionbox.petra.util.Petra.rt;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
-@Ignore
 public class DeadLockRecoveryTest extends BaseExecutionModesTest {
 
   public DeadLockRecoveryTest(ExecMode execMode) {
@@ -75,7 +74,7 @@ public class DeadLockRecoveryTest extends BaseExecutionModesTest {
       type(A.class);
       pre(a->a.value==1);
       func(a->{
-        if (Math.random()>0.2){
+        if (Math.random()>0.1){
           ThreadDemo1 T1 = new ThreadDemo1();
           ThreadDemo2 T2 = new ThreadDemo2();
           T1.start();
@@ -87,7 +86,8 @@ public class DeadLockRecoveryTest extends BaseExecutionModesTest {
             throw new IllegalStateException(e);
           }
         }
-        return new A(222);
+        a.value = 222;
+        return a;
       });
       post(a->a.value==222);
     }

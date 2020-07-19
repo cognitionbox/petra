@@ -4,7 +4,9 @@ import io.cognitionbox.petra.examples.driverlesscars.Signal;
 import io.cognitionbox.petra.examples.driverlesscars.SignalState;
 import io.cognitionbox.petra.examples.driverlesscars.permissions.ReadSignal;
 
-public class Car implements ReadSignal {
+import java.io.Serializable;
+
+public class Car implements ReadSignal, Serializable {
     private Signal trafficLight;
 
     public Car(Signal trafficLight) {

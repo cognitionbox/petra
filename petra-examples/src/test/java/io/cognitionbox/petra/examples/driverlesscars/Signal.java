@@ -3,7 +3,9 @@ package io.cognitionbox.petra.examples.driverlesscars;
 import io.cognitionbox.petra.examples.driverlesscars.permissions.ReadSignal;
 import io.cognitionbox.petra.examples.driverlesscars.permissions.WriteSignal;
 
-public class Signal implements ReadSignal, WriteSignal {
+import java.io.Serializable;
+
+public class Signal implements ReadSignal, WriteSignal, Serializable {
     public Signal(SignalState state) {
         this.state = state;
     }

@@ -25,6 +25,7 @@ import io.cognitionbox.petra.core.engine.extractors.impl.SequentialRootValueExtr
 import io.cognitionbox.petra.core.engine.petri.Place;
 import io.cognitionbox.petra.core.engine.petri.impl.Token;
 import io.cognitionbox.petra.core.impl.*;
+import io.cognitionbox.petra.exceptions.sideeffects.SideEffectFailure;
 import io.cognitionbox.petra.lang.annotations.DoesNotTerminate;
 import io.cognitionbox.petra.lang.annotations.Extract;
 import io.cognitionbox.petra.exceptions.GraphException;
@@ -32,7 +33,6 @@ import io.cognitionbox.petra.exceptions.IterationsTimeoutException;
 import io.cognitionbox.petra.exceptions.JoinException;
 import io.cognitionbox.petra.exceptions.PetraException;
 import io.cognitionbox.petra.exceptions.conditions.PostConditionFailure;
-import io.cognitionbox.petra.exceptions.sideeffects.SideEffectFailure;
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.core.engine.petri.IToken;
 import io.cognitionbox.petra.util.function.*;
@@ -79,8 +79,8 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         init();
     }
 
-    public RGraph(String description, boolean isEffect) {
-        super(description, isEffect);
+    public RGraph(String description) {
+        super(description);
         init();
     }
 
@@ -931,7 +931,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 //                copyInputs = !( effectType.isPresent() &&
 //                        guard.getTypeClass().isAssignableFrom(effectType.get()));
 //            }
-            copyInputs = copyInputs && RGraphComputer.getConfig().isDefensiveCopyAllInputsExceptForEffectedInputs();
+            copyInputs = copyInputs && RGraphComputer.getConfig().isDefensiveCopyAllInputs();
             IJoinMatchesProcessor joinMatchesProcessor = new JoinMatchesProcessor();
             List<IToken> matches = joinMatchesProcessor.getMatchesUsingGuard(guard,copyInputs, toUse);
             if (matches != null) {
@@ -1005,7 +1005,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 
     public RGraph copy() {
         // we dont copy the id as we need a unique id based on the hashcode of the new instance
-        RGraph copy = new RGraph(getPartitionKey(), isEffect());
+        RGraph copy = new RGraph(getPartitionKey());
         copy.setEffectType(this.getEffectType()); // so we dont have to re-compute
         copy.setClazz(getStepClazz());
         copy.setP(p());

@@ -155,7 +155,7 @@ public class PetraConfig implements IPetraConfig {
         return deadLockRecovery;
     }
 
-    public boolean isDefensiveCopyAllInputsExceptForEffectedInputs() {
+    public boolean isDefensiveCopyAllInputs() {
         return defensiveCopyAllInputsExceptForEffectedInputs;
     }
 

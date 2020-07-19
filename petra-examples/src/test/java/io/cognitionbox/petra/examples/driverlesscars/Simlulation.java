@@ -6,11 +6,12 @@ import io.cognitionbox.petra.examples.driverlesscars.permissions.ReadJunction;
 import io.cognitionbox.petra.examples.driverlesscars.permissions.WriteJunction;
 import io.cognitionbox.petra.lang.annotations.Extract;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Extract
-public class Simlulation implements ReadJunction, WriteJunction {
+public class Simlulation implements ReadJunction, WriteJunction, Serializable {
     Junction junction = new Junction();
 
     @Override

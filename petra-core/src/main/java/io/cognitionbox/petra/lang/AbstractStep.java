@@ -64,9 +64,8 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
 
     protected AbstractStep() {
     }
-    protected AbstractStep(String description, boolean isEffect) {
+    protected AbstractStep(String description) {
         super(description);
-        this.isEffect = isEffect;
     }
 
 //    public AbstractStep(String description, Guard<I> p, Guard<O> q) {
@@ -147,12 +146,6 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
         }
         return effectType;
     }
-
-    public boolean isEffect() {
-        return isEffect || getEffectType().isPresent();
-    }
-
-    private boolean isEffect = false;
 
     final GuardXOR<X> returnType = new GuardXOR<X>(OperationType.RETURN);
 

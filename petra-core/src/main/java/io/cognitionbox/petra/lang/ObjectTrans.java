@@ -2,6 +2,9 @@ package io.cognitionbox.petra.lang;
 
 import io.cognitionbox.petra.core.impl.ObjectCopyerViaSerialization;
 import io.cognitionbox.petra.core.impl.ReflectUtils;
+import io.cognitionbox.petra.factory.PetraParallelComponentsFactory;
+import io.cognitionbox.petra.factory.PetraSequentialComponentsFactory;
+import io.cognitionbox.petra.util.impl.PList;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -9,12 +12,15 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 
+import static io.cognitionbox.petra.util.Petra.ref;
+
 public class ObjectTrans {
 
     static class A {
         String x = "x";
         String y = "y";
-        List<Integer> list = new ArrayList<>();
+        List<Integer> list = new PList<>();
+        Ref<Integer> i = ref(1);
 
         {
             list.add(1);
@@ -28,6 +34,7 @@ public class ObjectTrans {
                     "x='" + x + '\'' +
                     ", y='" + y + '\'' +
                     ", list=" + list +
+                    ", i=" + i +
                     '}';
         }
     }
@@ -39,6 +46,8 @@ public class ObjectTrans {
     public void capture(Object object){
         Set<Field> fields = ReflectUtils.getAllFieldsAccessibleFromObject(object.getClass());
         fields.parallelStream().forEach(f->{
+            boolean access = f.isAccessible();
+            f.setAccessible(true);
             try {
                 Object value = f.get(object);
                 // later add support for petra's parallel / distributable atomic reference
@@ -46,16 +55,27 @@ public class ObjectTrans {
                 storedValues.put(f,copyer.copy(value));
             } catch (Throwable e) {
                 e.printStackTrace();
+            } finally {
+                f.setAccessible(access);
             }
         });
     }
 
     public static void main(String[] args){
+
+        PComputer.getConfig()
+                .enableStatesLogging()
+                .setConstructionGuaranteeChecks(true)
+                .setStrictModeExtraConstructionGuarantee(true)
+                .setSequentialModeFactory(new PetraSequentialComponentsFactory())
+                .setParallelModeFactory(new PetraParallelComponentsFactory());
+
         A a = new A();
         ObjectTrans objectTrans = new ObjectTrans();
         objectTrans.capture(a);
         System.out.println(a);
         a.x = "hello";
+        a.i.set(7);
         a.list.clear();
         System.out.println(a);
         objectTrans.restore(a);
@@ -73,15 +93,17 @@ public class ObjectTrans {
         fields.parallelStream().forEach(f->{
             // later add support for petra's parallel / distributable atomic reference
             // we capture/replace the value rather than the reference
+            boolean access = f.isAccessible();
+            f.setAccessible(true);
             try {
-                boolean access = f.isAccessible();
                 Object restored = storedValues.get(f);
                 // later add support for petra's parallel / distributable atomic reference
                 // we capture/replace the value rather than the reference
                 f.set(object,restored);
-                f.setAccessible(access);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
+            } finally {
+                f.setAccessible(access);
             }
         });
     }

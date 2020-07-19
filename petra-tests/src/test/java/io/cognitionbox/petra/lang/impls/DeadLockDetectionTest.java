@@ -20,6 +20,8 @@ import io.cognitionbox.petra.exceptions.GraphException;
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.PGraph;
+import io.cognitionbox.petra.lang.RGraphComputer;
+import io.cognitionbox.petra.lang.config.IPetraTestConfig;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,7 +41,7 @@ public class DeadLockDetectionTest extends BaseExecutionModesTest {
     super(execMode);
   }
 
-  public static class B {}
+  public static class B implements Serializable {}
   public static class A implements Serializable {
     int value = 0;
 
@@ -96,6 +98,7 @@ public class DeadLockDetectionTest extends BaseExecutionModesTest {
 
     getGraphComputer().getConfig().setDeadLockRecovery(true);
     getGraphComputer().getConfig().setDefensiveCopyAllInputsExceptForEffectedInputs(true);
+    ((IPetraTestConfig) RGraphComputer.getConfig()).allowExceptionsPassthrough();
     Object res = getGraphComputer().eval(new g(), new A(1));
     assertThat(res).isInstanceOf(GraphException.class);
     TimeoutException to = (TimeoutException) ((GraphException)res).getCauses()[0].getCause();

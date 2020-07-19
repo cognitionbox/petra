@@ -16,7 +16,6 @@
 package io.cognitionbox.petra.guarantees.impl;
 
 import io.cognitionbox.petra.config.IPetraConfig;
-import io.cognitionbox.petra.config.PetraConfig;
 import io.cognitionbox.petra.core.IGraph;
 import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.core.impl.PGraphDotDiagramRendererImpl2;
@@ -80,7 +79,7 @@ public class ConstructionGuarantees {
     }
 
     void initAllChecksExceptForThoseNotCompatibleWithGraphsGeneratedByReachabilityCheck(){
-        if (config.isDefensiveCopyAllInputsExceptForEffectedInputs()) {
+        if (config.isDefensiveCopyAllInputs()) {
             addCheck(new AllFieldsMustBeSerializableUnlessTransient());
         }
         addCheck(new StepsCanOnlyEverImplementOneInterfaceWhichIsIRollback());
@@ -114,11 +113,7 @@ public class ConstructionGuarantees {
     }
 
     public static boolean isSideEffect(AbstractStep<?> step) {
-        if (step.isEffect()) {// || step instanceof EffectG){
-            return true;
-        } else {
-            return false;
-        }
+        return true;
     }
 
     String printErrorDotDiagram(RGraph xGraphSafe) {
