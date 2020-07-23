@@ -18,7 +18,6 @@ package io.cognitionbox.petra.lang;
 import io.cognitionbox.petra.core.impl.*;
 import io.cognitionbox.petra.lang.annotations.Exclusive;
 import io.cognitionbox.petra.exceptions.EdgeException;
-import io.cognitionbox.petra.exceptions.UnknownEdgeFailure;
 import io.cognitionbox.petra.exceptions.conditions.PostConditionFailure;
 import io.cognitionbox.petra.util.function.IBiPredicate;
 import io.cognitionbox.petra.util.function.IFunction;
@@ -34,7 +33,7 @@ import java.util.Set;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-import static io.cognitionbox.petra.lang.Void.vd;
+
 import static io.cognitionbox.petra.util.Petra.throwRandomException;
 
 
@@ -136,7 +135,7 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
             throwableRef.set(e);
             LOG.error(this.getUniqueId(), e);
         }
-        boolean postConditionOk = throwableRef.get()==null && (res!=null && q().test(res) && isDeltaOk(res));
+        boolean postConditionOk = throwableRef.get()==null && (res!=null && q().test(res) && evalV(res));
         if (postConditionOk) {
             Lg_ALL_STATES("[Eg out]",input);
             return res;
@@ -171,36 +170,36 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
         return false;
     }
 
-    public void pre(GuardInput<X> p) {
+    public void preC(GuardInput<X> p) {
         setP(p);
     }
 
-    public void pre(IPredicate<X> predicate) {
+    public void preC(IPredicate<X> predicate) {
         setP(new GuardWrite(type, predicate));
     }
 
-    public void post(GuardReturn<X> q) {
+    public void postC(GuardReturn<X> q) {
         returnType.addChoice(new Guard(q.getTypeClass(),q.predicate,OperationType.RETURN));
         setQ(returnType);
     }
 
-    public void post(IPredicate<X> predicate) {
+    public void postC(IPredicate<X> predicate) {
         returnType.addChoice(new Guard(type,predicate,OperationType.RETURN));
         setQ(returnType);
     }
 
-    private IBiPredicate<X,X> deltaPredicate = null;
+    private IBiPredicate<X,X> v = null;
 
-    public void delta(IBiPredicate<X,X> predicate) {
-        this.deltaPredicate = predicate;
+    public void variantC(IBiPredicate<X,X> predicate) {
+        this.v = predicate;
     }
 
-    private boolean isDeltaOk(X x){
-        if (this.deltaPredicate==null){
+    private boolean evalV(X x){
+        if (this.v ==null){
             return true;
         } else {
             // need to plumb in old value using the object transaction restore
-            return this.deltaPredicate.test(x,x);
+            return this.v.test(x,x);
         }
     }
 }

@@ -50,9 +50,9 @@ public class StaticsDetectionTest extends BaseExecutionModesTest {
   public static class AtoA extends PEdge<A> {
     {
       type(A.class);
-      pre(a->true);
+      preC(a->true);
       func(a->new A(222));
-      post(a->true);
+      postC(a->true);
     }
   }
 
@@ -60,8 +60,8 @@ public class StaticsDetectionTest extends BaseExecutionModesTest {
   public static class g extends PGraph<A> {
     {
       type(A.class);
-      pre(a->true);
-      post(a->true);
+      loopC(a->true);
+      postC(a->true);
       step(AtoA.class);
     }
   }

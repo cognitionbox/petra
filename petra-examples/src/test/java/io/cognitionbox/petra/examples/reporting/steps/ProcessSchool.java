@@ -9,11 +9,12 @@ public class ProcessSchool extends PGraph<School> {
         // set safety properties that are always checked
 
         type(School.class);
-        pre(p->p.hasPupils() && !p.allPupilsHaveAverage());
+        loopI(p->p.hasPupils() && (!p.allPupilsHaveAverage() ^ p.allPupilsHaveAverage()) );
+        loopC(p->!p.allPupilsHaveAverage());
         stepForall(s->s.getAllPupils(),
                 new ProcessExamResults());
         stepForall(s->s.getAllPupils(),
                 new SitExams());
-        post(p->p.allPupilsHaveAverage());
+        postC(p->p.allPupilsHaveAverage());
     }
 }

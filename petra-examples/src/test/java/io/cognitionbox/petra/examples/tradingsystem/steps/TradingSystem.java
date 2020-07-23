@@ -29,12 +29,12 @@ public class TradingSystem extends PGraph<State> {
     {
         type(State.class);
         setSleepPeriod(1000);
-        pre(x->x.currentExp().get()>=0 && x.currentExp().get()<=160 &&
+        loopC(x->x.currentExp().get()>=0 && x.currentExp().get()<=160 &&
                 forAll(Trader.class,x.traders(),t->t.isEnabled()));
         stepForall(x->x.getTraders(),new Trade());
         join(state->true,
             state->state.updateExposure(),
             state->true);
-        post(x->x.isAtMaxExposure());
+        postC(x->x.isAtMaxExposure());
     }
 }

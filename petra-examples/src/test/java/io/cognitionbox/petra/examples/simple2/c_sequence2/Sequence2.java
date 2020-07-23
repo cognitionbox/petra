@@ -54,33 +54,33 @@ public class Sequence2 extends BaseExecutionModesTest {
         class SeqEdge1 extends PEdge<X> {
             {
                 type(X.class);
-                pre(x -> x.isA());
+                preC(x -> x.isA());
                 func(x ->{
                     x.state(State.B);
                     return x;
                 });
-                post(x -> x.isB());
+                postC(x -> x.isB());
             }
         }
         class SeqEdge2 extends PEdge<X> {
             {
                 type(X.class);
-                pre(x ->x.isB());
+                preC(x ->x.isB());
                 func(x ->{
                     x.state(State.C);
                     return x;
                 });
-                post(x -> x.isC());
+                postC(x -> x.isC());
             }
         }
 
         class SeqGraph extends PGraph<X> {
             {
                 type(X.class);
-                pre(x->x.isAB());
+                loopC(x->x.isAB());
                 step(new SeqEdge2());
                 step(new SeqEdge1());
-                post(x->x.isC());
+                postC(x->x.isC());
             }
         }
 

@@ -26,8 +26,8 @@ import static io.cognitionbox.petra.util.Petra.rt;
 public class AtoAGraph extends PGraph<A> {
     {
        type(A.class);
-       pre(x->getCurrentIteration()==0);
+       loopC(x->getCurrentIteration()==0);
        step(new AtoA());
-       post(x->getCurrentIteration()==1);
+       postC(x->getCurrentIteration()==1);
     }
 }

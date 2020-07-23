@@ -29,7 +29,7 @@ import static io.cognitionbox.petra.util.Petra.rt;
 public class IncrementA extends PEdge<A> implements IRollback<A> {
     {
        type(A.class);
-       pre(a->a.value<10);
+       preC(a->a.value<10);
        func(a->{
             if (Math.random()>=0.5){
                 throw new IllegalStateException();
@@ -38,7 +38,7 @@ public class IncrementA extends PEdge<A> implements IRollback<A> {
             System.out.println("A="+a.value);
             return a;
         });
-        post(a->a.value==10);
+        postC(a->a.value==10);
     }
 
     @Override

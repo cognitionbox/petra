@@ -62,7 +62,7 @@ public class DeadLockDetectionTest extends BaseExecutionModesTest {
   public static class AtoA extends PEdge<A> {
     {
       type(A.class);
-      pre(a->a.value==1);
+      preC(a->a.value==1);
       func(a->{
         ThreadDemo1 T1 = new ThreadDemo1();
         ThreadDemo2 T2 = new ThreadDemo2();
@@ -78,7 +78,7 @@ public class DeadLockDetectionTest extends BaseExecutionModesTest {
         a.value = 222;
         return a;
       });
-      post(a->a.value==222);
+      postC(a->a.value==222);
     }
   }
 
@@ -86,8 +86,8 @@ public class DeadLockDetectionTest extends BaseExecutionModesTest {
   public static class g extends PGraph<A> {
     {
       type(A.class);
-      pre(a->a.value==1);
-      post(a->a.value==222);
+      loopC(a->a.value==1);
+      postC(a->a.value==222);
       step(AtoA.class);
     }
   }

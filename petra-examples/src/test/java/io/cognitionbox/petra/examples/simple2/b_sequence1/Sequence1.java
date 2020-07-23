@@ -54,21 +54,21 @@ public class Sequence1 extends BaseExecutionModesTest {
         class SeqEdge extends PEdge<X> {
             {
                 type(X.class);
-                pre(x -> x.isA() ^ x.isB());
+                preC(x -> x.isA() ^ x.isB());
                 func(x ->{
                     x.state(State.values()[x.state().ordinal() + 1]);
                     return x;
                 });
-                post(x -> x.isB() ^ x.isC());
+                postC(x -> x.isB() ^ x.isC());
             }
         }
 
         class SeqGraph extends PGraph<X> {
             {
                 type(X.class);
-                pre(x->x.isAB());
+                loopC(x->x.isAB());
                 step(new SeqEdge());
-                post(x->x.isC());
+                postC(x->x.isC());
             }
         }
 

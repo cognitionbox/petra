@@ -28,9 +28,9 @@ import static io.cognitionbox.petra.util.Petra.rt;
 public class PrintAGraph extends PGraph<X> {
     {
        type(X.class);
-       pre(x->getCurrentIteration()==0);
+       loopC(x->getCurrentIteration()==0);
        step(x->x.getA1(),new PrintA());
        step(x->x.getA2(),new PrintA());
-       post(x->getCurrentIteration()==1);
+       postC(x->getCurrentIteration()==1);
     }
 }

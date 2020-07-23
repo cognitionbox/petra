@@ -79,8 +79,8 @@ public class ExclusivesTest extends BaseExecutionModesTest {
   public static class AtoA extends PEdge<A> implements IRollback<A> {
     {
       type(A.class);
-      pre(a->a.integer.get()==0 || a.integer.get()!=10);
-      post(a->a.integer.get()==10);
+      preC(a->a.integer.get()==0 || a.integer.get()!=10);
+      postC(a->a.integer.get()==10);
       func(a->{
         a.integer.incrementAndGet();
         return a;
@@ -101,8 +101,8 @@ public class ExclusivesTest extends BaseExecutionModesTest {
   public static class g extends PGraph<A> {
     {
       type(A.class);
-      pre(a->a.integer.get()==0);
-      post(a->a.integer.get()==10);
+      loopC(a->a.integer.get()==0);
+      postC(a->a.integer.get()==10);
       step(AtoA.class);
     }
   }
