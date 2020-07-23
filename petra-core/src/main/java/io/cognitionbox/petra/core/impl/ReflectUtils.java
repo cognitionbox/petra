@@ -17,6 +17,7 @@ package io.cognitionbox.petra.core.impl;
 
 import org.reflections.Reflections;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -28,6 +29,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class ReflectUtils {
 
@@ -128,6 +130,11 @@ public class ReflectUtils {
             }
             allFields.addAll(fields);
         }
+    }
+
+    static public <T> Set<Field> getAllNonStaticFieldsAccessibleFromObject(Class<?> t) {
+        return getAllFieldsAccessibleFromObject(t).stream()
+                .filter(f->!Modifier.isStatic(f.getModifiers())).collect(Collectors.toSet());
     }
 
     static public <T> Set<Field> getAllFieldsAccessibleFromObject(Class<?> t) {

@@ -6,6 +6,7 @@ import io.cognitionbox.petra.factory.PetraParallelComponentsFactory;
 import io.cognitionbox.petra.factory.PetraSequentialComponentsFactory;
 import io.cognitionbox.petra.util.impl.PList;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -44,15 +45,17 @@ public class ObjectTrans {
     public ObjectTrans() {}
 
     public void capture(Object object){
-        Set<Field> fields = ReflectUtils.getAllFieldsAccessibleFromObject(object.getClass());
+        Set<Field> fields = ReflectUtils.getAllNonStaticFieldsAccessibleFromObject(object.getClass());
         fields.parallelStream().forEach(f->{
             boolean access = f.isAccessible();
             f.setAccessible(true);
             try {
                 Object value = f.get(object);
-                // later add support for petra's parallel / distributable atomic reference
-                // we capture/replace the value rather than the reference
-                storedValues.put(f,copyer.copy(value));
+                if (value instanceof Serializable){
+                    // later add support for petra's parallel / distributable atomic reference
+                    // we capture/replace the value rather than the reference
+                    storedValues.put(f,copyer.copy(value));
+                }
             } catch (Throwable e) {
                 e.printStackTrace();
             } finally {
@@ -89,17 +92,19 @@ public class ObjectTrans {
     }
 
     public void restore(Object object){
-        Set<Field> fields = ReflectUtils.getAllFieldsAccessibleFromObject(object.getClass());
+        Set<Field> fields = ReflectUtils.getAllNonStaticFieldsAccessibleFromObject(object.getClass());
         fields.parallelStream().forEach(f->{
             // later add support for petra's parallel / distributable atomic reference
             // we capture/replace the value rather than the reference
             boolean access = f.isAccessible();
             f.setAccessible(true);
             try {
-                Object restored = storedValues.get(f);
-                // later add support for petra's parallel / distributable atomic reference
-                // we capture/replace the value rather than the reference
-                f.set(object,restored);
+                if (storedValues.containsKey(f)){
+                    Object restored = storedValues.get(f);
+                    // later add support for petra's parallel / distributable atomic reference
+                    // we capture/replace the value rather than the reference
+                    f.set(object,restored);
+                }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             } finally {
