@@ -184,9 +184,11 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
     private List<StateIterableTransformerStep> stateIterableTransformerSteps = new ArrayList<>();
     public <P> void stepForall(IFunction<X,Iterable<P>> transformer, IStep<P> step){
         stateIterableTransformerSteps.add(new StateIterableTransformerStep(transformer, (AbstractStep) step));
+        addParallizable(step);
     }
     public <P> void step(IFunction<X,P> transformer, IStep<P> step){
         stateTransformerSteps.add(new StateTransformerStep(transformer, (AbstractStep) step));
+        addParallizable(step);
     }
     private void prepareSteps(){
         for (StateTransformerStep<X,?> f : stateTransformerSteps){
@@ -230,7 +232,6 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 
     public void step(IStep<X> computation) {
         step(x->x,computation);
-        //addParallizable(computation);
     }
 
     private Set<Class<?>> deconstructable = new HashSet<>();
