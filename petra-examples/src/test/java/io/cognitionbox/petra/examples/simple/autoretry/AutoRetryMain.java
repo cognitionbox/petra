@@ -23,6 +23,8 @@ import io.cognitionbox.petra.examples.simple.common.A;
 import io.cognitionbox.petra.examples.simple.common.AB;
 import io.cognitionbox.petra.examples.simple.common.B;
 import io.cognitionbox.petra.lang.PComputer;
+import io.cognitionbox.petra.lang.RGraphComputer;
+import io.cognitionbox.petra.lang.config.PetraTestConfig;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -47,6 +49,9 @@ public class AutoRetryMain extends BaseExecutionModesTest {
      */
     @Test
     public void test(){
+
+        ((PetraTestConfig)RGraphComputer.getConfig()).disableExceptionsPassthrough();
+
         AB result = new PComputer<AB>()
                 .eval(new ABtoAB(),new AB(new A(),new B()));
 

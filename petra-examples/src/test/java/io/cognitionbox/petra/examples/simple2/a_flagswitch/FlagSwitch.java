@@ -54,12 +54,12 @@ public class FlagSwitch extends BaseExecutionModesTest {
         class FlagEdge extends PEdge<X> {
             {
                 type(X.class);
-                preC(x -> x.value==false);
+                pre(x -> x.value==false);
                 func(x ->{
                     x.value=true;
                     return x;
                 });
-                postC(x -> x.value==true);
+                post(x -> x.value==true);
             }
         }
 
@@ -67,9 +67,9 @@ public class FlagSwitch extends BaseExecutionModesTest {
             {
                 type(X.class);
                 //invariant(x -> x.value==true ^ x.value==false);
-                loopC(x -> x.value==false);
+                pre(x -> x.value==false);
                 step(new FlagEdge());
-                postC(x -> x.value==true);
+                post(x -> x.value==true);
             }
         }
 

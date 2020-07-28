@@ -30,7 +30,6 @@ import io.cognitionbox.petra.lang.annotations.DoesNotTerminate;
 import io.cognitionbox.petra.lang.annotations.Extract;
 import io.cognitionbox.petra.exceptions.GraphException;
 import io.cognitionbox.petra.exceptions.IterationsTimeoutException;
-import io.cognitionbox.petra.exceptions.JoinException;
 import io.cognitionbox.petra.exceptions.PetraException;
 import io.cognitionbox.petra.exceptions.conditions.PostConditionFailure;
 import io.cognitionbox.petra.config.ExecMode;
@@ -107,38 +106,37 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         }
     }
 
-    private IPredicate<X> loopI = null;// null means x->true;
-
-    public void loopI(IPredicate<X> loopI) {
-        this.loopI = loopI;
-    }
-
     X executeMatchingLoopUntilPostCondition() {
         currentIteration = 0;
         X out = null;
-        while (this.p().test(getInput().getValue())) {
+        while (!this.q().test(getInput().getValue())) {
             iterationId.getAndIncrement();
             currentIteration++;
             try {
                 Lg();
-                out = iteration();
+                iteration();
+                List<Throwable> exceptions = exceptions();
+                if (!exceptions.isEmpty()) {
+                    return (X) new GraphException((X) this.getInput().getValue(), null, exceptions);
+                }
             } catch (Exception e){
                 e.printStackTrace();
             }
         }
-        if (out!=null){
-            return out;
-        }
-        // loop terminated before post condition reached
-        throw new PostConditionFailure();
+//        if (out!=null){
+//            return out;
+//        }
+//        // loop terminated before post condition reached
+//        throw new PostConditionFailure();
+
+        return getInput().getValue();
     }
 
-    X iteration(){
-        if (currentIteration > getMaxIterations()) {
-            // if we go past the max iterations, we have failed to meet the post cons
-            putState(new IterationsTimeoutException());
-            return (X) new IterationsTimeoutException();
-        } else {
+    void iteration(){
+//        if (currentIteration > getMaxIterations()) {
+//            // if we go past the max iterations, we have failed to meet the post cons
+//            putState(new IterationsTimeoutException());
+//        } else {
             if (sleepPeriod>0) {
                 sleep(sleepPeriod);
             }
@@ -162,13 +160,14 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
             //De();
             Ex();
             Jn();
-            Object toReturn = Rt();
-            if (toReturn != null) {
-                return (X) toReturn;
-            } else {
-                return null;
-            }
-        }
+//            Object toReturn = Rt();
+//            if (toReturn != null) {
+//                return (X) toReturn;
+//            } else {
+//                return null;
+//            }
+
+        //  }
     }
 
     public void step(Class<? extends IStep<X>> computation) {
@@ -241,140 +240,6 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         // decons one level
     }
 
-    private void addJoinType(IJoin join) {
-        joinsTypes.add(join);
-    }
-
-    // need to add the domain restriction support to joins as rc point
-    @Deprecated
-    public <A extends D, R extends D> void joinSome(Class<? extends IJoin> clazz) {
-        if (AbstractPureJoin1.class.isAssignableFrom(clazz)) {
-            joinSome((AbstractPureJoin1<? extends D, ? extends D>) Petra.createJoin(clazz));
-        } else if (AbstractPureJoin2.class.isAssignableFrom(clazz)) {
-            joinSome((AbstractPureJoin2<? extends D, ? extends D, ? extends D>) Petra.createJoin(clazz));
-        } else if (AbstractPureJoin3.class.isAssignableFrom(clazz)) {
-            joinSome((AbstractPureJoin3<? extends D, ? extends D, ? extends D, ? extends D>) Petra.createJoin(clazz));
-        }
-        throw new UnsupportedOperationException();
-    }
-
-    public <A extends D, B extends D, R extends D> void join(IPredicate<X> pre,
-                                                             IConsumer<X> joinEdge,
-                                                             IPredicate<X> post) {
-        this.newJoins.add(Triplet.with(new GuardWrite(Object.class, pre),joinEdge,new GuardWrite(Object.class, post)));
-    }
-
-    public <A extends D, R extends D> void joinSome(AbstractPureJoin1<A, R> PJoinEdge) {
-        addJoinType(PJoinEdge);
-        join(false,PJoinEdge, PJoinEdge.a(), PJoinEdge.func(), PJoinEdge.r(), null);
-    }
-
-    public <A extends D, B extends D, R extends D> void joinSome(AbstractPureJoin2<A, B, R> joinEdge) {
-        addJoinType(joinEdge);
-        join(false,joinEdge, joinEdge.a(), joinEdge.b(), joinEdge.func(), joinEdge.r(), null);
-    }
-
-    public <A extends D, B extends D, C extends D, R extends D> void joinSome(AbstractPureJoin3<A, B, C, R> joinEdge) {
-        addJoinType(joinEdge);
-        join(false,joinEdge, joinEdge.a(), joinEdge.b(), joinEdge.c(), joinEdge.func(), joinEdge.r(), null);
-    }
-
-    public <A extends D, R extends D> void joinAll(AbstractPureJoin1<A, R> PJoinEdge) {
-        addJoinType(PJoinEdge);
-        join(true,PJoinEdge, PJoinEdge.a(), PJoinEdge.func(), PJoinEdge.r(), null);
-    }
-
-    public <A extends D, B extends D, R extends D> void joinAll(AbstractPureJoin2<A, B, R> joinEdge) {
-        addJoinType(joinEdge);
-        join(true,joinEdge, joinEdge.a(), joinEdge.b(), joinEdge.func(), joinEdge.r(), null);
-    }
-
-    public <A extends D, B extends D, C extends D, R extends D> void joinAll(AbstractPureJoin3<A, B, C, R> joinEdge) {
-        addJoinType(joinEdge);
-        join(true,joinEdge, joinEdge.a(), joinEdge.b(), joinEdge.c(), joinEdge.func(), joinEdge.r(), null);
-    }
-
-    private <A extends D, B extends D, C extends D, R extends D, E extends Throwable> void join(boolean joinAll, AbstractPureJoin3 join, Guard<? super A> a, Guard<? super B> b, Guard<? super C> c,
-                                                                                                ITriFunction<List<A>, List<B>, List<C>, R> transform, Guard<? super R> predicate, List<Class<? extends Exception>> throwsRandomly) {
-        int index = getNoOfJoins();
-        addJoin(index, (toUse, toWrite) -> {
-            executePureJoin3(joinAll,join, index, a, b, c, transform, predicate, toUse, toWrite, throwsRandomly);
-        });
-    }
-
-    private <A extends D, B extends D, R extends D, E extends Throwable> void join(boolean joinAll, AbstractPureJoin2 join, Guard<? super A> a, Guard<? super B> b, IBiFunction<List<A>, List<B>, R> transform, Guard<? super R> predicate, List<Class<? extends Exception>> throwsRandomly) {
-        int index = getNoOfJoins();
-        addJoin(index, (toUse, toWrite) -> {
-            executePureJoin2(joinAll,join, index, a, b, transform, predicate, toUse, toWrite, throwsRandomly);
-        });
-    }
-
-    private <A extends D, R extends D> void join(boolean joinAll, AbstractPureJoin1 join, Guard<? super A> a, IFunction<List<A>, R> transform, Guard<? super R> predicate, List<Class<? extends Exception>> throwsRandomly) {
-        int index = getNoOfJoins();
-        addJoin(index, (toUse, toWrite) -> {
-            executePureJoin1(joinAll,join, index, a, transform, predicate, toUse, toWrite, throwsRandomly);
-        });
-    }
-
-
-
-    public <A extends D, R extends D> void joinSome(AbstractEffectJoin1<A> PJoinEdge) {
-        addJoinType(PJoinEdge);
-        join(false,PJoinEdge, PJoinEdge.a(), PJoinEdge.func(),null);
-    }
-
-    public <A extends D, B extends D, R extends D> void joinSome(AbstractEffectJoin2<A, B> joinEdge) {
-        addJoinType(joinEdge);
-        join(false,joinEdge, joinEdge.a(), joinEdge.b(), joinEdge.func(), null);
-    }
-
-    public <A extends D, B extends D, C extends D, R extends D> void joinSome(AbstractEffectJoin3<A, B, C> joinEdge) {
-        addJoinType(joinEdge);
-        join(false,joinEdge, joinEdge.a(), joinEdge.b(), joinEdge.c(), joinEdge.func(),null);
-    }
-
-    public <A extends D, R extends D> void joinAll(AbstractEffectJoin1<A> PJoinEdge) {
-        addJoinType(PJoinEdge);
-        join(true,PJoinEdge, PJoinEdge.a(), PJoinEdge.func(),null);
-    }
-
-    public <A extends D, B extends D, R extends D> void joinAll(AbstractEffectJoin2<A, B> joinEdge) {
-        addJoinType(joinEdge);
-        join(true,joinEdge, joinEdge.a(), joinEdge.b(), joinEdge.func(), null);
-    }
-
-    public <A extends D, B extends D, C extends D, R extends D> void joinAll(AbstractEffectJoin3<A, B, C> joinEdge) {
-        addJoinType(joinEdge);
-        join(true,joinEdge, joinEdge.a(), joinEdge.b(), joinEdge.c(), joinEdge.func(),null);
-    }
-
-    private <A extends D, B extends D, C extends D, R extends D, E extends Throwable> void join(boolean joinAll, AbstractEffectJoin3 join, Guard<? super A> a, Guard<? super B> b, Guard<? super C> c,
-                                                                                                ITriConsumer<List<A>, List<B>, List<C>> transform, List<Class<? extends Exception>> throwsRandomly) {
-        int index = getNoOfJoins();
-        addJoin(index, (toUse, toWrite) -> {
-            executeEffectJoin3(joinAll,join, index, a, b, c, transform, toUse, toWrite, throwsRandomly);
-        });
-    }
-
-    private <A extends D, B extends D, R extends D, E extends Throwable> void join(boolean joinAll, AbstractEffectJoin2 join, Guard<? super A> a, Guard<? super B> b, IBiConsumer<List<A>, List<B>> transform, List<Class<? extends Exception>> throwsRandomly) {
-        int index = getNoOfJoins();
-        addJoin(index, (toUse, toWrite) -> {
-            executeEffectJoin2(joinAll,join, index, a, b, transform, toUse, toWrite, throwsRandomly);
-        });
-    }
-
-    private <A extends D, R extends D> void join(boolean joinAll, AbstractEffectJoin1 join, Guard<? super A> a, IConsumer<List<A>> transform, List<Class<? extends Exception>> throwsRandomly) {
-        int index = getNoOfJoins();
-        addJoin(index, (toUse, toWrite) -> {
-            executeEffectJoin1(joinAll,join, index, a, transform, toUse, toWrite, throwsRandomly);
-        });
-    }
-
-
-
-
-
-
     public List<IStep> getParallizable() {
         return parallizable;
     }
@@ -437,6 +302,9 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
             for (StepCallable callable : callables) {
                 try {
                     StepResult sr = callable.call();
+                    if (sr.getOutputValue().getValue() instanceof Throwable){
+                        this.place.addValue(sr.getOutputValue().getValue());
+                    }
                     if (OperationType.READ_WRITE != sr.getOperationType()) {
                         deconstruct(sr.getOutputValue());
                         //putState(f.get().getOutputValue());
@@ -449,8 +317,12 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
             try {
                 List<Future<StepResult>> futures = RGraphComputer.getWorkerExecutor().invokeAll(callables);
                 for (Future<StepResult> f : futures){
-                    if (OperationType.READ_WRITE != f.get().getOperationType()) {
-                        deconstruct(f.get().getOutputValue());
+                    StepResult sr = f.get();
+                    if (sr.getOutputValue().getValue() instanceof Throwable){
+                        this.place.addValue(sr.getOutputValue().getValue());
+                    }
+                    if (OperationType.READ_WRITE != sr.getOperationType()) {
+                        deconstruct(sr.getOutputValue());
                         //putState(f.get().getOutputValue());
                     }
                 }
@@ -524,22 +396,22 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         return this.getPlace().size() == 0 && this.q().isVoid();
     }
 
-    private List<PetraException> exceptions() {
+    private List<Throwable> exceptions() {
         return this.getPlace()
                 .stream()
-                .filter(s -> s.getValue() instanceof PetraException)
+                .filter(s -> s.getValue() instanceof Throwable)
                 .map(s -> (PetraException) s.getValue())
                 .collect(Collectors.toCollection(() -> new PList<>()));
     }
 
     X Rt() {
-        List<PetraException> exceptions = exceptions();
+        List<Throwable> exceptions = exceptions();
         if (!exceptions.isEmpty()) {
-            for (PetraException petraException : exceptions) {
-                petraException.printStackTrace();
-                for (Throwable t : petraException.getCauses()) {
-                    t.printStackTrace();
-                }
+            for (Throwable throwable : exceptions) {
+//                throwable.printStackTrace();
+//                for (Throwable t : throwable.getCauses()) {
+//                    t.printStackTrace();
+//                }
             }
             return (X) new GraphException((X) this.getInput().getValue(), null, exceptions);
         }
@@ -641,312 +513,6 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         }
     }
 
-    // PJoin 1 rc
-    <A, E extends Throwable> void executeEffectJoin1(boolean joinAll, AbstractEffectJoin1 join, int index, Guard<? super A> a,
-                                                      IConsumer<List<A>> transform, Collection<IToken> toUse, RGraph toWrite, List<Class<? extends Exception>> throwsRandomly) {
-        Guard[] Guards = new Guard[1];
-        Guards[0] = a;
-        List<List<IToken>> listOfMatches = new PList();
-        populateListOfMatchesAndRemoveFromCurrentStates(join, index, Guards, listOfMatches, toUse);
-        if ((!joinAll && listOfMatches.stream().flatMap(l->l.stream()).findAny().isPresent()) || (joinAll && listOfMatches.stream().flatMap(l->l.stream()).count()==toUse.size())){
-            List<IToken> one = listOfMatches.get(0);
-            PList<A> as = one.stream().map(x -> x.getValue()).collect(Collectors.toCollection(() -> new PList()));
-            try {
-                if (RGraphComputer.getConfig().isTestMode() && (throwsRandomly != null && throwsRandomly.size() > 0)) {
-                    Petra.throwRandomException(throwsRandomly);
-                }
-                //rollbackHelper.captureListStates(join.getMillisBeforeRetry(), join, as);
-                synchronized (this) {
-                    transform.accept(as);
-                }
-                boolean postConditionOk = as.stream().allMatch(join.postA);
-                boolean sideEffectsOk = true;//rollbackHelper.sideEffectsCheck(join, as);
-                if (postConditionOk && sideEffectsOk) {
-
-                } else {
-                    if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
-                        if (!postConditionOk && sideEffectsOk) {
-                            toWrite.putState(new JoinException(null, new PostConditionFailure()));
-                        } else if (postConditionOk && !sideEffectsOk) {
-                            toWrite.putState(new JoinException(null, new SideEffectFailure()));
-                        } else if (!postConditionOk && !sideEffectsOk) {
-                            toWrite.putState(new JoinException(null, new PostConditionFailure(), new SideEffectFailure()));
-                        }
-                    } else {
-                       // rollbackHelper.rollbackListStates(join.getMillisBeforeRetry(), join, as);
-                    }
-                }
-            } catch (Exception e) {
-                LOG.error(this.getUniqueId()+"."+join.getJoinClazz().getSimpleName()+"."+index, e);
-                if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
-                    toWrite.putState(new JoinException(null, e));
-                } else {
-                    //rollbackHelper.rollbackListStates(join.getMillisBeforeRetry(), join, as);
-                }
-            }
-        }
-    }
-
-    // PJoin 1 rc
-    <A, R, E extends Throwable> void executePureJoin1(boolean joinAll, AbstractPureJoin1 join, int index, Guard<? super A> a,
-                                                      IFunction<List<A>, R> transform,
-                                                      Guard<? super R> predicate, Collection<IToken> toUse, RGraph toWrite, List<Class<? extends Exception>> throwsRandomly) {
-        Guard[] Guards = new Guard[1];
-        Guards[0] = a;
-        List<List<IToken>> listOfMatches = new PList();
-        populateListOfMatchesAndRemoveFromCurrentStates(join, index, Guards, listOfMatches, toUse);
-        if ((!joinAll && listOfMatches.stream().flatMap(l->l.stream()).findAny().isPresent()) || (joinAll && listOfMatches.stream().flatMap(l->l.stream()).count()==toUse.size())){
-            List<IToken> one = listOfMatches.get(0);
-            Object value = null;
-            PList<A> as = one.stream().map(x -> x.getValue()).collect(Collectors.toCollection(() -> new PList()));
-            try {
-                if (RGraphComputer.getConfig().isTestMode() && (throwsRandomly != null && throwsRandomly.size() > 0)) {
-                    Petra.throwRandomException(throwsRandomly);
-                }
-                synchronized (this) {
-                    value = transform.apply(as);
-                }
-                if (value == null) {
-                    value = vd;
-                }
-                boolean postConditionOk = predicate.test((R) value);
-                if (postConditionOk) {
-                    // remove matches
-                    int i = 0;
-                    for (List matches : listOfMatches) {
-                        i++;
-                    }
-                    toWrite.deconstruct(new Token(value),t->true);
-                } else {
-                    if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
-                        if (!postConditionOk) {
-                            toWrite.putState(new JoinException(value, new PostConditionFailure()));
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                LOG.error(this.getUniqueId()+"."+join.getJoinClazz().getSimpleName()+"."+index, e);
-                if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
-                    toWrite.putState(new JoinException(null, e));
-                }
-            }
-        }
-    }
-
-    // PJoin 2 types
-    <A, B, E extends Throwable> void executeEffectJoin2(boolean joinAll, AbstractEffectJoin2 join, int index, Guard<? super A> a, Guard<? super B> b,
-                                                         IBiConsumer<List<A>, List<B>> transform, Collection<IToken> toUse, RGraph toWrite, List<Class<? extends Exception>> throwsRandomly) {
-        Guard[] Guards = new Guard[2];
-        Guards[0] = a;
-        Guards[1] = b;
-        List<List<IToken>> listOfMatches = new PList();
-        populateListOfMatchesAndRemoveFromCurrentStates(join, index, Guards, listOfMatches, toUse);
-        if ((!joinAll && listOfMatches.stream().flatMap(l->l.stream()).findAny().isPresent()) || (joinAll && listOfMatches.stream().flatMap(l->l.stream()).count()==toUse.size())){
-            Pair<PList<IToken>, PList<IToken>> pair = Pair.with((PList<IToken>) listOfMatches.get(0), (PList<IToken>) listOfMatches.get(1));
-            Object value = null;
-            PList<A> as = (PList<A>) pair.getValue0().stream().map(x -> x.getValue()).collect(Collectors.toCollection(() -> new PList<>()));
-            PList<B> bs = (PList<B>) pair.getValue1().stream().map(x -> x.getValue()).collect(Collectors.toCollection(() -> new PList<>()));
-            try {
-                if (RGraphComputer.getConfig().isTestMode() && (throwsRandomly != null && throwsRandomly.size() > 0)) {
-                    Petra.throwRandomException(throwsRandomly);
-                }
-                //rollbackHelper.captureListStates(join.getMillisBeforeRetry(), join, as, bs);
-                synchronized (this) {
-                    transform.accept(as, bs);
-                }
-                boolean postConditionOk = as.stream().allMatch(join.postA) && bs.stream().allMatch(join.postB);
-                boolean sideEffectsOk = true;//rollbackHelper.sideEffectsCheck(join, as, bs);
-                if (postConditionOk) {
-
-                } else {
-                    if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
-                        if (!postConditionOk && sideEffectsOk) {
-                            toWrite.putState(new JoinException(value, new PostConditionFailure()));
-                        } else if (postConditionOk && !sideEffectsOk) {
-                            toWrite.putState(new JoinException(value, new SideEffectFailure()));
-                        } else if (!postConditionOk && !sideEffectsOk) {
-                            toWrite.putState(new JoinException(value, new PostConditionFailure(), new SideEffectFailure()));
-                        }
-                    } else {
-                        //rollbackHelper.rollbackListStates(join.getMillisBeforeRetry(), join, as, bs);
-                    }
-                }
-            } catch (Exception e) {
-                LOG.error(this.getUniqueId()+"."+join.getJoinClazz().getSimpleName()+"."+index, e);
-                if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
-                    toWrite.putState(new JoinException(null, e));
-                } else {
-                    //rollbackHelper.rollbackListStates(join.getMillisBeforeRetry(), join, as, bs);
-                }
-            }
-        }
-    }
-
-    // PJoin 2 types
-    <A, B, R, E extends Throwable> void executePureJoin2(boolean joinAll, AbstractPureJoin2 join, int index, Guard<? super A> a, Guard<? super B> b,
-                                                         IBiFunction<List<A>, List<B>, R> transform,
-                                                         Guard<? super R> predicate, Collection<IToken> toUse, RGraph toWrite, List<Class<? extends Exception>> throwsRandomly) {
-        Guard[] Guards = new Guard[2];
-        Guards[0] = a;
-        Guards[1] = b;
-        List<List<IToken>> listOfMatches = new PList();
-        populateListOfMatchesAndRemoveFromCurrentStates(join, index, Guards, listOfMatches, toUse);
-        if ((!joinAll && listOfMatches.stream().flatMap(l->l.stream()).findAny().isPresent()) || (joinAll && listOfMatches.stream().flatMap(l->l.stream()).count()==toUse.size())){
-            Pair<PList<IToken>, PList<IToken>> pair = Pair.with((PList<IToken>) listOfMatches.get(0), (PList<IToken>) listOfMatches.get(1));
-            Object value = null;
-            PList<A> as = (PList<A>) pair.getValue0().stream().map(x -> x.getValue()).collect(Collectors.toCollection(() -> new PList<>()));
-            PList<B> bs = (PList<B>) pair.getValue1().stream().map(x -> x.getValue()).collect(Collectors.toCollection(() -> new PList<>()));
-            try {
-                if (RGraphComputer.getConfig().isTestMode() && (throwsRandomly != null && throwsRandomly.size() > 0)) {
-                    Petra.throwRandomException(throwsRandomly);
-                }
-                synchronized (this) {
-                    value = transform.apply(as, bs);
-                }
-                if (value == null) {
-                    value = vd;
-                }
-                boolean postConditionOk = predicate.test((R) value);
-                if (postConditionOk) {
-                    // remove matches
-                    int i = 0;
-                    for (List matches : listOfMatches) {
-                        i++;
-                    }
-                    toWrite.deconstruct(new Token(value),t->true);
-                } else {
-                    if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
-                        if (!postConditionOk) {
-                            toWrite.putState(new JoinException(value, new PostConditionFailure()));
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                LOG.error(this.getUniqueId()+"."+join.getJoinClazz().getSimpleName()+"."+index, e);
-                if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
-                    toWrite.putState(new JoinException(null, e));
-                }
-            }
-        }
-    }
-
-    // PJoin 3 types
-    <A, B, C, E extends Throwable> void executeEffectJoin3(boolean joinAll, AbstractEffectJoin3 join, int index, Guard<? super A> a, Guard<? super B> b, Guard<? super C> c,
-                                                            ITriConsumer<List<A>, List<B>, List<C>> transform, Collection<IToken> toUse, RGraph toWrite, List<Class<? extends Exception>> throwsRandomly) {
-        Guard[] Guards = new Guard[3];
-        Guards[0] = a;
-        Guards[1] = b;
-        Guards[2] = c;
-        List<List<IToken>> listOfMatches = new PList();
-        populateListOfMatchesAndRemoveFromCurrentStates(join, index, Guards, listOfMatches, toUse);
-        if ((!joinAll && listOfMatches.stream().flatMap(l->l.stream()).findAny().isPresent()) || (joinAll && listOfMatches.stream().flatMap(l->l.stream()).count()==toUse.size())){
-            Triplet<PList<IToken>, PList<IToken>, PList<IToken>> triplet = Triplet.with((PList<IToken>) listOfMatches.get(0), (PList<IToken>) listOfMatches.get(1), (PList<IToken>) listOfMatches.get(2));
-            PList<A> as = (PList<A>) triplet.getValue0().stream().map(x -> x.getValue()).collect(Collectors.toCollection(() -> new PList<>()));
-            PList<B> bs = (PList<B>) triplet.getValue1().stream().map(x -> x.getValue()).collect(Collectors.toCollection(() -> new PList<>()));
-            PList<C> cs = (PList<C>) triplet.getValue2().stream().map(x -> x.getValue()).collect(Collectors.toCollection(() -> new PList<>()));
-            try {
-                if (RGraphComputer.getConfig().isTestMode() && (throwsRandomly != null && throwsRandomly.size() > 0)) {
-                    Petra.throwRandomException(throwsRandomly);
-                }
-                //rollbackHelper.captureListStates(join.getMillisBeforeRetry(), join, as, bs, cs);
-                synchronized (this) {
-                    transform.accept(as, bs, cs);
-                }
-                boolean postConditionOk = as.stream().allMatch(join.postA) && bs.stream().allMatch(join.postB) && cs.stream().allMatch(join.postC);
-                boolean sideEffectsOk = true;//rollbackHelper.sideEffectsCheck(join, as, bs, cs);
-                if (postConditionOk && sideEffectsOk) {
-
-                } else {
-                    if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
-                        if (!postConditionOk && sideEffectsOk) {
-                            toWrite.putState(new JoinException(null, new PostConditionFailure()));
-                        } else if (postConditionOk && !sideEffectsOk) {
-                            toWrite.putState(new JoinException(null, new SideEffectFailure()));
-                        } else if (!postConditionOk && !sideEffectsOk) {
-                            toWrite.putState(new JoinException(null, new PostConditionFailure(), new SideEffectFailure()));
-                        }
-                    } else {
-                        //rollbackHelper.rollbackListStates(join.getMillisBeforeRetry(), join, as, bs, cs);
-                    }
-                }
-            } catch (Exception e) {
-                LOG.error(this.getUniqueId()+"."+join.getJoinClazz().getSimpleName()+"."+index, e);
-                if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
-                    toWrite.putState(new JoinException(null, e));
-                } else {
-                    //rollbackHelper.rollbackListStates(join.getMillisBeforeRetry(), join, as, bs, cs);
-                }
-            }
-        }
-    }
-
-    // PJoin 3 types
-    <A, B, C, R, E extends Throwable> void executePureJoin3(boolean joinAll, AbstractPureJoin3 join, int index, Guard<? super A> a, Guard<? super B> b, Guard<? super C> c,
-                                                            ITriFunction<List<A>, List<B>, List<C>, R> transform,
-                                                            Guard<? super R> predicate, Collection<IToken> toUse, RGraph toWrite, List<Class<? extends Exception>> throwsRandomly) {
-        Guard[] Guards = new Guard[3];
-        Guards[0] = a;
-        Guards[1] = b;
-        Guards[2] = c;
-        List<List<IToken>> listOfMatches = new PList();
-        populateListOfMatchesAndRemoveFromCurrentStates(join, index, Guards, listOfMatches, toUse);
-        if ((!joinAll && listOfMatches.stream().flatMap(l->l.stream()).findAny().isPresent()) || (joinAll && listOfMatches.stream().flatMap(l->l.stream()).count()==toUse.size())){
-            Triplet<PList<IToken>, PList<IToken>, PList<IToken>> triplet = Triplet.with((PList<IToken>) listOfMatches.get(0), (PList<IToken>) listOfMatches.get(1), (PList<IToken>) listOfMatches.get(2));
-            Object value = null;
-            PList<A> as = (PList<A>) triplet.getValue0().stream().map(x -> x.getValue()).collect(Collectors.toCollection(() -> new PList<>()));
-            PList<B> bs = (PList<B>) triplet.getValue1().stream().map(x -> x.getValue()).collect(Collectors.toCollection(() -> new PList<>()));
-            PList<C> cs = (PList<C>) triplet.getValue2().stream().map(x -> x.getValue()).collect(Collectors.toCollection(() -> new PList<>()));
-            try {
-                if (RGraphComputer.getConfig().isTestMode() && (throwsRandomly != null && throwsRandomly.size() > 0)) {
-                    Petra.throwRandomException(throwsRandomly);
-                }
-                synchronized (this) {
-                    value = transform.apply(as, bs, cs);
-                }
-                if (value == null) {
-                    value = vd; // really should throw null point as if they wanted to return Void they would have, so must be a mistake
-                }
-                boolean postConditionOk = predicate.test((R) value);
-                if (postConditionOk) {
-                    // remove matches
-                    int i = 0;
-                    for (List matches : listOfMatches) {
-                        i++;
-                    }
-                    toWrite.deconstruct(new Token(value),t->true);
-                } else {
-                    if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
-                        if (!postConditionOk) {
-                            toWrite.putState(new JoinException(value, new PostConditionFailure()));
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                LOG.error(this.getUniqueId()+"."+join.getJoinClazz().getSimpleName()+"."+index, e);
-                if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
-                    toWrite.putState(new JoinException(null, e));
-                }
-            }
-        }
-    }
-
-    private void populateListOfMatchesAndRemoveFromCurrentStates(IJoin join, int index, Guard[] Guards, List<List<IToken>> listOfMatches, Collection<IToken> toUse) {
-        for (Guard<?> guard : Guards) {
-            boolean copyInputs = guard.operationType!=OperationType.READ_WRITE;
-//            if (join instanceof IMaybeEffect) {
-//                io.cognitionbox.petra.google.Optional<Class<?>> effectType = ((IMaybeEffect) join).getEffectType();
-//                copyInputs = !( effectType.isPresent() &&
-//                        guard.getTypeClass().isAssignableFrom(effectType.get()));
-//            }
-            copyInputs = copyInputs && RGraphComputer.getConfig().isDefensiveCopyAllInputs();
-            IJoinMatchesProcessor joinMatchesProcessor = new JoinMatchesProcessor();
-            List<IToken> matches = joinMatchesProcessor.getMatchesUsingGuard(guard,copyInputs, toUse);
-            if (matches != null) {
-                listOfMatches.add(matches);
-            }
-        }
-    }
-
     synchronized private void removeAllStates(List<IToken> matches) {
         matches.stream().forEach(m -> removeState(m));
     }
@@ -1028,7 +594,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
                 joins.get(iFinal).accept((Collection<IToken>) list, (RGraph) toWrite);
             });
         }
-        returnType.getChoices().forEach(q -> copy.postC(new GuardReturn(q.getTypeClass(), q.predicate)));
+        returnType.getChoices().forEach(q -> copy.post(new GuardReturn(q.getTypeClass(), q.predicate)));
         return copy;
     }
 
@@ -1038,20 +604,20 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         return executeMatchingLoopUntilPostCondition();
     }
 
-    public void loopC(GuardInput<X> p) {
+    public void pre(GuardInput<X> p) {
         setP(p);
     }
 
-    public void loopC(IPredicate<X> predicate) {
+    public void pre(IPredicate<X> predicate) {
         setP(new GuardWrite(type, predicate));
     }
 
-    public void postC(GuardReturn<X> q) {
+    public void post(GuardReturn<X> q) {
         returnType.addChoice(new Guard(q.getTypeClass(),q.predicate,OperationType.RETURN));
         setQ(returnType);
     }
 
-    public void postC(IPredicate<X> predicate) {
+    public void post(IPredicate<X> predicate) {
         returnType.addChoice(new Guard(type,predicate,OperationType.RETURN));
         setQ(returnType);
     }

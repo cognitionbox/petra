@@ -7,13 +7,13 @@ import io.cognitionbox.petra.lang.PEdge;
 public class SitExams extends PEdge<Pupil> {
     {
         type(Pupil.class);
-        preC(p->!p.takenExams());
+        pre(p->!p.takenExams());
         func(p->{
             p.sitExam(new Exam());
             p.sitExam(new Exam());
             p.sitExam(new Exam());
             return p;
         });
-        postC(p->p.takenExams());
+        post(p->p.takenExams());
     }
 }

@@ -141,7 +141,7 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
             return res;
         } else if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
             // need to think about aggregating exceptions at parent graph level
-            return (X) new EdgeException(input, res, new PostConditionFailure());
+            return (X) new EdgeException(input, res, throwableRef.get());
         } else {
             objectTrans.restore(input);
             PEdgeRollbackHelper.rollback(input, this);
@@ -170,27 +170,27 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
         return false;
     }
 
-    public void preC(GuardInput<X> p) {
+    public void pre(GuardInput<X> p) {
         setP(p);
     }
 
-    public void preC(IPredicate<X> predicate) {
+    public void pre(IPredicate<X> predicate) {
         setP(new GuardWrite(type, predicate));
     }
 
-    public void postC(GuardReturn<X> q) {
+    public void post(GuardReturn<X> q) {
         returnType.addChoice(new Guard(q.getTypeClass(),q.predicate,OperationType.RETURN));
         setQ(returnType);
     }
 
-    public void postC(IPredicate<X> predicate) {
+    public void post(IPredicate<X> predicate) {
         returnType.addChoice(new Guard(type,predicate,OperationType.RETURN));
         setQ(returnType);
     }
 
     private IBiPredicate<X,X> v = null;
 
-    public void variantC(IBiPredicate<X,X> predicate) {
+    public void variant(IBiPredicate<X,X> predicate) {
         this.v = predicate;
     }
 

@@ -31,7 +31,6 @@ import org.junit.runners.Parameterized;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Ignore
 @RunWith(Parameterized.class)
 public class ParallelLoopMain extends BaseExecutionModesTest {
     public ParallelLoopMain(ExecMode execMode) {

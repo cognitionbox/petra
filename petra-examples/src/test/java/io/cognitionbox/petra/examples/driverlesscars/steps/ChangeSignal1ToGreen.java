@@ -6,7 +6,7 @@ import io.cognitionbox.petra.lang.PEdge;
 public class ChangeSignal1ToGreen extends PEdge<Simlulation> {
     {
         type(Simlulation.class);
-        preC(s->(s.signalAisRED() && s.signalBisGREEN()) && Math.random()>0.3);
+        pre(s->(s.signalAisRED() && s.signalBisGREEN()) && Math.random()>0.3);
         func(s->{
             s.getSignalA().setToGreenLight();
             s.getSignalB().setToRedLight();
@@ -14,6 +14,6 @@ public class ChangeSignal1ToGreen extends PEdge<Simlulation> {
             System.out.println("signal 2 = "+s.getSignalB().getSignal());
             return s;
         });
-        postC(s->(s.signalAisGREEN() && s.signalBisRED()));
+        post(s->(s.signalAisGREEN() && s.signalBisRED()));
     }
 }

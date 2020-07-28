@@ -78,16 +78,16 @@ public class ResourceConflictTest extends BaseExecutionModesTest {
 
   public static class AtoA extends PEdge<A> {
     {
-      preC(rw(A.class, x->true));
+      pre(rw(A.class, x->true));
       func(a->new A(222));
-      postC(Petra.rt(A.class, x->true));
+      post(Petra.rt(A.class, x->true));
     }
   }
 
   public static class g extends PGraph<A> {
     {
-      loopC(rw(A.class, x->true));
-      postC(Petra.rt(A.class, x->true));
+      pre(rw(A.class, x->true));
+      post(Petra.rt(A.class, x->true));
       step(AtoA.class);
     }
   }

@@ -19,7 +19,6 @@ import io.cognitionbox.petra.core.impl.*;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import io.cognitionbox.petra.exceptions.EdgeException;
 import io.cognitionbox.petra.exceptions.IterationsTimeoutException;
-import io.cognitionbox.petra.exceptions.JoinException;
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.core.engine.petri.impl.Token;
 import org.javatuples.Pair;
@@ -61,9 +60,9 @@ public abstract class StepTest<X> extends BaseExecutionModesTest {
     public static class EdgePGraph extends PGraph<Object> {
         EdgePGraph(PEdge PEdge){
             type(Object.class);
-            loopC(x->true);
+            pre(x->true);
             step(PEdge);
-            postC(x->true);
+            post(x->true);
         }
     }
 
@@ -178,15 +177,9 @@ public abstract class StepTest<X> extends BaseExecutionModesTest {
                                 String value = desc + "_join_" + joinNo + " [shape=rect style=filled, fillcolor=green fontcolor=black];\n";
                                 dotToRender.put(value, value);
                             } else {
-                                if (throwables.stream().anyMatch(e -> e instanceof JoinException)) {
-                                    //LOG.info("FAILS: " + desc);
-                                    String value = desc + "_join_" + joinNo + " [shape=rect style=filled, fillcolor=red fontcolor=black];\n";
-                                    dotToRender.put(value, value);
-                                } else {
-                                    //LOG.info("PASSES: " + desc);
-                                    String value = desc + "_join_" + joinNo + " [shape=rect style=filled, fillcolor=green fontcolor=black];\n";
-                                    dotToRender.put(value, value);
-                                }
+                                //LOG.info("PASSES: " + desc);
+                                String value = desc + "_join_" + joinNo + " [shape=rect style=filled, fillcolor=green fontcolor=black];\n";
+                                dotToRender.put(value, value);
                             }
                         }
                     }

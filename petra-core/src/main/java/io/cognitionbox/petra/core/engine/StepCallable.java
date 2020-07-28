@@ -15,7 +15,11 @@
  */
 package io.cognitionbox.petra.core.engine;
 
+import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.core.engine.petri.impl.Token;
+import io.cognitionbox.petra.exceptions.EdgeException;
+import io.cognitionbox.petra.exceptions.GraphException;
+import io.cognitionbox.petra.exceptions.conditions.PostConditionFailure;
 import io.cognitionbox.petra.lang.AbstractStep;
 import io.cognitionbox.petra.core.impl.Identifyable;
 import io.cognitionbox.petra.lang.RGraph;
@@ -49,6 +53,19 @@ public class StepCallable extends Identifyable implements Callable<StepResult>, 
         try {
             Object out = step.call();
             return new StepResult(step.p().getOperationType(), step.getInput(),new Token(out));
+//            if (step instanceof RGraph){
+//                if (out instanceof GraphException){
+//                    return new StepResult(step.p().getOperationType(), step.getInput(),new Token(out),((GraphException) out).getCauses());
+//                } else {
+//                    return new StepResult(step.p().getOperationType(), step.getInput(),new Token(out));
+//                }
+//            } else if (step instanceof IStep){
+//                if (out instanceof EdgeException){
+//                    return new StepResult(step.p().getOperationType(), step.getInput(),new Token(out),((EdgeException) out).getCause());
+//                } else {
+//                    return new StepResult(step.p().getOperationType(), step.getInput(),new Token(out));
+//                }
+//            }
         } catch (Exception e) {
             LOG.error(this.getUniqueId(),e);
         }

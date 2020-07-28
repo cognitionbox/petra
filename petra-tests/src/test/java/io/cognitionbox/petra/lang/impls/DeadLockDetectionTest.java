@@ -62,7 +62,7 @@ public class DeadLockDetectionTest extends BaseExecutionModesTest {
   public static class AtoA extends PEdge<A> {
     {
       type(A.class);
-      preC(a->a.value==1);
+      pre(a->a.value==1);
       func(a->{
         ThreadDemo1 T1 = new ThreadDemo1();
         ThreadDemo2 T2 = new ThreadDemo2();
@@ -78,7 +78,7 @@ public class DeadLockDetectionTest extends BaseExecutionModesTest {
         a.value = 222;
         return a;
       });
-      postC(a->a.value==222);
+      post(a->a.value==222);
     }
   }
 
@@ -86,8 +86,8 @@ public class DeadLockDetectionTest extends BaseExecutionModesTest {
   public static class g extends PGraph<A> {
     {
       type(A.class);
-      loopC(a->a.value==1);
-      postC(a->a.value==222);
+      pre(a->a.value==1);
+      post(a->a.value==222);
       step(AtoA.class);
     }
   }
@@ -101,7 +101,7 @@ public class DeadLockDetectionTest extends BaseExecutionModesTest {
     ((IPetraTestConfig) RGraphComputer.getConfig()).allowExceptionsPassthrough();
     Object res = getGraphComputer().eval(new g(), new A(1));
     assertThat(res).isInstanceOf(GraphException.class);
-    TimeoutException to = (TimeoutException) ((GraphException)res).getCauses()[0].getCause();
+    TimeoutException to = (TimeoutException) ((GraphException)res).getCauses().get(0).getCause();
   }
 
   public static Object Lock1 = new Object();

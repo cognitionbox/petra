@@ -18,11 +18,7 @@ package io.cognitionbox.petra.exceptions;
 import java.util.List;
 
 public class GraphException extends PetraException {
-    private Object input;
-    private Object output;
-    public GraphException(Object input, Object output, List<? extends Throwable> causes) {
-        super(causes);
-        this.input = input;
-        this.output = output;
+    public GraphException(Object input, Object output, List<Throwable> causes) {
+        super(input,output,causes);
     }
 }

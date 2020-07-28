@@ -18,23 +18,20 @@
  */
 package io.cognitionbox.petra.examples.tradingsystem.steps.trade;
 
-
-import io.cognitionbox.petra.examples.tradingsystem.objects.Decisions;
-import io.cognitionbox.petra.examples.tradingsystem.objects.Trader;
+import io.cognitionbox.petra.examples.tradingsystem.objects.State;
 import io.cognitionbox.petra.lang.PEdge;
 
 
-public class Trade extends PEdge<Trader> {
+public class UpdateExp extends PEdge<State> {
     {
-       type(Trader.class);
-       pre(x->x.isEnabled() && x.getDecisions().size()>=0);
+       type(State.class);
+       pre(x->true);
        func(
                 x -> {
-                    Decisions decisions = x.runStrategy(x.getFeed().sourceTick());
-                    decisions.forEach(d -> x.addDecision(d));
+                    x.updateExposure();
                     return x;
                 }
         );
-        post(x->x.getDecisions().size()>0);
+        post(x->true);
     }
 }

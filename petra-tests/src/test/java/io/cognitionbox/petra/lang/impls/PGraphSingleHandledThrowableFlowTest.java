@@ -59,8 +59,8 @@ public class PGraphSingleHandledThrowableFlowTest extends BaseExecutionModesTest
   public static class MainLoop extends PGraph<X> {
     {
       type(X.class);
-      loopC(x->x.value==0);
-      postC(x->x.value==3);
+      pre(x->x.value==0);
+      post(x->x.value==3);
       step(new Nesting());
     }
   }
@@ -68,8 +68,8 @@ public class PGraphSingleHandledThrowableFlowTest extends BaseExecutionModesTest
   public static class Nesting extends PGraph<X> {
     {
       type(X.class);
-      loopC(x -> x.value == 0);
-      postC(x->x.value==1 || x.value==3);
+      pre(x -> x.value == 0);
+      post(x->x.value==1 || x.value==3);
       step(new PlusOne());
     }
   }
@@ -77,8 +77,8 @@ public class PGraphSingleHandledThrowableFlowTest extends BaseExecutionModesTest
   public static class MainLoopWithDirectStepHandledThrowable extends PGraph<X> {
     {
       type(X.class);
-      loopC(x->x.value==0);
-      postC(x->x.value==3);
+      pre(x->x.value==0);
+      post(x->x.value==3);
       step(new NestingWithDirectStepHandledThrowable());
     }
   }
@@ -86,8 +86,8 @@ public class PGraphSingleHandledThrowableFlowTest extends BaseExecutionModesTest
   public static class NestingWithDirectStepHandledThrowable extends PGraph<X> {
     {
       type(X.class);
-      loopC(x -> x.value == 0);
-      postC(x -> x.value == 3);
+      pre(x -> x.value == 0);
+      post(x -> x.value == 3);
       step(new PlusOne());
     }
   }
@@ -95,8 +95,8 @@ public class PGraphSingleHandledThrowableFlowTest extends BaseExecutionModesTest
   public static class PlusOne extends PEdge<X> {
    {
       type(X.class);
-      preC(x->x.value==0);
-      postC(x->x.value==1 || x.value==3);
+      pre(x->x.value==0);
+      post(x->x.value==1 || x.value==3);
       func(x->{
         try {
           int y = 1/0;

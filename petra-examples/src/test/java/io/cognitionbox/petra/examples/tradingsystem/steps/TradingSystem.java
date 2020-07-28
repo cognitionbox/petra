@@ -21,20 +21,21 @@ package io.cognitionbox.petra.examples.tradingsystem.steps;
 import io.cognitionbox.petra.examples.tradingsystem.objects.State;
 import io.cognitionbox.petra.examples.tradingsystem.objects.Trader;
 import io.cognitionbox.petra.examples.tradingsystem.steps.trade.Trade;
+import io.cognitionbox.petra.examples.tradingsystem.steps.trade.UpdateExp;
 import io.cognitionbox.petra.lang.PGraph;
+import org.junit.Ignore;
 
 import static io.cognitionbox.petra.util.Petra.*;
 
+@Ignore
 public class TradingSystem extends PGraph<State> {
     {
         type(State.class);
         setSleepPeriod(1000);
-        loopC(x->x.currentExp().get()>=0 && x.currentExp().get()<=160 &&
+        pre(x->x.currentExp().get()>=0 && x.currentExp().get()<=160 &&
                 forAll(Trader.class,x.traders(),t->t.isEnabled()));
         stepForall(x->x.getTraders(),new Trade());
-        join(state->true,
-            state->state.updateExposure(),
-            state->true);
-        postC(x->x.isAtMaxExposure());
+        step(new UpdateExp());
+        post(x->x.isAtMaxExposure());
     }
 }

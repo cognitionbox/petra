@@ -55,21 +55,21 @@ public class HelloWorld extends BaseExecutionModesTest {
         class AtoA extends PEdge<X> {
             {
                 type(X.class);
-                preC(x -> x.isBlankOrHelloWorld());
+                pre(x -> x.isBlankOrHelloWorld());
                 func(x ->{
                     x.value = "hello world.";
                     return x;
                 });
-                postC(x -> x.isHelloWorld());
+                post(x -> x.isHelloWorld());
             }
         }
 
         class AtoAGraph extends PGraph<X> {
             {
                 type(X.class);
-                loopC(x -> x.isBlank());
+                pre(x -> x.isBlank());
                 step(new AtoA());
-                postC(x -> x.isHelloWorld());
+                post(x -> x.isHelloWorld());
             }
         }
 

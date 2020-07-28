@@ -6,9 +6,9 @@ import io.cognitionbox.petra.lang.PGraph;
 public class ProcessExamResults extends PGraph<Pupil> {
     {
         type(Pupil.class);
-        loopC(p->p.takenExams() && p.hasNoAverage());
+        pre(p->p.takenExams() && p.hasNoAverage());
         stepForall(p->p.getExams(),new MarkExam());
         step(new AverageScores());
-        postC(p->p.hasAverage());
+        post(p->p.hasAverage());
     }
 }
