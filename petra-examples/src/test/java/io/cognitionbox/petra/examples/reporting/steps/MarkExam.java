@@ -6,7 +6,7 @@ import io.cognitionbox.petra.lang.PEdge;
 public class MarkExam extends PEdge<Exam> {
     {
         type(Exam.class);
-        pre(e->e.isNotMarked());
+        pre(e->!e.isMarked());
         func(e->e.mark(1d));
         post(e->e.isMarked());
     }

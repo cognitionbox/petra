@@ -141,7 +141,7 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
             return res;
         } else if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
             // need to think about aggregating exceptions at parent graph level
-            return (X) new EdgeException(input, res, throwableRef.get());
+            return (X) new EdgeException(this,input, res, throwableRef.get());
         } else {
             objectTrans.restore(input);
             PEdgeRollbackHelper.rollback(input, this);

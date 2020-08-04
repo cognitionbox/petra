@@ -15,8 +15,4 @@ public class Exam {
     public boolean isMarked(){
         return result!=null;
     }
-
-    public boolean isNotMarked(){
-        return !isMarked();
-    }
 }

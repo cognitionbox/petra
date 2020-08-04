@@ -25,10 +25,6 @@ public class Pupil extends Person {
         return this.average!=null;
     }
 
-    public boolean hasNoAverage(){
-        return !hasAverage();
-    }
-
     public void sitExam(Exam exam){
         exams.add(exam);
     }

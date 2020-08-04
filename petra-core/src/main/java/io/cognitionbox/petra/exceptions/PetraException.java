@@ -15,10 +15,13 @@
  */
 package io.cognitionbox.petra.exceptions;
 
+import io.cognitionbox.petra.core.IStep;
+
 import java.util.List;
 
 public class PetraException extends RuntimeException{
 
+    private IStep step;
     private Object input;
     private Object output;
 
@@ -40,7 +43,8 @@ public class PetraException extends RuntimeException{
     }
 
     private List<Throwable> causes;
-    public PetraException(Object input, Object output, List<Throwable> causes){
+    public PetraException(IStep step, Object input, Object output, List<Throwable> causes){
+        this.step = step;
         this.input = input;
         this.output = output;
         this.causes = causes;

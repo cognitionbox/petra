@@ -109,6 +109,9 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
     X executeMatchingLoopUntilPostCondition() {
         currentIteration = 0;
         X out = null;
+
+        boolean doesNotTerminate = getStepClazz().isAnnotationPresent(DoesNotTerminate.class);
+        // use in while loop to prevent termination.
         while (!this.q().test(getInput().getValue())) {
             iterationId.getAndIncrement();
             currentIteration++;
@@ -117,8 +120,12 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
                 iteration();
                 List<Throwable> exceptions = exceptions();
                 if (!exceptions.isEmpty()) {
-                    return (X) new GraphException((X) this.getInput().getValue(), null, exceptions);
+                    return (X) new GraphException(this,(X) this.getInput().getValue(), null, exceptions);
                 }
+                // breach of loop invariant i.e. pre invariant
+//                if (!this.p().test(getInput().getValue())) {
+//                    return (X) new GraphException(this,(X) this.getInput().getValue(), null, Arrays.asList(new IllegalStateException("invariant broken.")));
+//                }
             } catch (Exception e){
                 e.printStackTrace();
             }
@@ -413,7 +420,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 //                    t.printStackTrace();
 //                }
             }
-            return (X) new GraphException((X) this.getInput().getValue(), null, exceptions);
+            return (X) new GraphException(this,(X) this.getInput().getValue(), null, exceptions);
         }
         if (checkOutput(getInput().getValue())) {
             if (this.getPlace().size() == 0) {

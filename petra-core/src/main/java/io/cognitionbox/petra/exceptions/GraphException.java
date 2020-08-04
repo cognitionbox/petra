@@ -15,10 +15,12 @@
  */
 package io.cognitionbox.petra.exceptions;
 
+import io.cognitionbox.petra.core.IStep;
+
 import java.util.List;
 
 public class GraphException extends PetraException {
-    public GraphException(Object input, Object output, List<Throwable> causes) {
-        super(input,output,causes);
+    public GraphException(IStep step, Object input, Object output, List<Throwable> causes) {
+        super(step,input,output,causes);
     }
 }
