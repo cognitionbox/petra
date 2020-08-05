@@ -36,7 +36,6 @@ public class IncrementB extends PEdge<B> implements IRollback<B> {
             }
             b.value++;
             System.out.println("B="+b.value);
-            return b;
         });
         post(b->b.value>=0 && b.value<=10);
     }

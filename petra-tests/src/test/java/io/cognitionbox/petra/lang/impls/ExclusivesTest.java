@@ -83,7 +83,6 @@ public class ExclusivesTest extends BaseExecutionModesTest {
       post(a->a.integer.get()==10);
       func(a->{
         a.integer.incrementAndGet();
-        return a;
       });
     }
 

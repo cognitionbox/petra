@@ -29,7 +29,6 @@ public class UpdateExp extends PEdge<State> {
        func(
                 x -> {
                     x.updateExposure();
-                    return x;
                 }
         );
         post(x->true);

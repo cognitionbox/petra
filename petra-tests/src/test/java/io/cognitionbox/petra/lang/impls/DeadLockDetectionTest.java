@@ -76,7 +76,6 @@ public class DeadLockDetectionTest extends BaseExecutionModesTest {
           e.printStackTrace();
         }
         a.value = 222;
-        return a;
       });
       post(a->a.value==222);
     }

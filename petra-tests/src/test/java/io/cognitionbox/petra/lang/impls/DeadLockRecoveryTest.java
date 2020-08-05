@@ -86,7 +86,6 @@ public class DeadLockRecoveryTest extends BaseExecutionModesTest {
           }
         }
         a.value = 222;
-        return a;
       });
       post(a->a.value==222);
     }

@@ -12,7 +12,6 @@ public class SitExams extends PEdge<Pupil> {
             p.sitExam(new Exam());
             p.sitExam(new Exam());
             p.sitExam(new Exam());
-            return p;
         });
         post(p->p.takenExams());
     }

@@ -32,7 +32,6 @@ public class Trade extends PEdge<Trader> {
                 x -> {
                     Decisions decisions = x.runStrategy(x.getFeed().sourceTick());
                     decisions.forEach(d -> x.addDecision(d));
-                    return x;
                 }
         );
         post(x->x.getDecisions().size()>0);

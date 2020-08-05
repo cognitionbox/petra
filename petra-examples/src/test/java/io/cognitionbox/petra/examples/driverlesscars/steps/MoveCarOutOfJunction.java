@@ -13,7 +13,6 @@ public class MoveCarOutOfJunction extends PEdge<Simlulation> {
         func(x->{
             x.getCars().stream().filter(c->x.carInJunction(c)).forEach(c->x.moveOutOfJunction(c));
             System.out.println("getNoOfCarsInJunction = "+x.getNoOfCarsInJunction());
-            return x;
         });
         post(x->thereExists(Car.class,x.getCars(), c->!x.carInJunction(c)));
     }

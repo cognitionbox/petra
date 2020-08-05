@@ -12,7 +12,6 @@ public class ChangeSignal1ToGreen extends PEdge<Simlulation> {
             s.getSignalB().setToRedLight();
             System.out.println("signal 1 = "+s.getSignalA().getSignal());
             System.out.println("signal 2 = "+s.getSignalB().getSignal());
-            return s;
         });
         post(s->(s.signalAisGREEN() && s.signalBisRED()));
     }

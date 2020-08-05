@@ -58,7 +58,6 @@ public class HelloWorld extends BaseExecutionModesTest {
                 pre(x -> x.isBlankOrHelloWorld());
                 func(x ->{
                     x.value = "hello world.";
-                    return x;
                 });
                 post(x -> x.isHelloWorld());
             }

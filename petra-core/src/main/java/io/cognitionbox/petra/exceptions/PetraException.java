@@ -52,8 +52,9 @@ public class PetraException extends RuntimeException{
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName()+"{" +
-                "input=" + input +
+        return "PetraException{" +
+                "step=" + step +
+                ", input=" + input +
                 ", output=" + output +
                 ", causes=" + causes +
                 '}';

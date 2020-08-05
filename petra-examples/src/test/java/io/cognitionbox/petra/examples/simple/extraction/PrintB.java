@@ -31,7 +31,6 @@ public class PrintB extends PEdge<B> {
        pre(b->true);
        func(b->{
            System.out.println(b.getClass().getSimpleName());
-           return b;
         });
        post(b->true);
     }

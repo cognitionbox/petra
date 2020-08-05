@@ -59,7 +59,6 @@ public class SimpleTest extends BaseExecutionModesTest {
       pre(a->a.value==1);
       func(a->{
         a.value = 222;
-        return a;
       });
       post(a->a.value==222);
     }

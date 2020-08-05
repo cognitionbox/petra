@@ -57,7 +57,6 @@ public class FlagSwitch extends BaseExecutionModesTest {
                 pre(x -> x.value==false);
                 func(x ->{
                     x.value=true;
-                    return x;
                 });
                 post(x -> x.value==true);
             }

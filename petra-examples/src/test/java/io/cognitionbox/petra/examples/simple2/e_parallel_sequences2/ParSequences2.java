@@ -57,7 +57,6 @@ public class ParSequences2 extends BaseExecutionModesTest {
                 pre(x -> x.y1().isA() ^ x.y1().isB());
                 func(x ->{
                     x.y1().state(State.values()[x.y1().state().ordinal() + 1]);
-                    return x;
                 });
                 post(x -> x.y1().isB() ^ x.y1().isC());
             }
@@ -68,7 +67,6 @@ public class ParSequences2 extends BaseExecutionModesTest {
                 pre(x -> x.y2().isA() ^ x.y2().isB());
                 func(x ->{
                     x.y2().state(State.values()[x.y2().state().ordinal() + 1]);
-                    return x;
                 });
                 post(x -> x.y2().isB() ^ x.y2().isC());
             }

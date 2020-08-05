@@ -102,9 +102,7 @@ public class PGraphSingleHandledThrowableFlowTest extends BaseExecutionModesTest
           int y = 1/0;
         } catch (ArithmeticException e){
           x.value = 3;
-          return x;
         }
-        return null;
       });
     }
   }

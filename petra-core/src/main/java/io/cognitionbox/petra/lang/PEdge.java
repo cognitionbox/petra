@@ -20,6 +20,7 @@ import io.cognitionbox.petra.lang.annotations.Exclusive;
 import io.cognitionbox.petra.exceptions.EdgeException;
 import io.cognitionbox.petra.exceptions.conditions.PostConditionFailure;
 import io.cognitionbox.petra.util.function.IBiPredicate;
+import io.cognitionbox.petra.util.function.IConsumer;
 import io.cognitionbox.petra.util.function.IFunction;
 import io.cognitionbox.petra.util.function.IPredicate;
 import org.slf4j.Logger;
@@ -40,7 +41,7 @@ import static io.cognitionbox.petra.util.Petra.throwRandomException;
 public class PEdge<X> extends AbstractStep<X> implements Serializable {
 
     final static Logger LOG = LoggerFactory.getLogger(PEdge.class);
-    private IFunction<X, X> function;
+    private IConsumer<X> function;
     private io.cognitionbox.petra.core.impl.PEdgeRollbackHelper PEdgeRollbackHelper = new PEdgeRollbackHelper(100);
     private ObjectCopyerViaSerialization copyer = new ObjectCopyerViaSerialization();
     private List<Class<? extends Exception>> throwsRandomly = new ArrayList<>();
@@ -51,7 +52,7 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
         super(description);
     }
 
-    public PEdge(Guard<X> p, IFunction<X, X> function, GuardXOR<X> q) {
+    public PEdge(Guard<X> p, IConsumer<X> function, GuardXOR<X> q) {
         this.p = p;
         this.function = function;
         this.q = q;
@@ -61,11 +62,11 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
         return LoggerFactory.getLogger(this.getStepClazz());
     }
 
-    public IFunction<X, X> getFunction() {
+    public IConsumer<X> getFunction() {
         return function;
     }
 
-    public PEdge<X> func(IFunction<X, X> function) {
+    public PEdge<X> func(IConsumer<X> function) {
         this.function = function;
         return this;
     }
@@ -116,7 +117,8 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
                     if (RGraphComputer.getConfig().isTestMode() && (throwsRandomly != null && throwsRandomly.size() > 0)) {
                         throwRandomException(throwsRandomly);
                     }
-                    return (X) function.apply(input);
+                    function.accept(input);
+                    return input;
                 } catch (Throwable e){
                     throwableRef.set(e);
                     LOG.error(this.getUniqueId(), e);

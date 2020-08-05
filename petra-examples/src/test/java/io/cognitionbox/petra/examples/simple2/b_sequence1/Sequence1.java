@@ -57,7 +57,6 @@ public class Sequence1 extends BaseExecutionModesTest {
                 pre(x -> x.isA() ^ x.isB());
                 func(x ->{
                     x.state(State.values()[x.state().ordinal() + 1]);
-                    return x;
                 });
                 post(x -> x.isB() ^ x.isC());
             }

@@ -30,7 +30,6 @@ public class AtoA extends PEdge<A> {
        pre(a->a.value.equals(""));
        func(a->{
            a.value = "hello world.";
-           return a;
        });
        post(a->a.value.equals("hello world."));
     }

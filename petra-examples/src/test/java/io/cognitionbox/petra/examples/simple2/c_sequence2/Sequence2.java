@@ -57,7 +57,6 @@ public class Sequence2 extends BaseExecutionModesTest {
                 pre(x -> x.isA());
                 func(x ->{
                     x.state(State.B);
-                    return x;
                 });
                 post(x -> x.isB());
             }
@@ -68,7 +67,6 @@ public class Sequence2 extends BaseExecutionModesTest {
                 pre(x ->x.isB());
                 func(x ->{
                     x.state(State.C);
-                    return x;
                 });
                 post(x -> x.isC());
             }

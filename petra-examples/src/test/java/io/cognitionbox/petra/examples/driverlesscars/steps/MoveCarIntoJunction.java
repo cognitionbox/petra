@@ -18,7 +18,6 @@ public class MoveCarIntoJunction extends PEdge<Simlulation> {
                     .limit(1)
                     .forEach(c->x.moveToIntoJunction(c));
             System.out.println("getNoOfCarsInJunction = "+x.getNoOfCarsInJunction());
-            return x;
         });
         post(x->x.getCars().stream().filter(c->x.carInJunction(c)).count()==1);
     }

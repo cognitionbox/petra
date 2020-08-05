@@ -117,7 +117,7 @@ public class Petra {
     }
 
     public static <X> PEdge<X> anonymous(Guard<X> p,
-                                               IFunction<X, X> function,
+                                               IConsumer<X> function,
                                                Guard<X>... qs) {
         GuardXOR<X> pTypeXOR = new GuardXOR<>(OperationType.RETURN);
         for (Guard q : qs) {
