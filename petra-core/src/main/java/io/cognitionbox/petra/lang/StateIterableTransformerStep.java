@@ -11,8 +11,15 @@ public class StateIterableTransformerStep<X, P> {
     }
     private IFunction<X, Iterable<P>> transformer;
     private AbstractStep step;
-    public StateIterableTransformerStep(IFunction<X, Iterable<P>> transformer, AbstractStep step) {
+
+    public boolean isSeq() {
+        return isSeq;
+    }
+
+    private boolean isSeq = false;
+    public StateIterableTransformerStep(IFunction<X, Iterable<P>> transformer, AbstractStep step, boolean isSeq) {
         this.transformer = transformer;
         this.step = step;
+        this.isSeq = isSeq;
     }
 }

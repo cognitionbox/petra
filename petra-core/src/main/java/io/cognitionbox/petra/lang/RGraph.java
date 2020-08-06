@@ -25,19 +25,15 @@ import io.cognitionbox.petra.core.engine.extractors.impl.SequentialRootValueExtr
 import io.cognitionbox.petra.core.engine.petri.Place;
 import io.cognitionbox.petra.core.engine.petri.impl.Token;
 import io.cognitionbox.petra.core.impl.*;
-import io.cognitionbox.petra.exceptions.sideeffects.SideEffectFailure;
 import io.cognitionbox.petra.lang.annotations.DoesNotTerminate;
 import io.cognitionbox.petra.lang.annotations.Extract;
 import io.cognitionbox.petra.exceptions.GraphException;
-import io.cognitionbox.petra.exceptions.IterationsTimeoutException;
 import io.cognitionbox.petra.exceptions.PetraException;
-import io.cognitionbox.petra.exceptions.conditions.PostConditionFailure;
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.core.engine.petri.IToken;
 import io.cognitionbox.petra.util.function.*;
 import io.cognitionbox.petra.util.impl.PList;
 import io.cognitionbox.petra.util.Petra;
-import org.javatuples.Pair;
 import org.javatuples.Triplet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +46,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static io.cognitionbox.petra.lang.Void.vd;
 import static io.cognitionbox.petra.util.Petra.rt;
 import static java.lang.Math.min;
 
@@ -112,7 +107,8 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 
         boolean doesNotTerminate = getStepClazz().isAnnotationPresent(DoesNotTerminate.class);
         // use in while loop to prevent termination.
-        while (!this.q().test(getInput().getValue())) {
+        while (this.getStepClazz().isAnnotationPresent(DoesNotTerminate.class) ||
+                !this.q().test(getInput().getValue())) {
             iterationId.getAndIncrement();
             currentIteration++;
             try {
@@ -123,9 +119,14 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
                     return (X) new GraphException(this,(X) this.getInput().getValue(), null, exceptions);
                 }
                 // breach of loop invariant i.e. pre invariant
-//                if (!this.p().test(getInput().getValue())) {
-//                    return (X) new GraphException(this,(X) this.getInput().getValue(), null, Arrays.asList(new IllegalStateException("invariant broken.")));
-//                }
+                if (!this.p().test(getInput().getValue())) {
+                    return (X) new GraphException(this,(X) this.getInput().getValue(), null, Arrays.asList(new IllegalStateException("invariant broken.")));
+                }
+
+                // post con check for non terminating processes
+                if (!this.q().test(getInput().getValue())) {
+                    return (X) new GraphException(this,(X) this.getInput().getValue(), null, Arrays.asList(new IllegalStateException("cycle not correct.")));
+                }
             } catch (Exception e){
                 e.printStackTrace();
             }
@@ -197,29 +198,47 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         return stateIterableTransformerSteps;
     }
 
+    public <P> void seqForall(IFunction<X,Iterable<P>> transformer, IStep<P> step){
+        stepForall(transformer,step,true);
+    }
+    public <P> void seq(IFunction<X,P> transformer, IStep<P> step){
+        step(transformer,step,true);
+    }
+    public <P> void parForall(IFunction<X,Iterable<P>> transformer, IStep<P> step){
+        stepForall(transformer,step,false);
+    }
+    public <P> void par(IFunction<X,P> transformer, IStep<P> step){
+        step(transformer,step,false);
+    }
     public <P> void stepForall(IFunction<X,Iterable<P>> transformer, IStep<P> step){
-        stateIterableTransformerSteps.add(new StateIterableTransformerStep(transformer, (AbstractStep) step));
-        addParallizable(step);
+        stepForall(transformer,step,false);
     }
     public <P> void step(IFunction<X,P> transformer, IStep<P> step){
-        stateTransformerSteps.add(new StateTransformerStep(transformer, (AbstractStep) step));
+        step(transformer,step,false);
+    }
+    private <P> void stepForall(IFunction<X,Iterable<P>> transformer, IStep<P> step, boolean isSeq){
+        stateIterableTransformerSteps.add(new StateIterableTransformerStep(transformer, (AbstractStep) step,isSeq));
         addParallizable(step);
     }
-    private void prepareSteps(){
+    private <P> void step(IFunction<X,P> transformer, IStep<P> step, boolean isSeq){
+        stateTransformerSteps.add(new StateTransformerStep(transformer, (AbstractStep) step,isSeq));
+        addParallizable(step);
+    }
+    private void prepareParallizableSteps(){
         for (StateTransformerStep<X,?> f : stateTransformerSteps){
             try {
                 Object value = f.getTransformer().apply(getInput().getValue());
-                if (f.getStep().evalP(value)){
+                //if (f.getStep().evalP(value)){
                     AbstractStep copy = f.getStep().copy();
                     copy.setInput(new Token(value));
-                    collectCallable(new StepCallable(this,copy), callables);
-                }
+                    collectCallable(new StepCallable(this,copy,f.isSeq()), callables);
+                //}
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
-    private void prepareForalls(){
+    private void prepareParallizableStepForalls(){
         for (StateIterableTransformerStep<X,?> f : stateIterableTransformerSteps){
             boolean ok = true;
             Iterable<?> iterable = f.getTransformer().apply(getInput().getValue());
@@ -236,7 +255,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
                     try {
                         AbstractStep copy = f.getStep().copy();
                         copy.setInput(new Token(o));
-                        collectCallable(new StepCallable(this,copy), callables);
+                        collectCallable(new StepCallable(this,copy,f.isSeq()), callables);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -314,24 +333,30 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
     }
 
     private void forkAndJoinCallables(List<StepCallable> callables) {
-        if (RGraphComputer.getConfig().getMode().isSEQ()){
-            for (StepCallable callable : callables) {
+        for (StepCallable callable : callables) {
+            if (RGraphComputer.getConfig().getMode().isSEQ() || callable.isSeq()) {
                 try {
-                    StepResult sr = callable.call();
-                    if (sr.getOutputValue().getValue() instanceof Throwable){
-                        this.place.addValue(sr.getOutputValue().getValue());
-                    }
-                    if (OperationType.READ_WRITE != sr.getOperationType()) {
-                        deconstruct(sr.getOutputValue());
-                        //putState(f.get().getOutputValue());
+                    if (callable.getStep().evalP(callable.getStep().getInput().getValue())){
+                        StepResult sr = callable.call();
+                        if (sr.getOutputValue().getValue() instanceof Throwable){
+                            this.place.addValue(sr.getOutputValue().getValue());
+                        }
+                        if (OperationType.READ_WRITE != sr.getOperationType()) {
+                            deconstruct(sr.getOutputValue());
+                            //putState(f.get().getOutputValue());
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-        } else {
+        }
+        if (!RGraphComputer.getConfig().getMode().isSEQ()) {
             try {
-                List<Future<StepResult>> futures = RGraphComputer.getWorkerExecutor().invokeAll(callables);
+                List<Future<StepResult>> futures = RGraphComputer.getWorkerExecutor().invokeAll(
+                        callables.stream().filter(s->
+                                s.getStep().evalP(s.getStep().getInput().getValue()) &&
+                                !s.isSeq()).collect(Collectors.toList()));
                 for (Future<StepResult> f : futures){
                     StepResult sr = f.get();
                     if (sr.getOutputValue().getValue() instanceof Throwable){
@@ -352,8 +377,8 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 
     private void matchComputationsToStatesAndExecute(List<IStep> steps) {
         callables.clear();
-        prepareSteps();
-        prepareForalls();
+        prepareParallizableSteps();
+        prepareParallizableStepForalls();
 //        for (int index = 0; index < steps.size(); index = index + 1) {
 //            IStep c = steps.get(index);
 //            for (Object token : place.filterTokensByValue(c.p())) {

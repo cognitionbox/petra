@@ -93,57 +93,57 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
         final ExecutorService executor = Executors.newSingleThreadExecutor();
         ObjectTrans objectTrans = new ObjectTrans();
         AtomicReference<Throwable> throwableRef = new AtomicReference<>();
-        final Future<X> future = executor.submit(() -> {
-            synchronized (this) { // memory-barrier to ensure all updates are visible before and after func is applied.
-                //if (RGraphComputer.getConfig().isDefensiveCopyAllInputs()) {
-                    objectTrans.capture(input);
-                //}
-                if (this.p().getTypeClass().isAnnotationPresent(Exclusive.class)) {
-                    classesLockKey.set(ReflectUtils.getAllMethodsAccessibleFromObject(this.p().getTypeClass())
-                                    .stream()
-                                    .filter(m -> m.isAnnotationPresent(Exclusive.class) &&
-                                            m.getReturnType().isAnnotationPresent(Exclusive.class) &&
-                                            m.getParameterCount() == 0 &&
-                                            Modifier.isPublic(m.getModifiers()))
-                                    .map(m -> m.getReturnType())
-                                    .collect(Collectors.toSet()));
-                    if (classesLockKey.get() != null && !classesLockKey.get().isEmpty() && getEffectType().isPresent() && Exclusives.tryAquireExclusive(classesLockKey.get())) {
-                        Exclusives.load(input, getEffectType().get());
-                    } else {
-                        return (X) input;
-                    }
-                }
-                try {
-                    if (RGraphComputer.getConfig().isTestMode() && (throwsRandomly != null && throwsRandomly.size() > 0)) {
-                        throwRandomException(throwsRandomly);
-                    }
-                    function.accept(input);
-                    return input;
-                } catch (Throwable e){
-                    throwableRef.set(e);
-                    LOG.error(this.getUniqueId(), e);
-                }
-                return null;
-            }
-        });
-        executor.shutdown(); // This does not cancel the already-scheduled task.
-        X res = null;
+//        final Future<X> future = executor.submit(() -> {
+//            synchronized (this) { // memory-barrier to ensure all updates are visible before and after func is applied.
+//                //if (RGraphComputer.getConfig().isDefensiveCopyAllInputs()) {
+//                    objectTrans.capture(input);
+//                //}
+//                if (this.p().getTypeClass().isAnnotationPresent(Exclusive.class)) {
+//                    classesLockKey.set(ReflectUtils.getAllMethodsAccessibleFromObject(this.p().getTypeClass())
+//                                    .stream()
+//                                    .filter(m -> m.isAnnotationPresent(Exclusive.class) &&
+//                                            m.getReturnType().isAnnotationPresent(Exclusive.class) &&
+//                                            m.getParameterCount() == 0 &&
+//                                            Modifier.isPublic(m.getModifiers()))
+//                                    .map(m -> m.getReturnType())
+//                                    .collect(Collectors.toSet()));
+//                    if (classesLockKey.get() != null && !classesLockKey.get().isEmpty() && getEffectType().isPresent() && Exclusives.tryAquireExclusive(classesLockKey.get())) {
+//                        Exclusives.load(input, getEffectType().get());
+//                    } else {
+//                        return (X) input;
+//                    }
+//                }
+//                try {
+//                    if (RGraphComputer.getConfig().isTestMode() && (throwsRandomly != null && throwsRandomly.size() > 0)) {
+//                        throwRandomException(throwsRandomly);
+//                    }
+//                    function.accept(input);
+//                    return input;
+//                } catch (Throwable e){
+//                    throwableRef.set(e);
+//                    LOG.error(this.getUniqueId(), e);
+//                }
+//                return null;
+//            }
+//        });
+//        executor.shutdown(); // This does not cancel the already-scheduled task.
         try {
-            res = future.get(1000, TimeUnit.MILLISECONDS);
+            function.accept(input);
+            //res = future.get(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
             if (classesLockKey.get() != null && !classesLockKey.get().isEmpty() && this.getEffectType().isPresent()) {// && this.p().getTypeClass().isAnnotationPresent(Exclusive.class)){
                 Exclusives.returnExclusive(classesLockKey.get());
             }
-        } catch (InterruptedException | ExecutionException | TimeoutException e){
+        } catch (Throwable e){
             throwableRef.set(e);
             LOG.error(this.getUniqueId(), e);
         }
-        boolean postConditionOk = throwableRef.get()==null && (res!=null && q().test(res) && evalV(res));
+        boolean postConditionOk = throwableRef.get()==null && (input!=null && q().test(input) && evalV(input));
         if (postConditionOk) {
             Lg_ALL_STATES("[Eg out]",input);
-            return res;
+            return input;
         } else if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
             // need to think about aggregating exceptions at parent graph level
-            return (X) new EdgeException(this,input, res, throwableRef.get());
+            return (X) new EdgeException(this,input, input, throwableRef.get());
         } else {
             objectTrans.restore(input);
             PEdgeRollbackHelper.rollback(input, this);

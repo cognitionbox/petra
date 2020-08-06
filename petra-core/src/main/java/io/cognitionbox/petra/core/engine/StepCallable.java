@@ -41,11 +41,23 @@ public class StepCallable extends Identifyable implements Callable<StepResult>, 
     final static Logger LOG = LoggerFactory.getLogger(StepCallable.class);
     private static final long serialVersionUID = 1L;
     protected RGraph parent;
+
+    public AbstractStep getStep() {
+        return step;
+    }
+
     protected AbstractStep step;
 
-    public StepCallable(RGraph parent, AbstractStep step) {
+    public boolean isSeq() {
+        return isSeq;
+    }
+
+    private boolean isSeq = false;
+
+    public StepCallable(RGraph parent, AbstractStep step, boolean isSeq) {
         this.parent = parent;
         this.step = step;
+        this.isSeq = isSeq;
     }
 
     @Override
