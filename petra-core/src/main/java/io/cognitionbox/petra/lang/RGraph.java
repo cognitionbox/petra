@@ -112,7 +112,8 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 
         boolean doesNotTerminate = getStepClazz().isAnnotationPresent(DoesNotTerminate.class);
         // use in while loop to prevent termination.
-        while (!this.q().test(getInput().getValue())) {
+        while (this.getStepClazz().isAnnotationPresent(DoesNotTerminate.class) ||
+                !this.q().test(getInput().getValue())) {
             iterationId.getAndIncrement();
             currentIteration++;
             try {
@@ -126,6 +127,12 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 //                if (!this.p().test(getInput().getValue())) {
 //                    return (X) new GraphException(this,(X) this.getInput().getValue(), null, Arrays.asList(new IllegalStateException("invariant broken.")));
 //                }
+
+                // post con check for non terminating processes
+                if (this.getStepClazz().isAnnotationPresent(DoesNotTerminate.class) &&
+                        !this.q().test(getInput().getValue())) {
+                    return (X) new GraphException(this,(X) this.getInput().getValue(), null, Arrays.asList(new IllegalStateException("cycle not correct.")));
+                }
             } catch (Exception e){
                 e.printStackTrace();
             }
