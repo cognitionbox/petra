@@ -119,12 +119,13 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
                     return (X) new GraphException(this,(X) this.getInput().getValue(), null, exceptions);
                 }
                 // breach of loop invariant i.e. pre invariant
-                if (!this.p().test(getInput().getValue())) {
-                    return (X) new GraphException(this,(X) this.getInput().getValue(), null, Arrays.asList(new IllegalStateException("invariant broken.")));
-                }
+//                if (!this.p().test(getInput().getValue())) {
+//                    return (X) new GraphException(this,(X) this.getInput().getValue(), null, Arrays.asList(new IllegalStateException("invariant broken.")));
+//                }
 
                 // post con check for non terminating processes
-                if (!this.q().test(getInput().getValue())) {
+                if (this.getStepClazz().isAnnotationPresent(DoesNotTerminate.class) &&
+                        !this.q().test(getInput().getValue())) {
                     return (X) new GraphException(this,(X) this.getInput().getValue(), null, Arrays.asList(new IllegalStateException("cycle not correct.")));
                 }
             } catch (Exception e){
