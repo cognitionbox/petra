@@ -25,19 +25,15 @@ import io.cognitionbox.petra.core.engine.extractors.impl.SequentialRootValueExtr
 import io.cognitionbox.petra.core.engine.petri.Place;
 import io.cognitionbox.petra.core.engine.petri.impl.Token;
 import io.cognitionbox.petra.core.impl.*;
-import io.cognitionbox.petra.exceptions.sideeffects.SideEffectFailure;
 import io.cognitionbox.petra.lang.annotations.DoesNotTerminate;
 import io.cognitionbox.petra.lang.annotations.Extract;
 import io.cognitionbox.petra.exceptions.GraphException;
-import io.cognitionbox.petra.exceptions.IterationsTimeoutException;
 import io.cognitionbox.petra.exceptions.PetraException;
-import io.cognitionbox.petra.exceptions.conditions.PostConditionFailure;
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.core.engine.petri.IToken;
 import io.cognitionbox.petra.util.function.*;
 import io.cognitionbox.petra.util.impl.PList;
 import io.cognitionbox.petra.util.Petra;
-import org.javatuples.Pair;
 import org.javatuples.Triplet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +46,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static io.cognitionbox.petra.lang.Void.vd;
 import static io.cognitionbox.petra.util.Petra.rt;
 import static java.lang.Math.min;
 
@@ -106,6 +101,13 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         }
     }
 
+    private IPredicate<X> loopCondition = x->true;
+
+    // this.loopCondition.test(getInput().getValue()) &&
+    public void loop(IPredicate<X> loopCondition) {
+        this.loopCondition = loopCondition;
+    }
+
     X executeMatchingLoopUntilPostCondition() {
         currentIteration = 0;
         X out = null;
@@ -113,7 +115,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         boolean doesNotTerminate = getStepClazz().isAnnotationPresent(DoesNotTerminate.class);
         // use in while loop to prevent termination.
         while (this.getStepClazz().isAnnotationPresent(DoesNotTerminate.class) ||
-                !this.q().test(getInput().getValue())) {
+                (!this.q().test(getInput().getValue())) ) {
             iterationId.getAndIncrement();
             currentIteration++;
             try {
@@ -195,6 +197,18 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 
     private List<StateTransformerStep> stateTransformerSteps = new ArrayList<>();
     private List<StateIterableTransformerStep> stateIterableTransformerSteps = new ArrayList<>();
+    private List<StateTransformerStep> parTransformerSteps = new ArrayList<>();
+    private List<StateIterableTransformerStep> parIterableTransformerSteps = new ArrayList<>();
+    private List<StateTransformerStep> seqTransformerSteps = new ArrayList<>();
+    private List<StateIterableTransformerStep> seqIterableTransformerSteps = new ArrayList<>();
+
+    public List<StateTransformerStep> getSeqTransformerSteps() {
+        return seqTransformerSteps;
+    }
+
+    public List<StateIterableTransformerStep> getSeqIterableTransformerSteps() {
+        return seqIterableTransformerSteps;
+    }
 
     public List<StateTransformerStep> getTransformerSteps() {
         return stateTransformerSteps;
@@ -204,16 +218,84 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         return stateIterableTransformerSteps;
     }
 
+//    private TransformerStep currentStep = null;
+//
+//    public void par(){
+//        stateIterableTransformerSteps.remove(currentStep);
+//        parTransformerSteps.remove(currentStep);
+//        if (currentStep instanceof StateIterableTransformerStep){
+//            stateIterableTransformerSteps.add((StateIterableTransformerStep) currentStep);
+//            parIterableTransformerSteps.add((StateIterableTransformerStep) currentStep);
+//        } else if (currentStep instanceof StateTransformerStep){
+//            stateTransformerSteps.add((StateTransformerStep) currentStep);
+//            parTransformerSteps.add((StateTransformerStep) currentStep);
+//        }
+//    }
+//
+//    public void seq(){
+//        stateIterableTransformerSteps.remove(currentStep);
+//        seqTransformerSteps.remove(currentStep);
+//        if (currentStep instanceof StateIterableTransformerStep){
+//            stateIterableTransformerSteps.add((StateIterableTransformerStep) currentStep);
+//            seqIterableTransformerSteps.add((StateIterableTransformerStep) currentStep);
+//        } else if (currentStep instanceof StateTransformerStep){
+//            stateTransformerSteps.add((StateTransformerStep) currentStep);
+//            seqTransformerSteps.add((StateTransformerStep) currentStep);
+//        }
+//    }
+
     public <P> void stepForall(IFunction<X,Iterable<P>> transformer, IStep<P> step){
-        stateIterableTransformerSteps.add(new StateIterableTransformerStep(transformer, (AbstractStep) step));
+        stepForall(transformer,step,ExecMode.PAR);
+    }
+    public <P> void stepForall(IFunction<X,Iterable<P>> transformer, IStep<P> step, ExecMode execMode){
+        StateIterableTransformerStep currentStep = new StateIterableTransformerStep(transformer, (AbstractStep) step);
+        stateIterableTransformerSteps.add((StateIterableTransformerStep) currentStep);
+        //parIterableTransformerSteps.add((StateIterableTransformerStep) currentStep);
+        if (execMode.isSEQ()){
+            seqIterableTransformerSteps.add(currentStep);
+        } else if (execMode.isPAR()){
+            parIterableTransformerSteps.add(currentStep);
+        }
         addParallizable(step);
     }
     public <P> void step(IFunction<X,P> transformer, IStep<P> step){
-        stateTransformerSteps.add(new StateTransformerStep(transformer, (AbstractStep) step));
+        step(transformer,step,ExecMode.PAR);
+    }
+    public <P> void step(IFunction<X,P> transformer, IStep<P> step, ExecMode execMode){
+        StateTransformerStep currentStep = new StateTransformerStep(transformer, (AbstractStep) step);
+        stateTransformerSteps.add((StateTransformerStep) currentStep);
+        //parTransformerSteps.add((StateTransformerStep) currentStep);
+        if (execMode.isSEQ()){
+            seqTransformerSteps.add(currentStep);
+        } else if (execMode.isPAR()){
+            parTransformerSteps.add(currentStep);
+        }
         addParallizable(step);
     }
-    private void prepareSteps(){
-        for (StateTransformerStep<X,?> f : stateTransformerSteps){
+    private void executeSeqSteps(){
+        for (StateTransformerStep<X,?> f : seqTransformerSteps){
+            try {
+                Object value = f.getTransformer().apply(getInput().getValue());
+                if (f.getStep().evalP(value)){
+                    AbstractStep copy = f.getStep().copy();
+                    copy.setInput(new Token(value));
+                    StepCallable stepCallable = new StepCallable(this,copy);
+                    StepResult sr = stepCallable.call();
+                    if (sr.getOutputValue().getValue() instanceof Throwable){
+                        this.place.addValue(sr.getOutputValue().getValue());
+                    }
+                    if (OperationType.READ_WRITE != sr.getOperationType()) {
+                        deconstruct(sr.getOutputValue());
+                        //putState(f.get().getOutputValue());
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    private void prepareParSteps(){
+        for (StateTransformerStep<X,?> f : parTransformerSteps){
             try {
                 Object value = f.getTransformer().apply(getInput().getValue());
                 if (f.getStep().evalP(value)){
@@ -226,8 +308,62 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
             }
         }
     }
-    private void prepareForalls(){
-        for (StateIterableTransformerStep<X,?> f : stateIterableTransformerSteps){
+    private void executeSeqStepForalls(){
+        for (StateIterableTransformerStep<X,?> s : seqIterableTransformerSteps){
+            boolean ok = true;
+            Iterable<?> iterable = s.getTransformer().apply(getInput().getValue());
+            for(Object o : iterable){
+                if (!s.getStep().p().test(o)){
+                    ok = false;
+                    break;
+                }
+            }
+            iterable = s.getTransformer().apply(getInput().getValue());
+            // if all match run steps against the elements
+            List<StepCallable> callables = new ArrayList<>();
+            if (ok){
+                for(Object o : iterable){
+                    try {
+                        AbstractStep copy = s.getStep().copy();
+                        copy.setInput(new Token(o));
+                        collectCallable(new StepCallable(this,copy), callables);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                try {
+                    if (RGraphComputer.getConfig().getMode().isSEQ()){
+                        for (StepCallable callable : callables){
+                            StepResult sr = callable.call();
+                            if (sr.getOutputValue().getValue() instanceof Throwable){
+                                this.place.addValue(sr.getOutputValue().getValue());
+                            }
+                            if (OperationType.READ_WRITE != sr.getOperationType()) {
+                                deconstruct(sr.getOutputValue());
+                                //putState(f.get().getOutputValue());
+                            }
+                        }
+                    } else {
+                        List<Future<StepResult>> futures = RGraphComputer.getWorkerExecutor().invokeAll(callables);
+                        for (Future<StepResult> f : futures){
+                            StepResult sr = f.get();
+                            if (sr.getOutputValue().getValue() instanceof Throwable){
+                                this.place.addValue(sr.getOutputValue().getValue());
+                            }
+                            if (OperationType.READ_WRITE != sr.getOperationType()) {
+                                deconstruct(sr.getOutputValue());
+                                //putState(f.get().getOutputValue());
+                            }
+                        }
+                    }
+                } catch (Throwable e){
+
+                }
+            }
+        }
+    }
+    private void prepareParStepForalls(){
+        for (StateIterableTransformerStep<X,?> f : parIterableTransformerSteps){
             boolean ok = true;
             Iterable<?> iterable = f.getTransformer().apply(getInput().getValue());
             for(Object o : iterable){
@@ -359,8 +495,8 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 
     private void matchComputationsToStatesAndExecute(List<IStep> steps) {
         callables.clear();
-        prepareSteps();
-        prepareForalls();
+        prepareParSteps();
+        prepareParStepForalls();
 //        for (int index = 0; index < steps.size(); index = index + 1) {
 //            IStep c = steps.get(index);
 //            for (Object token : place.filterTokensByValue(c.p())) {
@@ -373,6 +509,8 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 //            }
 //        }
         forkAndJoinCallables(callables);
+        executeSeqSteps();
+        executeSeqStepForalls();
     }
 
     <D> void addParallizable(IStep<? extends D> computation) {
@@ -609,6 +747,12 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         // copy steps
         copy.stateTransformerSteps.addAll(stateTransformerSteps);
         copy.stateIterableTransformerSteps.addAll(stateIterableTransformerSteps);
+
+        copy.seqTransformerSteps.addAll(seqTransformerSteps);
+        copy.seqIterableTransformerSteps.addAll(seqIterableTransformerSteps);
+
+        copy.parTransformerSteps.addAll(parTransformerSteps);
+        copy.parIterableTransformerSteps.addAll(parIterableTransformerSteps);
 
         // copy joins one by one as with the steps above
         for (int i = 0; i < joins.size(); i++) {

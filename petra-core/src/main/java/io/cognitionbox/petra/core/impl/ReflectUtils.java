@@ -18,9 +18,7 @@ package io.cognitionbox.petra.core.impl;
 import org.reflections.Reflections;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
@@ -50,6 +48,26 @@ public class ReflectUtils {
                 return Double.isFinite(d.floatValue()) && !Double.isInfinite(d.floatValue()) && !Double.isNaN(d.floatValue());
             }
             return true;
+        }
+    }
+
+    public static Set<Class<?>> getAllFieldTypeDependanciesIncludingResolvedGenerics(Class<?> clazz){
+        Set<Class<?>> clazzes = new HashSet<>();
+        addAllTypeDependanciesIncludingResolvedGenericsImpl(clazz,clazzes);
+        return clazzes;
+    }
+
+    private static void addAllTypeDependanciesIncludingResolvedGenericsImpl(Class<?> clazz, Set<Class<?>> set){
+        set.add(clazz);
+        for (Field f : getAllFieldsAccessibleFromObject(clazz)){
+            if (!f.getType().isPrimitive()){
+                Type type = f.getGenericType();
+                if (type instanceof ParameterizedType){
+                    for (Type t : ((ParameterizedType)type).getActualTypeArguments()){
+                        addAllTypeDependanciesIncludingResolvedGenericsImpl((Class<?>) t, set);
+                    }
+                }
+            }
         }
     }
 

@@ -2,7 +2,7 @@ package io.cognitionbox.petra.lang;
 
 import io.cognitionbox.petra.util.function.IFunction;
 
-public class StateIterableTransformerStep<X, P> {
+public class StateIterableTransformerStep<X, P> implements TransformerStep {
     public IFunction<X, Iterable<P>> getTransformer() {
         return transformer;
     }
@@ -11,6 +11,7 @@ public class StateIterableTransformerStep<X, P> {
     }
     private IFunction<X, Iterable<P>> transformer;
     private AbstractStep step;
+
     public StateIterableTransformerStep(IFunction<X, Iterable<P>> transformer, AbstractStep step) {
         this.transformer = transformer;
         this.step = step;

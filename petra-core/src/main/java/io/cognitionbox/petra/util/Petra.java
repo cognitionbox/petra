@@ -15,6 +15,7 @@
  */
 package io.cognitionbox.petra.util;
 
+import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.core.IJoin;
 import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.core.impl.OperationType;
@@ -94,6 +95,14 @@ public class Petra {
         } catch (Exception e) {
             throw new UnsupportedOperationException("cannot create step.");
         }
+    }
+
+    public static ExecMode seq(){
+        return ExecMode.SEQ;
+    }
+
+    public static ExecMode par(){
+        return ExecMode.PAR;
     }
 
     public static <T> boolean forAll(Class<T> eventClazz, Collection<? extends T> collection, IPredicate<T> predicate) {
