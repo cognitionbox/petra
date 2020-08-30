@@ -34,8 +34,8 @@ public class TradingSystem extends PGraph<State> {
         setSleepPeriod(1000);
         pre(x->x.currentExp().get()>=0 && x.currentExp().get()<=160 &&
                 forAll(Trader.class,x.traders(),t->t.isEnabled()));
-        stepForall(x->x.getTraders(),new Trade());
-        step(new UpdateExp());
+        stepForall(state->state.getTraders(),new Trade());
+        step(state->state,new UpdateExp(),seq());
         post(x->x.isAtMaxExposure());
     }
 }

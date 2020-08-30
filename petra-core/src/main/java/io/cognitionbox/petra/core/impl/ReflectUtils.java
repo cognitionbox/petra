@@ -58,6 +58,11 @@ public class ReflectUtils {
     }
 
     private static void addAllTypeDependanciesIncludingResolvedGenericsImpl(Class<?> clazz, Set<Class<?>> set){
+        if (Number.class.isAssignableFrom(clazz) ||
+                String.class.isAssignableFrom(clazz) ||
+                Boolean.class.isAssignableFrom(clazz)){
+            return;
+        }
         set.add(clazz);
         for (Field f : getAllFieldsAccessibleFromObject(clazz)){
             if (!f.getType().isPrimitive()){
