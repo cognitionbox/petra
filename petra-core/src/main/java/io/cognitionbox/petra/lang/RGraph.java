@@ -733,9 +733,14 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
             place.addValue(s.getValue());
         }
     }
+
     private void deconstruct(IToken s) {
-        deconstruct(s,t->true);
+        putState(s.getValue());
     }
+
+//    private void deconstruct(IToken s) {
+//        deconstruct(s,t->true);
+//    }
 
     public RGraph copy() {
         // we dont copy the id as we need a unique id based on the hashcode of the new instance

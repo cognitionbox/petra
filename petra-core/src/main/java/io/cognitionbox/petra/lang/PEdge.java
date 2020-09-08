@@ -129,13 +129,13 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
         executor.shutdown(); // This does not cancel the already-scheduled task.
         X res = null;
         try {
-            res = future.get(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+            res = future.get(10000, TimeUnit.MILLISECONDS);
             if (classesLockKey.get() != null && !classesLockKey.get().isEmpty() && this.getEffectType().isPresent()) {// && this.p().getTypeClass().isAnnotationPresent(Exclusive.class)){
                 Exclusives.returnExclusive(classesLockKey.get());
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e){
             throwableRef.set(e);
-            LOG.error(this.getUniqueId(), e);
+            LOG.error(this.getStepClazz().getSimpleName()+" "+this.getUniqueId(), e);
         }
         boolean postConditionOk = throwableRef.get()==null && (res!=null && q().test(res) && evalV(res));
         if (postConditionOk) {
