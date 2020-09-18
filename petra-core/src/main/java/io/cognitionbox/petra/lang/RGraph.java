@@ -39,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.*;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -108,6 +109,8 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         this.loopCondition = loopCondition;
     }
 
+    private PollingTimer iterationTimer;
+
     X executeMatchingLoopUntilPostCondition() {
         currentIteration = 0;
         X out = null;
@@ -118,6 +121,9 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
                 (!this.q().test(getInput().getValue())) ) {
             iterationId.getAndIncrement();
             currentIteration++;
+            if (iterationTimer!=null && !iterationTimer.periodHasPassed(LocalDateTime.now())){
+                continue;
+            }
             try {
                 Lg();
                 iteration();
@@ -153,9 +159,11 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 //            // if we go past the max iterations, we have failed to meet the post cons
 //            putState(new IterationsTimeoutException());
 //        } else {
-            if (sleepPeriod>0) {
-                sleep(sleepPeriod);
-            }
+
+//            if (sleepPeriod>0) {
+//                sleep(sleepPeriod);
+//            }
+
 //            boolean b = getPlace().size() == 1;
 //            boolean c = false;
 //            if (b){
@@ -665,6 +673,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 
     protected void setSleepPeriod(long sleepPeriod) {
         this.sleepPeriod = sleepPeriod;
+        this.iterationTimer = new PollingTimer((int) (this.sleepPeriod/1000),false);
     }
 
     private void sleep(long millis) {
