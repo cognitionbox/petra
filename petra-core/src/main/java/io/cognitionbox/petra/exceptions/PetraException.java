@@ -15,27 +15,48 @@
  */
 package io.cognitionbox.petra.exceptions;
 
+import io.cognitionbox.petra.core.IStep;
+
 import java.util.List;
 
 public class PetraException extends RuntimeException{
-    @Override
-    public Throwable getCause() {
-        return causes[0];
+
+    private IStep step;
+    private Object input;
+    private Object output;
+
+    public Object getInput() {
+        return input;
     }
 
-    public Throwable[] getCauses() {
+    public Object getOutput() {
+        return output;
+    }
+
+    @Override
+    public Throwable getCause() {
+        return causes.get(0);
+    }
+
+    public List<Throwable> getCauses() {
         return causes;
     }
 
-    private Throwable[] causes;
-    public PetraException(Throwable... causes){
+    private List<Throwable> causes;
+    public PetraException(IStep step, Object input, Object output, List<Throwable> causes){
+        this.step = step;
+        this.input = input;
+        this.output = output;
         this.causes = causes;
     }
-    public PetraException(List<? extends Throwable> causes){
-        Throwable[] arr = new Throwable[causes.size()];
-        for (int i=0;i<arr.length;i++){
-            arr[i] = causes.get(0);
-        }
-        this.causes = arr;
+
+    @Override
+    public String toString() {
+        return "PetraException{" +
+                "step=" + step +
+                ", input=" + input +
+                ", output=" + output +
+                ", causes=" + causes +
+                '}';
     }
 }

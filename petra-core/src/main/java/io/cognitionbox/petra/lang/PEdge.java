@@ -16,15 +16,10 @@
 package io.cognitionbox.petra.lang;
 
 import io.cognitionbox.petra.core.impl.*;
-import io.cognitionbox.petra.lang.annotations.Exclusive;
-import io.cognitionbox.petra.lang.annotations.Feedback;
 import io.cognitionbox.petra.exceptions.EdgeException;
-import io.cognitionbox.petra.exceptions.UnknownEdgeFailure;
-import io.cognitionbox.petra.exceptions.conditions.PostConditionFailure;
-import io.cognitionbox.petra.exceptions.conditions.PreConditionFailure;
-import io.cognitionbox.petra.exceptions.sideeffects.IsNotSideEffectAndDidChangeInput;
-import io.cognitionbox.petra.exceptions.sideeffects.IsSideEffectAndDidNotChangeInput;
-import io.cognitionbox.petra.util.function.IFunction;
+import io.cognitionbox.petra.util.function.IBiPredicate;
+import io.cognitionbox.petra.util.function.IConsumer;
+import io.cognitionbox.petra.util.function.IPredicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,33 +28,28 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-import static io.cognitionbox.petra.lang.Void.vd;
+
 import static io.cognitionbox.petra.util.Petra.throwRandomException;
 
 
-public class PEdge<I, O> extends AbstractStep<I, O> implements Serializable {
+public class PEdge<X> extends AbstractStep<X> implements Serializable {
 
     final static Logger LOG = LoggerFactory.getLogger(PEdge.class);
-    protected boolean feedback = false;
-    private IFunction<I, O> function;
+    private IConsumer<X> function;
     private io.cognitionbox.petra.core.impl.PEdgeRollbackHelper PEdgeRollbackHelper = new PEdgeRollbackHelper(100);
     private ObjectCopyerViaSerialization copyer = new ObjectCopyerViaSerialization();
     private List<Class<? extends Exception>> throwsRandomly = new ArrayList<>();
 
-    public PEdge() {
-        this.feedback = this.getStepClazz().getAnnotationsByType(Feedback.class).length > 0;
+    public PEdge() {}
+
+    public PEdge(String description) {
+        super(description);
     }
 
-    public PEdge(String description, boolean isEffect) {
-        super(description,isEffect);
-    }
-
-    public PEdge(Guard<I> p, IFunction<I, O> function, GuardXOR<O> q) {
+    public PEdge(Guard<X> p, IConsumer<X> function, GuardXOR<X> q) {
         this.p = p;
         this.function = function;
         this.q = q;
@@ -69,11 +59,11 @@ public class PEdge<I, O> extends AbstractStep<I, O> implements Serializable {
         return LoggerFactory.getLogger(this.getStepClazz());
     }
 
-    public IFunction<I, O> getFunction() {
+    public IConsumer<X> getFunction() {
         return function;
     }
 
-    public PEdge<I, O> func(IFunction<I, O> function) {
+    public PEdge<X> func(IConsumer<X> function) {
         this.function = function;
         return this;
     }
@@ -82,142 +72,75 @@ public class PEdge<I, O> extends AbstractStep<I, O> implements Serializable {
         this.PEdgeRollbackHelper = new PEdgeRollbackHelper(millisBeforeRetry);
     }
 
-    @Override
-    public O call() {
-        I input = getInput().getValue();
-        if (!p().test(input)) {
-            return (O) input;
-        }
-        Set<Class<?>> classesLockKey = null;
-        try {
-            if (RGraphComputer.getConfig().isTestMode() && (throwsRandomly != null && throwsRandomly.size() > 0)) {
-                throwRandomException(throwsRandomly);
-            }
-
-            if (isEffect() && this.p().getTypeClass().isAnnotationPresent(Exclusive.class)) {
-                classesLockKey =
-                        ReflectUtils.getAllMethodsAccessibleFromObject(this.p().getTypeClass())
-                                .stream()
-                                .filter(m -> m.isAnnotationPresent(Exclusive.class) &&
-                                        m.getReturnType().isAnnotationPresent(Exclusive.class) &&
-                                        m.getParameterCount() == 0 &&
-                                        Modifier.isPublic(m.getModifiers()))
-                                .map(m -> m.getReturnType())
-                                .collect(Collectors.toSet());
-                if (classesLockKey != null && !classesLockKey.isEmpty() && getEffectType().isPresent() && Exclusives.tryAquireExclusive(classesLockKey)) {
-                    Exclusives.load(input, getEffectType().get());
-                } else {
-                    return (O) input;
-                }
-            }
-
-            PEdgeRollbackHelper.capture(input, this);
-            boolean inputMatchesPostConditionBeforeRunning = q().test(input);
-            O res = null;
-            if (RGraphComputer.getConfig().isDeadLockRecoveryActive()) {
-                final ExecutorService executor = Executors.newSingleThreadExecutor();
-                final Future<O> future = executor.submit(() -> {
-                    synchronized (this) { // memory-barrier to ensure all updates are visible before and after func is applied.
-                        if (!isEffect() && RGraphComputer.getConfig().isDefensiveCopyAllInputsExceptForEffectedInputs()) {
-                            return (O) function.apply(copyer.copy(input));
-                        } else {
-                            return (O) function.apply(input);
-                        }
-                    }
-                });
-                executor.shutdown(); // This does not cancel the already-scheduled task.
-
-                res = future.get(1000, TimeUnit.MILLISECONDS);
-            } else {
-                synchronized (this) { // memory-barrier to ensure all updates are visible before and after func is applied.
-                    if (!isEffect() && RGraphComputer.getConfig().isDefensiveCopyAllInputsExceptForEffectedInputs()) {
-                        res = (O) function.apply(copyer.copy(input));
-                    } else {
-                        res = (O) function.apply(input);
-                    }
-                }
-            }
-            if (res == null) {
-                return (O) vd;
-            } else {
-                boolean postConditionOk = q().test(res) || (isFeedback() && p().test(res));
-                boolean isNotSideEffectAndDidChangeInput = !isEffect() && !p().test(input);
-
-                // after successfully completes check side effect, allows for looping on same inputs
-                boolean isSideEffectAndDidNotChangeInput = isEffect() && p().test(input) && !isFeedback();
-
-                boolean sideEffectOk = !(isSideEffectAndDidNotChangeInput || isNotSideEffectAndDidChangeInput);
-                if (!inputMatchesPostConditionBeforeRunning && postConditionOk && sideEffectOk) {
-                    return res;
-                } else if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
-
-                    if (inputMatchesPostConditionBeforeRunning) {
-                        return (O) new EdgeException(input, res, new PreConditionFailure());
-                    }
-
-                    if (isNotSideEffectAndDidChangeInput) {
-                        return (O) new EdgeException(input, res, new IsNotSideEffectAndDidChangeInput());
-                    }
-
-                    if (isSideEffectAndDidNotChangeInput) {
-                        return (O) new EdgeException(input, res, new IsSideEffectAndDidNotChangeInput());
-                    }
-
-                    if (!postConditionOk) {
-                        return (O) new EdgeException(input, res, new PostConditionFailure());
-                    }
-
-                    return (O) new EdgeException(input, res, new UnknownEdgeFailure());
-
-                } else {
-                    PEdgeRollbackHelper.rollback(input, this);
-                    return (O) input;
-                }
-            }
-        } catch (Exclusives.ExclusivesLoadException e) {
-            LOG.error(this.getUniqueId(), e);
-            if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
-                // required for Exhaust Petra to highlight errors
-                return (O) new EdgeException(input, null, e);
-            } else {
-                // no rollback as load happens before input is transformed
-                return (O) input;
-            }
-        } catch (Exception e) {
-            LOG.error(this.getUniqueId(), e);
-            if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
-                // required for Exhaust Petra to highlight errors
-                return (O) new EdgeException(input, null, e);
-            } else {
-                // swallow exception in production so retry will be triggered
-
-                PEdgeRollbackHelper.rollback(input, this);
-                return (O) input;
-            }
-        } finally {
-            if (classesLockKey != null && !classesLockKey.isEmpty() && this.getEffectType().isPresent()) {// && this.p().getTypeClass().isAnnotationPresent(Exclusive.class)){
-                Exclusives.returnExclusive(classesLockKey);
-            }
+    private void Lg_ALL_STATES(String desc, X value) {
+        if (RGraphComputer.getConfig().isAllStatesLoggingEnabled()) {
+            LOG.info(desc + " " + RGraphComputer.getConfig().getMode() + " " + " " + this.getPartitionKey() + " " + " thread=" + Thread.currentThread().getId() + " -> " + value);
         }
     }
 
-    private boolean isFeedback() {
-        return feedback;
+    @Override
+    public X call() {
+        X input = getInput().getValue();
+        Lg_ALL_STATES("[Eg in]",input);
+        if (!p().test(input)) {
+            return (X) input;
+        }
+        PEdgeRollbackHelper.capture(input, this);
+        final ExecutorService executor = Executors.newSingleThreadExecutor();
+        //ObjectTrans objectTrans = new ObjectTrans();
+        AtomicReference<Throwable> throwableRef = new AtomicReference<>();
+        final Future<X> future = executor.submit(() -> {
+            synchronized (this) { // memory-barrier to ensure all updates are visible before and after func is applied.
+                //if (RGraphComputer.getConfig().isDefensiveCopyAllInputs()) {
+                    //objectTrans.capture(input);
+                //}
+                try {
+                    if (RGraphComputer.getConfig().isTestMode() && (throwsRandomly != null && throwsRandomly.size() > 0)) {
+                        throwRandomException(throwsRandomly);
+                    }
+                    function.accept(input);
+                    return input;
+                } catch (Throwable e){
+                    throwableRef.set(e);
+                    LOG.error(this.getUniqueId(), e);
+                }
+                return null;
+            }
+        });
+        executor.shutdown(); // This does not cancel the already-scheduled task.
+        X res = null;
+        try {
+            res = future.get(60, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e){
+            throwableRef.set(e);
+            LOG.error(this.getStepClazz().getSimpleName()+" "+this.getUniqueId(), e);
+        }
+        boolean postConditionOk = throwableRef.get()==null && (res!=null && q().test(res) && evalV(res));
+        if (postConditionOk) {
+            Lg_ALL_STATES("[Eg out]",input);
+            return res;
+        } else if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
+            // need to think about aggregating exceptions at parent graph level
+            return (X) new EdgeException(this,input, res, throwableRef.get());
+        } else {
+            //objectTrans.restore(input);
+            PEdgeRollbackHelper.rollback(input, this);
+            return (X) input;
+        }
     }
 
     public PEdge copy() {
         // we dont copy the id as we need a unique id based on the hashcode of the new instance
-        PEdge PEdge = new PEdge(getPartitionKey(), isEffect());
+        PEdge PEdge = new PEdge(getPartitionKey());
         PEdge.setEffectType(this.getEffectType()); // so we dont have to re-compute
         PEdge.setClazz(getStepClazz());
         PEdge.setP(p());
         PEdge.func(function);
         PEdge.setQ(q());
-        PEdge.feedback = this.feedback;
         return PEdge;
     }
 
-    public PEdge<I, O> throwsRandom(Class<? extends Exception> clazz) {
+    public PEdge<X> throwsRandom(Class<? extends Exception> clazz) {
         throwsRandomly.add(clazz);
         return this;
     }
@@ -225,5 +148,38 @@ public class PEdge<I, O> extends AbstractStep<I, O> implements Serializable {
     @Override
     public boolean isDoesNotTerminate() {
         return false;
+    }
+
+    public void pre(GuardInput<X> p) {
+        setP(p);
+    }
+
+    public void pre(IPredicate<X> predicate) {
+        setP(new GuardWrite(type, predicate));
+    }
+
+    public void post(GuardReturn<X> q) {
+        returnType.addChoice(new Guard(q.getTypeClass(),q.predicate,OperationType.RETURN));
+        setQ(returnType);
+    }
+
+    public void post(IPredicate<X> predicate) {
+        returnType.addChoice(new Guard(type,predicate,OperationType.RETURN));
+        setQ(returnType);
+    }
+
+    private IBiPredicate<X,X> v = null;
+
+    public void variant(IBiPredicate<X,X> predicate) {
+        this.v = predicate;
+    }
+
+    private boolean evalV(X x){
+        if (this.v ==null){
+            return true;
+        } else {
+            // need to plumb in old value using the object transaction restore
+            return this.v.test(x,x);
+        }
     }
 }

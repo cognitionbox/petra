@@ -39,7 +39,7 @@ public interface IPetraConfig {
 
     public boolean isDeadLockRecoveryActive();
 
-    public boolean isDefensiveCopyAllInputsExceptForEffectedInputs();
+    public boolean isDefensiveCopyAllInputs();
 
     public IPetraConfig setDefensiveCopyAllInputsExceptForEffectedInputs(boolean defensiveCopyAllInputsExceptForEffectedInputs);
 

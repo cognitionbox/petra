@@ -17,34 +17,22 @@ package io.cognitionbox.petra.ktln
 
 import io.cognitionbox.petra.core.impl.OperationType
 import io.cognitionbox.petra.lang.*
-import io.cognitionbox.petra.util.function.IBiFunction
-import io.cognitionbox.petra.util.function.IFunction
-import io.cognitionbox.petra.util.function.IPredicate
-import io.cognitionbox.petra.util.function.ITriFunction
 import kotlin.reflect.KClass
 
 object Petra {
 
-    fun <T:Any> ro(eventClazz: KClass<T>, predicate: (T) -> Boolean): GuardRead<T> {
-        return GuardRead(eventClazz.java, predicate)
-    }
-
     fun <T:Any> rw(eventClazz: KClass<T>, predicate: (T) -> Boolean): GuardWrite<T> {
         return GuardWrite(eventClazz.java, predicate)
-    }
-
-    fun <T:Any> rc(eventClazz: KClass<T>, predicate: (T) -> Boolean): GuardConsume<T> {
-        return GuardConsume(eventClazz.java, predicate)
     }
 
     fun <T:Any> rt(eventClazz: KClass<T>, predicate: (T) -> Boolean): GuardReturn<T> {
         return GuardReturn(eventClazz.java, predicate)
     }
 
-    fun <I, O> anonymous(p: Guard<I>,
-                         function: (I) -> O,
-                         vararg qs: Guard<O>): PEdge<I, O> {
-        val pTypeXOR = GuardXOR<O>(OperationType.RETURN)
+    fun <X> anonymous(p: Guard<X>,
+                         function: (X) -> X,
+                         vararg qs: Guard<X>): PEdge<X> {
+        val pTypeXOR = GuardXOR<X>(OperationType.RETURN)
         for (q in qs) {
             pTypeXOR.addChoice(q)
         }

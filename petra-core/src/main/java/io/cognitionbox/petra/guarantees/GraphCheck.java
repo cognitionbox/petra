@@ -17,4 +17,4 @@ package io.cognitionbox.petra.guarantees;
 
 import io.cognitionbox.petra.core.IGraph;
 
-public interface GraphCheck extends Check<IGraph<?,?>> {}
+public interface GraphCheck extends Check<IGraph<?>> {}

@@ -17,10 +17,7 @@ package io.cognitionbox.petra.core;
 
 import java.util.List;
 
-public interface IGraph<I, O> extends IStep<I, O> {
+public interface IGraph<P> extends IStep<P> {
     List<IStep> getParallizable();
-
-    int getNoOfJoins();
-
-    List<IJoin> getJoinTypes();
+    int getNoOfSteps();
 }

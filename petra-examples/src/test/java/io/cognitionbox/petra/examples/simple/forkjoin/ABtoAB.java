@@ -19,22 +19,19 @@
 package io.cognitionbox.petra.examples.simple.forkjoin;
 
 import io.cognitionbox.petra.examples.simple.common.AB;
-import io.cognitionbox.petra.examples.simple.common.AB_Result;
 import io.cognitionbox.petra.examples.simple.common.IncrementA;
 import io.cognitionbox.petra.examples.simple.common.IncrementB;
 import io.cognitionbox.petra.lang.PGraph;
-import io.cognitionbox.petra.util.Petra;
 
-import static io.cognitionbox.petra.util.Petra.rc;
 import static io.cognitionbox.petra.util.Petra.rt;
 
 
-public class ABtoAB extends PGraph<AB, AB_Result> {
+public class ABtoAB extends PGraph<AB> {
     {
-        pre(rc(AB.class, x->true));
-        step(new IncrementA());
-        step(new IncrementB());
-        joinSome(new ABtoABjoin());
-        post(Petra.rt(AB_Result.class, x->true));
+        type(AB.class);
+        pre(x->x.getA().value>=0 && x.getA().value<=10 && x.getB().value>=0 && x.getB().value<=10);
+        step(x->x.getA(),new IncrementA());
+        step(x->x.getB(),new IncrementB());
+        post(x->x.getA().value==10 && x.getB().value==10);
     }
 }

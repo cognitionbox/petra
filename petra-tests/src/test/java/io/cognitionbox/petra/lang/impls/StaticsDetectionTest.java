@@ -18,13 +18,9 @@ package io.cognitionbox.petra.lang.impls;
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.PGraph;
-import io.cognitionbox.petra.util.Petra;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-
-import static io.cognitionbox.petra.util.Petra.rc;
-import static io.cognitionbox.petra.util.Petra.rt;
 
 @RunWith(Parameterized.class)
 public class StaticsDetectionTest extends BaseExecutionModesTest {
@@ -51,19 +47,21 @@ public class StaticsDetectionTest extends BaseExecutionModesTest {
   }
 
 
-  public static class AtoA extends PEdge<A,A> {
+  public static class AtoA extends PEdge<A> {
     {
-      pre(rc(A.class, a->true));
+      type(A.class);
+      pre(a->true);
       func(a->new A(222));
-      post(Petra.rt(A.class, a->true));
+      post(a->true);
     }
   }
 
 
-  public static class g extends PGraph<A,A> {
+  public static class g extends PGraph<A> {
     {
-      pre(rc(A.class, a->true));
-      post(Petra.rt(A.class, a->true));
+      type(A.class);
+      pre(a->true);
+      post(a->true);
       step(AtoA.class);
     }
   }
@@ -71,7 +69,7 @@ public class StaticsDetectionTest extends BaseExecutionModesTest {
 
   @Test(expected = AssertionError.class)
   public void testStaticsDetection() {
-    A result = (A) getGraphComputer().computeWithInput(new g(), new A(1));
+    A result = (A) getGraphComputer().eval(new g(), new A(1));
   }
 
 }

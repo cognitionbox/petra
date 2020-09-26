@@ -19,16 +19,15 @@
 package io.cognitionbox.petra.examples.simple.loop;
 
 import io.cognitionbox.petra.lang.PGraph;
-import io.cognitionbox.petra.util.Petra;
 
-import static io.cognitionbox.petra.util.Petra.rc;
 import static io.cognitionbox.petra.util.Petra.rt;
 
 
-public class AtoA extends PGraph<A, A> {
+public class AtoA extends PGraph<A> {
     {
-        pre(rc(A.class, a->a.value<10));
+        type(A.class);
+        pre(a->a.value>=0 && a.value<=10);
         step(new IncrementA());
-        post(Petra.rt(A.class, a->a.value==10));
+        post(a->a.value==10);
     }
 }

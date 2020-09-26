@@ -20,7 +20,6 @@ import io.cognitionbox.petra.lang.Void;
 import io.cognitionbox.petra.lang.annotations.DoesNotTerminate;
 import io.cognitionbox.petra.lang.annotations.Extract;
 import io.cognitionbox.petra.lang.annotations.Feedback;
-import io.cognitionbox.petra.core.IJoin;
 import io.cognitionbox.petra.core.ILogicBoxDotDiagramRenderer;
 import io.cognitionbox.petra.core.IStep;
 import org.javatuples.Pair;
@@ -184,108 +183,6 @@ public class PGraphDotDiagramRendererImpl2 implements ILogicBoxDotDiagramRendere
       }
       if (step.q()!=null){
         deconstructType(logic,step.q());
-      }
-    }
-
-    for (IStep step : steps){
-      if (step instanceof RGraph){
-        String stepDesc = ((Identifyable)step).getPartitionKey();
-        int joinNo = 0;
-        for (Object jt : ((RGraph) step).getJoinTypes()){
-          if (jt instanceof IJoin){ // jt instanceof Pair
-
-//            ParameterizedType pt = (ParameterizedType) jt.getClass().getGenericSuperclass();
-//            Type[] actualTypeArguments = pt.getActualTypeArguments();
-            Type[] actualTypeArguments = null;
-            Guard[] Guards = null;
-            if (jt instanceof PJoin){
-              actualTypeArguments = new Class<?>[2];
-              actualTypeArguments[0] = ((PJoin) jt).a().getTypeClass();
-              actualTypeArguments[1] = ((PJoin) jt).r().getTypeClass();
-
-              Guards = new Guard[2];
-              Guards[0] = ((PJoin) jt).a();
-              Guards[1] = ((PJoin) jt).r();
-            } else if (jt instanceof PJoin2){
-              actualTypeArguments = new Class<?>[3];
-              actualTypeArguments[0] = ((PJoin2) jt).a().getTypeClass();
-              actualTypeArguments[1] = ((PJoin2) jt).b().getTypeClass();
-              actualTypeArguments[2] = ((PJoin2) jt).r().getTypeClass();
-
-              Guards = new Guard[3];
-              Guards[0] = ((PJoin2) jt).a();
-              Guards[1] = ((PJoin2) jt).b();
-              Guards[2] = ((PJoin2) jt).r();
-
-            } else if (jt instanceof PJoin3){
-              actualTypeArguments = new Class<?>[4];
-              actualTypeArguments[0] = ((PJoin3) jt).a().getTypeClass();
-              actualTypeArguments[1] = ((PJoin3) jt).b().getTypeClass();
-              actualTypeArguments[2] = ((PJoin3) jt).c().getTypeClass();
-              actualTypeArguments[3] = ((PJoin3) jt).r().getTypeClass();
-
-              Guards = new Guard[4];
-              Guards[0] = ((PJoin3) jt).a();
-              Guards[1] = ((PJoin3) jt).b();
-              Guards[2] = ((PJoin3) jt).c();
-              Guards[3] = ((PJoin3) jt).r();
-            }
-
-            for (Type t : actualTypeArguments){
-              clazzes.add((Class<?>) t);
-            }
-
-
-            for (int i=0;i<actualTypeArguments.length-1;i++){
-              java.lang.reflect.Type t = actualTypeArguments[i];
-              Guard Guard = Guards[i];
-              Class<?> tOut = (Class<?>) t;
-
-              java.lang.reflect.Type output = actualTypeArguments[actualTypeArguments.length-1];
-              Guard ptypeOut = Guards[Guards.length-1];
-              Class<?> rOut = (Class<?>) output;
-              deconstructType(logic,rOut);
-
-              append(ptypeOut.getTypeClass().getSimpleName()+" [style=filled, fillcolor=blue fontcolor=white];\n",logic);
-              append(Guard.getTypeClass().getSimpleName()+" [style=filled, fillcolor=blue fontcolor=white];\n",logic);
-              append(tOut.getSimpleName()+" [style=filled, fillcolor=blue fontcolor=white];\n",logic);
-              //append(tOut.getSimpleName()+"->"+ Guard.getTypeClass().getSimpleName()+";\n");
-
-              append(Guard.getTypeClass().getSimpleName()+"->"+stepDesc+"_join_"+joinNo+" [label=PRE];\n",logic);
-
-              if (ptypeOut instanceof GuardXOR<?>){
-                for (Guard<?> clazz : ((GuardXOR<?>) ptypeOut).getChoices()){
-                  clazzes.add(clazz.getTypeClass());
-                  append(clazz.getTypeClass().getSimpleName()+" [style=filled, fillcolor=blue fontcolor=white];\n",logic);
-                  append(stepDesc+"_join_"+joinNo+"->"+clazz.getTypeClass().getSimpleName()+" [label=POST];\n",logic);
-                }
-              } else {
-                clazzes.add(ptypeOut.getTypeClass());
-                append(ptypeOut.getTypeClass().getSimpleName()+" [style=filled, fillcolor=blue fontcolor=white];\n",logic);
-                append(stepDesc+"_join_"+joinNo+"->"+ptypeOut.getTypeClass().getSimpleName()+" [label=POST];\n",logic);
-              }
-
-//              for (Object w : Guard.getWeakerPTypes()){
-//                if (w instanceof Guard){
-//                  append(((Guard) w).getTypeClass().getSimpleName()+"->"+Guard.getTypeClass().getSimpleName()+";\n");
-//                }
-//              }
-
-              append(stepDesc+"_join_"+joinNo+" [shape=rect style=filled, fillcolor=orange fontcolor=black];\n",logic);
-              append(tOut.getSimpleName()+" [style=filled, fillcolor=blue fontcolor=white];\n",logic);
-              //append(tOut.getSimpleName()+"->"+stepDesc+"_join_"+joinNo+" [label=PRE];\n");
-              //append(stepDesc+"_join_"+joinNo+"->"+rOut.getSimpleName()+" [label=POST];\n");
-            }
-
-//            for (Guard t : (List<Guard>) ((Pair) jt).getValue0()){
-//              append(stepDesc+"_join_"+joinNo+" [shape=rect style=filled, fillcolor=blue fontcolor=white];\n");
-//              append(t.getTypeClass().getSimpleName()+" [style=filled, fillcolor=blue fontcolor=white];\n");
-//              append(t.getTypeClass().getSimpleName()+"->"+stepDesc+"_join_"+joinNo+" [label=PRE];\n");
-//              append(stepDesc+"_join_"+joinNo+"->"+(((Guard) ((Pair) jt).getValue()).getTypeClass().getSimpleName())+" [label=POST];\n");
-//            }
-          }
-          joinNo++;
-        }
       }
     }
 

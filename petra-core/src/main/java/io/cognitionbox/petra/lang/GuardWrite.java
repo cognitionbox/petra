@@ -20,6 +20,6 @@ import io.cognitionbox.petra.util.function.IPredicate;
 
 public class GuardWrite<E> extends GuardInput<E> {
     public GuardWrite(Class<E> eventClazz, IPredicate<E> predicate){
-        super(eventClazz,predicate, OperationType.WRITE);
+        super(eventClazz,predicate, OperationType.READ_WRITE);
     }
 }

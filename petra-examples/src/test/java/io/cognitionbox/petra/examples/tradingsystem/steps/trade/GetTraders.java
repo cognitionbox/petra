@@ -24,17 +24,8 @@ import io.cognitionbox.petra.examples.tradingsystem.objects.Traders;
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.util.Petra;
 
-import static io.cognitionbox.petra.util.Petra.ro;
 import static io.cognitionbox.petra.util.Petra.rt;
 
-public class GetTraders extends PEdge<State, Traders> {
-    {
-        pre(ro(State.class, x->x.stateOk()));
-        func(
-                x -> {
-                    return x.getTraders();
-                }
-        );
-        post(Petra.rt(Traders.class, x->true));
-    }
+public interface GetTraders{
+    Traders traders();
 }

@@ -19,7 +19,7 @@
 package io.cognitionbox.petra.examples.tradingsystem.steps.risk;
 
 import io.cognitionbox.petra.examples.tradingsystem.steps.StateOk;
-import io.cognitionbox.petra.examples.tradingsystem.steps.StopAtMaxExposure;
+import io.cognitionbox.petra.examples.tradingsystem.steps.MaxExposure;
 
-public interface AfterExposure extends StateOk, Exposure, StopAtMaxExposure {
+public interface AfterExposure extends StateOk, Exposure, MaxExposure {
 }

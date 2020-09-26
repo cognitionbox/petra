@@ -19,12 +19,16 @@
 package io.cognitionbox.petra.examples.tradingsystem.objects;
 
 
+import io.cognitionbox.petra.examples.tradingsystem.steps.TradingSystem;
 import io.cognitionbox.petra.examples.tradingsystem.steps.StateOk;
-import io.cognitionbox.petra.examples.tradingsystem.steps.StopAtMaxExposure;
+import io.cognitionbox.petra.examples.tradingsystem.steps.MaxExposure;
 import io.cognitionbox.petra.examples.tradingsystem.steps.risk.AfterExposure;
 import io.cognitionbox.petra.examples.tradingsystem.steps.risk.BeforeExposure;
+import io.cognitionbox.petra.examples.tradingsystem.steps.trade.GetTraders;
 import io.cognitionbox.petra.lang.Ref;
 import io.cognitionbox.petra.lang.annotations.Extract;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -32,7 +36,7 @@ import java.time.LocalDateTime;
 import static io.cognitionbox.petra.util.Petra.ref;
 
 @Extract
-public class State implements Serializable, StateOk, StopAtMaxExposure, BeforeExposure, AfterExposure {
+public class State implements Serializable, GetTraders, StateOk, MaxExposure, BeforeExposure, AfterExposure {
     private Ref<Double> lastExp = ref();
     private Ref<Double> currentExp = ref();
 
@@ -97,5 +101,12 @@ public class State implements Serializable, StateOk, StopAtMaxExposure, BeforeEx
             }
         }
         return true;
+    }
+
+    public void updateExposure(){
+        lastExp().set(currentExp().get());
+        currentExp().set(
+                traders().stream()
+                        .flatMap(d -> d.getDecisions().stream()).mapToDouble(d->d.exposure()).sum());
     }
 }

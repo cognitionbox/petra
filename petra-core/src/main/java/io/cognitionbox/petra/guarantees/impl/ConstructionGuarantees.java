@@ -16,7 +16,6 @@
 package io.cognitionbox.petra.guarantees.impl;
 
 import io.cognitionbox.petra.config.IPetraConfig;
-import io.cognitionbox.petra.config.PetraConfig;
 import io.cognitionbox.petra.core.IGraph;
 import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.core.impl.PGraphDotDiagramRendererImpl2;
@@ -59,19 +58,18 @@ public class ConstructionGuarantees {
 //            stepErrors.add(new StepError(step,config.JoinEffectMustHaveOnlyOneInputTypeEqualToTheOutputType.getClass().getSimpleName()));
 //        }
 
-        addCheck(new OnlyEdgesWithSideEffectsMustImplementIRollback());
+        //addCheck(new OnlyEdgesWithSideEffectsMustImplementIRollback());
         addCheck(new OnlyStepWithSideAffectTrueMustImplementSideEffect());
         addCheck(new StepWithImmutablePreOrPostConditionTypesCannotBeSideEffects());
-        addCheck(new StepsCannotHaveFields());
+        //addCheck(new StepsCannotHaveFields());
 
-        addCheck(new StepsCanCannotDeclareConstructors());
+        //addCheck(new StepsCanCannotDeclareConstructors());
         addCheck(new PrePostTypesMustBeBoundToUniquePredicates());
-        addCheck(new StepsCannotHaveFields());
+        //addCheck(new StepsCannotHaveFields());
 
         if (config.isStrictModeExtraConstructionGuarantee()) {
             addCheck(new CheckAllPrePostTypesAreStates());
             addCheck(new NoStepsInSameStepHaveSamePreconditionType());
-            addCheck(new NoJoinsCanHaveSameInputPreconditionTypes());
         }
 
         if (config.isReachabilityChecksEnabled()) {
@@ -80,15 +78,12 @@ public class ConstructionGuarantees {
     }
 
     void initAllChecksExceptForThoseNotCompatibleWithGraphsGeneratedByReachabilityCheck(){
-        if (config.isDefensiveCopyAllInputsExceptForEffectedInputs()) {
+        if (config.isDefensiveCopyAllInputs()) {
             addCheck(new AllFieldsMustBeSerializableUnlessTransient());
         }
         addCheck(new StepsCanOnlyEverImplementOneInterfaceWhichIsIRollback());
         addCheck(new StepsMustHavePublicClasses());
         addCheck(new EffectTypesMustBeClassesAndNotInterfaces());
-        addCheck(new ExclusivesMustBeMatchedOnlyByEffectSteps());
-        addCheck(new ExclusiveFieldsCanOnlyExistWithinAnExclusiveEffectTypes());
-        addCheck(new ExclusiveMethodsCanOnlyExistWithinAnExclusiveTypes());
         addCheck(new StaticFieldsOnlyAllowedIfFinalAndPrimitive());
         addCheck(new ClassesWithExtractsOnFieldsMustHaveExtractAnnotation());
         addCheck(new ExtractsAtClassLevelMustBeAppliedOnlyToIterablesOrClassesWhichHaveExtractOnFields());
@@ -113,12 +108,8 @@ public class ConstructionGuarantees {
         }
     }
 
-    public static boolean isSideEffect(AbstractStep<?, ?> step) {
-        if (step.isEffect()) {// || step instanceof EffectG){
-            return true;
-        } else {
-            return false;
-        }
+    public static boolean isSideEffect(AbstractStep<?> step) {
+        return true;
     }
 
     String printErrorDotDiagram(RGraph xGraphSafe) {

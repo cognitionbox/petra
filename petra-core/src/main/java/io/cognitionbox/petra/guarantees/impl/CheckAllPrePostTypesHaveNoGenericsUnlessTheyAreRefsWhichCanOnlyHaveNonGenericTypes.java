@@ -33,7 +33,7 @@ public class CheckAllPrePostTypesHaveNoGenericsUnlessTheyAreRefsWhichCanOnlyHave
 
 
         @Override
-        public boolean test(IStep<?, ?> abstractStep) {
+        public boolean test(IStep<?> abstractStep) {
             ParameterizedType pt = (ParameterizedType) abstractStep.getStepClazz().getGenericSuperclass();
             if (abstractStep.getEffectType().isPresent()) {
                 return nonRefTypeIsOk(pt, 0);

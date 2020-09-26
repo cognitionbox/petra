@@ -18,12 +18,10 @@ package io.cognitionbox.petra.lang.impls;
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.PGraph;
-import io.cognitionbox.petra.util.Petra;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import static io.cognitionbox.petra.util.Petra.rc;
 import static io.cognitionbox.petra.util.Petra.rt;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,65 +33,76 @@ public class PGraphSingleHandledThrowableFlowTest extends BaseExecutionModesTest
     super(execMode);
   }
 
+  static class X {
+    Integer value;
+    public X(Integer value) {
+      this.value = value;
+    }
+  }
+
   @Test
   public void testThrowableFlow() {
 
-    Object result = getGraphComputer().computeWithInput(new MainLoop(),0);
-    assertThat(result).isInstanceOf(Integer.class);
-    assertThat(result).isEqualTo(3);
+    X result = (X) getGraphComputer().eval(new MainLoop(),new X(0));
+    assertThat(result).isInstanceOf(X.class);
+    assertThat(result.value).isEqualTo(3);
   }
 
   @Test
   public void testThrowableFlowWithDirectStepHandledThrowable() {
 
-    Object result = getGraphComputer().computeWithInput(new MainLoopWithDirectStepHandledThrowable(),0);
-    assertThat(result).isInstanceOf(Integer.class);
-    assertThat(result).isEqualTo(3);
+    X result = (X) getGraphComputer().eval(new MainLoopWithDirectStepHandledThrowable(),new X(0));
+    assertThat(result).isInstanceOf(X.class);
+    assertThat(result.value).isEqualTo(3);
   }
 
-  public static class MainLoop extends PGraph<Integer,Integer> {
+  public static class MainLoop extends PGraph<X> {
     {
-      pre(rc(Integer.class, x->x==0));
-      post(Petra.rt(Integer.class, x->x==3));
+      type(X.class);
+      pre(x->x.value==0);
+      post(x->x.value==3);
       step(new Nesting());
     }
   }
 
-  public static class Nesting extends PGraph<Integer,Integer> {
+  public static class Nesting extends PGraph<X> {
     {
-      pre(rc(Integer.class, x -> x == 0));
-      post(Petra.rt(Integer.class, x->x==1 || x==3));
+      type(X.class);
+      pre(x -> x.value == 0);
+      post(x->x.value==1 || x.value==3);
       step(new PlusOne());
     }
   }
 
-  public static class MainLoopWithDirectStepHandledThrowable extends PGraph<Integer,Integer> {
+  public static class MainLoopWithDirectStepHandledThrowable extends PGraph<X> {
     {
-      pre(rc(Integer.class, x->x==0));
-      post(Petra.rt(Integer.class, x->x==3));
+      type(X.class);
+      pre(x->x.value==0);
+      post(x->x.value==3);
       step(new NestingWithDirectStepHandledThrowable());
     }
   }
 
-  public static class NestingWithDirectStepHandledThrowable extends PGraph<Integer,Integer> {
+  public static class NestingWithDirectStepHandledThrowable extends PGraph<X> {
     {
-      pre(rc(Integer.class, x -> x == 0));
-      post(Petra.rt(Integer.class, x -> x == 3));
+      type(X.class);
+      pre(x -> x.value == 0);
+      post(x -> x.value == 3);
       step(new PlusOne());
     }
   }
 
-  public static class PlusOne extends PEdge<Integer,Integer> {
+  public static class PlusOne extends PEdge<X> {
    {
-      pre(rc(Integer.class, x->x==0));
-      post(Petra.rt(Integer.class, x->x==1 || x==3));
+      type(X.class);
+      pre(x->x.value==0);
+      post(x->x.value==1 || x.value==3);
       func(x->{
         try {
           int y = 1/0;
         } catch (ArithmeticException e){
-          return 3;
+          x.value = 3;
         }
-        return null;
       });
     }
   }

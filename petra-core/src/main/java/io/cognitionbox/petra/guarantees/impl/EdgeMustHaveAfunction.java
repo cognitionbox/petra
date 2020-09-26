@@ -20,7 +20,7 @@ import io.cognitionbox.petra.lang.PEdge;
 
 public class EdgeMustHaveAfunction implements EdgeCheck {
         @Override
-        public boolean test(PEdge<?, ?> edge) {
+        public boolean test(PEdge<?> edge) {
             if (edge.getFunction() != null) {
                 return true;
             } else {

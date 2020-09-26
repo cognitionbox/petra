@@ -15,18 +15,17 @@
  */
 package io.cognitionbox.petra.lang.impls;
 
+import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.annotations.Extract;
 import io.cognitionbox.petra.config.ExecMode;
 
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.PGraph;
 import io.cognitionbox.petra.util.impl.PList;
-import io.cognitionbox.petra.util.Petra;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import static io.cognitionbox.petra.util.Petra.rc;
 import static io.cognitionbox.petra.util.Petra.rt;
 
 
@@ -35,7 +34,7 @@ public class BackReferencesDetectionTest extends BaseExecutionModesTest {
   // will help to ensure race conditions and deadlocks are impossible
   // this is currently achieved via the stack overflow exception when recursively deconstructing
   // if there is a back reference there will be a circular reference back to the parent when
-  // deconstructing, there might be rc other cases missed.
+  // deconstructing, there might be rw other cases missed.
 
   public BackReferencesDetectionTest(ExecMode execMode) {
     super(execMode);
@@ -89,18 +88,20 @@ public class BackReferencesDetectionTest extends BaseExecutionModesTest {
     }
   }
 
-  public static class AtoA extends PEdge<A,A> {
+  public static class AtoA extends PEdge<A> {
     {
-      pre(rc(A.class, x->true));
+      type(A.class);
+      pre(x->true);
       func(a->new A(222));
-      post(Petra.rt(A.class, x->true));
+      post(x->true);
     }
   }
 
-  public static class g extends PGraph<A,A> {
+  public static class g extends PGraph<A> {
     {
-      pre(rc(A.class, x->true));
-      post(Petra.rt(A.class, x->true));
+      type(A.class);
+      pre(x->true);
+      post(x->true);
       step(AtoA.class);
     }
   }
@@ -109,8 +110,8 @@ public class BackReferencesDetectionTest extends BaseExecutionModesTest {
   @Test(expected = StackOverflowError.class)
   public void testBackReferencesDetection() {
 
-    io.cognitionbox.petra.lang.PGraphComputer<A, A> lc = getGraphComputer();
-    A result = lc.computeWithInput(new g(), new A(1));
+    PComputer<A> lc = getGraphComputer();
+    A result = lc.eval(new g(), new A(1));
   }
 
 }

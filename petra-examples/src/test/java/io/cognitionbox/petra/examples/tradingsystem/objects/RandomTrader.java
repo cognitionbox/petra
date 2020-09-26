@@ -37,6 +37,23 @@ public class RandomTrader implements Trader {
     }
 
 
+    private Decisions decisions = new Decisions();
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @Override
+    public Decisions getDecisions() {
+        return decisions;
+    }
+
+    @Override
+    public void addDecision(Decision d) {
+        this.decisions.add(d);
+    }
+
     @Override
     public TraderId id() {
         return this.id;

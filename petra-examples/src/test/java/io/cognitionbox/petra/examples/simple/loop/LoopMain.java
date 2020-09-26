@@ -19,7 +19,7 @@
 package io.cognitionbox.petra.examples.simple.loop;
 
 import io.cognitionbox.petra.config.ExecMode;
-import io.cognitionbox.petra.lang.PGraphComputer;
+import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +43,7 @@ public class LoopMain extends BaseExecutionModesTest {
      */
     @Test
     public void test(){
-        A output = new PGraphComputer<A, A>().computeWithInput(new AtoA(),new A());
+        A output = new PComputer<A>().eval(new AtoA(),new A());
         System.out.println("OUTPUT: "+output.value);
         assertThat(output.value).isEqualTo(10);
     }

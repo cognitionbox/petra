@@ -17,14 +17,149 @@ package io.cognitionbox.petra.core.impl;
 
 import org.reflections.Reflections;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.*;
+import java.io.Serializable;
+import java.lang.reflect.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class ReflectUtils {
+
+    public static class ObjectNotNullStringNotEmptyAndValidFloatingPoint implements Predicate<Object>{
+
+        @Override
+        public boolean test(Object v) {
+            if (v==null){
+                return false;
+            }
+            if (v instanceof String){
+                return !((String) v).isEmpty();
+            } else if (v instanceof Float){
+                Float f = ((Float) v);
+                return Float.isFinite(f.floatValue()) && !Float.isInfinite(f.floatValue()) && !Float.isNaN(f.floatValue());
+            } else if (v instanceof Double){
+                Double d = ((Double) v);
+                return Double.isFinite(d.floatValue()) && !Double.isInfinite(d.floatValue()) && !Double.isNaN(d.floatValue());
+            }
+            return true;
+        }
+    }
+
+    public static Set<Class<?>> getAllFieldTypeDependanciesIncludingResolvedGenerics(Class<?> clazz){
+        Set<Class<?>> clazzes = new HashSet<>();
+        addAllTypeDependanciesIncludingResolvedGenericsImpl(clazz,clazzes);
+        return clazzes;
+    }
+
+    private static void addAllTypeDependanciesIncludingResolvedGenericsImpl(Class<?> clazz, Set<Class<?>> set){
+        if (Number.class.isAssignableFrom(clazz) ||
+                String.class.isAssignableFrom(clazz) ||
+                Boolean.class.isAssignableFrom(clazz)){
+            return;
+        }
+        set.add(clazz);
+        for (Field f : getAllFieldsAccessibleFromObject(clazz)){
+            if (!f.getType().isPrimitive()){
+                Type type = f.getGenericType();
+                if (type instanceof ParameterizedType){
+                    for (Type t : ((ParameterizedType)type).getActualTypeArguments()){
+                        addAllTypeDependanciesIncludingResolvedGenericsImpl((Class<?>) t, set);
+                    }
+                }
+            }
+        }
+    }
+
+    static public boolean isAllObjectGraphFieldsValid(Object object, Predicate validator) {
+        for (Field f : getAllFieldsAccessibleFromObject(object.getClass())){
+            Object fieldValue = null;
+            try {
+                boolean accessible = f.isAccessible();
+                f.setAccessible(true);
+                fieldValue = f.get(object);
+                f.setAccessible(accessible);
+            } catch (IllegalAccessException e) {
+                throw new IllegalStateException("could not complete validation of object.");
+            }
+            if (fieldValue instanceof Iterable){
+                for (Object o : (Iterable)fieldValue){
+                    if (!validator.test(o)) {
+                        return false;
+                    }
+                }
+            } else if (!validator.test(fieldValue)){
+                return false;
+            }
+            if (!(fieldValue instanceof Number || fieldValue instanceof String || fieldValue instanceof Boolean)){
+                return isAllObjectGraphFieldsValid(fieldValue,validator);
+            }
+        }
+        return true;
+    }
+
+    static public <T> void actionAllFieldsAccessibleFromObjectInstance(Object value, BiConsumer<Field,Object> fieldConsumer) {
+            if (value==null){
+                return;
+            }
+            if (Boolean.class.isAssignableFrom(value.getClass()) || String.class.isAssignableFrom(value.getClass()) || Integer.class.isAssignableFrom(value.getClass())){
+                return;
+            }
+            Set<Field> fields = getAllFieldsAccessibleFromObject(value.getClass());
+            for (Field f : fields){
+                if (!(Boolean.class.isAssignableFrom(value.getClass()) || String.class.isAssignableFrom(value.getClass()) || Integer.class.isAssignableFrom(value.getClass()))){
+                    if (!Modifier.isStatic(f.getModifiers())){
+                        try {
+                            boolean isAccessable = f.isAccessible();
+                            f.setAccessible(true);
+                            Object v = f.get(value);
+                            actionAllFieldsAccessibleFromObjectInstance(v,fieldConsumer);
+                            f.setAccessible(isAccessable);
+                            fieldConsumer.accept(f,value);
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+    }
+
+    static public <T> void actionAllFieldsAccessibleFromObjectGraph(Class<?> t, Consumer<Field> fieldConsumer) {
+        if (!(Boolean.class.isAssignableFrom(t) || String.class.isAssignableFrom(t) || Integer.class.isAssignableFrom(t))){
+            Set<Field> fields = getAllFieldsAccessibleFromObject(t);
+            for (Field f : fields){
+                actionAllFieldsAccessibleFromObjectGraph(f.getType(),fieldConsumer);
+                fieldConsumer.accept(f);
+            }
+        }
+    }
+
+    static public <T> Set<Field> getAllFieldsAccessibleFromObjectGraph(Class<?> t) {
+        Set<Field> allFields = new HashSet<>();
+        addAllFieldsAccessibleFromObjectGraph(t,allFields);
+        return allFields;
+    }
+
+    private static <T> void addAllFieldsAccessibleFromObjectGraph(Class<?> t, Set<Field> allFields) {
+        if (!(Boolean.class.isAssignableFrom(t) || String.class.isAssignableFrom(t) || Integer.class.isAssignableFrom(t))){
+            Set<Field> fields = getAllFieldsAccessibleFromObject(t);
+            for (Field f : fields){
+                addAllFieldsAccessibleFromObjectGraph(f.getType(),allFields);
+            }
+            allFields.addAll(fields);
+        }
+    }
+
+    static public <T> Set<Field> getAllNonStaticFieldsAccessibleFromObject(Class<?> t) {
+        return getAllFieldsAccessibleFromObject(t).stream()
+                .filter(f->!Modifier.isStatic(f.getModifiers())).collect(Collectors.toSet());
+    }
+
     static public <T> Set<Field> getAllFieldsAccessibleFromObject(Class<?> t) {
         Set<Field> fields = new HashSet<>();
         if (t.isPrimitive() || t.isArray()){

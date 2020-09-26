@@ -20,10 +20,11 @@ package io.cognitionbox.petra.examples.tradingsystem.steps;
 
 import io.cognitionbox.petra.examples.tradingsystem.objects.Traders;
 import io.cognitionbox.petra.examples.tradingsystem.steps.risk.BeforeExposure;
+import io.cognitionbox.petra.examples.tradingsystem.steps.risk.Exposure;
 import io.cognitionbox.petra.lang.annotations.Extract;
 
 @Extract
-public interface StateOk extends BeforeExposure {
+public interface StateOk extends Exposure {
     default boolean stateOk(){
         return hasAllFeeds();
     }

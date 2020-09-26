@@ -17,7 +17,6 @@ package io.cognitionbox.petra.lang;
 
 import io.cognitionbox.petra.config.IPetraConfig;
 import io.cognitionbox.petra.core.IRingbuffer;
-import io.cognitionbox.petra.core.engine.StepWorker;
 import io.cognitionbox.petra.config.PetraConfig;
 import io.cognitionbox.petra.core.engine.petri.impl.Token;
 import io.cognitionbox.petra.core.impl.*;
@@ -29,10 +28,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.URL;
-import java.net.URLConnection;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
@@ -40,7 +35,7 @@ import java.util.stream.Collectors;
 
 import static io.cognitionbox.petra.util.Petra.ref;
 
-public class RGraphComputer<I extends D, O extends D, D> implements Serializable {
+public class RGraphComputer<X extends D, D> implements Serializable {
 
   public static IPetraConfig getConfig() {
     return config;
@@ -72,7 +67,7 @@ public class RGraphComputer<I extends D, O extends D, D> implements Serializable
   final static Logger LOG = LoggerFactory.getLogger(RGraphComputer.class);
 
   private boolean invoked = false;
-  Ref<O> result;
+  Ref<X> result;
   private transient Lock initializerLock;
   private transient Lock masterLock;
   private String dotDiagram;
@@ -96,15 +91,14 @@ public class RGraphComputer<I extends D, O extends D, D> implements Serializable
 
   }
 
-  private RGraph<I, O, D> rootGraph;
-  synchronized public O computeWithInput(RGraph<I, O, D> xGraphSafe, I input) {
+  private RGraph<X, D> rootGraph;
+  synchronized public X eval(RGraph<X, D> xGraphSafe, X input) {
     this.rootGraph = xGraphSafe;
 
     taskQueue = Petra.getFactory().createRingbuffer("tasks");
 
     if (!RGraphComputer.getConfig().getMode().isSEQ()){
       workerExecutor = Petra.getFactory().createExecutorService("exe");
-      RGraphComputer.getWorkerExecutor().submit(new StepWorker());
     }
 
     List<AbstractStep> steps = LogicStepsCollector.getAllSteps(this.rootGraph);
@@ -130,10 +124,10 @@ public class RGraphComputer<I extends D, O extends D, D> implements Serializable
       }
     }
 
-    PGraphDotDiagramRendererImpl2 renderer = new PGraphDotDiagramRendererImpl2();
-    renderer.render(this.rootGraph);
-    renderer.finish();
-    LOG.info("\n"+renderer.getDotOutput());
+//    PGraphDotDiagramRendererImpl2 renderer = new PGraphDotDiagramRendererImpl2();
+//    renderer.render(this.rootGraph);
+//    renderer.finish();
+//    LOG.info("\n"+renderer.getDotOutput());
 
     if (!invoked) {
       invoked = true;
@@ -147,15 +141,11 @@ public class RGraphComputer<I extends D, O extends D, D> implements Serializable
 
   public static boolean isMaster = false;
 
-  private O handle(I input) {
-    try {
-      return tryAquireLoopAndExecute(this.rootGraph,input);
-    } finally {
-      Exclusives.clearAll();
-    }
+  private X handle(X input) {
+    return tryAquireLoopAndExecute(this.rootGraph,input);
   }
 
-  private O tryAquireLoopAndExecute(RGraph xGraphSafe, I input) {
+  private X tryAquireLoopAndExecute(RGraph xGraphSafe, X input) {
       if (result.get()!=null){
         return result.get();
       }
@@ -163,12 +153,12 @@ public class RGraphComputer<I extends D, O extends D, D> implements Serializable
         waitForInput(xGraphSafe, input);
         xGraphSafe.setInput(new Token(input));
         xGraphSafe.initInput();
-        O out = startMasterLoop(); // one nodes wins and keeps the lock
+        X out = startMasterLoop(); // one nodes wins and keeps the lock
         result.set(out);
       } else {
         try {
           masterLock.lock();
-          O out = startMasterLoop(); // the rest lose and just work the iterations
+          X out = startMasterLoop(); // the rest lose and just work the iterations
           result.set(out);
         } finally {
           // what if node fails and therefore does not unlock, need to tidy locks after node failures
@@ -178,11 +168,11 @@ public class RGraphComputer<I extends D, O extends D, D> implements Serializable
       return result.get();
   }
 
-  private O startMasterLoop(){
-    return (O) this.rootGraph.executeMatchingLoopUntilPostCondition();
+  private X startMasterLoop(){
+    return (X) this.rootGraph.executeMatchingLoopUntilPostCondition();
   }
 
-  private void waitForInput(RGraph xGraphSafe, I input){
+  private void waitForInput(RGraph xGraphSafe, X input){
     while (!xGraphSafe.evalP(input)){
       try {
         Thread.sleep(100);

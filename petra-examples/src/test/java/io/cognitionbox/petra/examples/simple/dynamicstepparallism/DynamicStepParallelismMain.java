@@ -19,8 +19,7 @@
 package io.cognitionbox.petra.examples.simple.dynamicstepparallism;
 
 import io.cognitionbox.petra.config.ExecMode;
-import io.cognitionbox.petra.lang.PGraphComputer;
-import io.cognitionbox.petra.lang.Void;
+import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,6 +50,6 @@ public class DynamicStepParallelismMain extends BaseExecutionModesTest {
      */
     @Test
     public void test(){
-        Void result = new PGraphComputer<X, Void>().computeWithInput(new PrintAGraph(),new X());
+        X result = new PComputer<X>().eval(new PrintAGraph(),new X());
     }
 }

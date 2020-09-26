@@ -22,8 +22,7 @@ import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.examples.simple.common.A;
 import io.cognitionbox.petra.examples.simple.common.AB;
 import io.cognitionbox.petra.examples.simple.common.B;
-import io.cognitionbox.petra.lang.PGraphComputer;
-import io.cognitionbox.petra.lang.Void;
+import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,6 +49,6 @@ public class ExtractionMain extends BaseExecutionModesTest {
      */
     @Test
     public void test(){
-        Void result = new PGraphComputer<AB, Void>().computeWithInput(new ExtractAB(),new AB(new A(),new B()));
+        AB result = new PComputer<AB>().eval(new ExtractAB(),new AB(new A(),new B()));
     }
 }

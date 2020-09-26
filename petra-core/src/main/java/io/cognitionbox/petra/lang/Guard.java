@@ -19,7 +19,6 @@ import io.cognitionbox.petra.core.impl.ObjectCopyerViaSerialization;
 import io.cognitionbox.petra.core.impl.OperationType;
 import io.cognitionbox.petra.core.impl.ReflectUtils;
 import io.cognitionbox.petra.google.Optional;
-import io.cognitionbox.petra.lang.annotations.Exclusive;
 import io.cognitionbox.petra.exceptions.TypeEvalException;
 import io.cognitionbox.petra.util.function.IPredicate;
 
@@ -37,7 +36,7 @@ public class Guard<E> implements IPredicate<E> {
         return getTypeClass().equals(Void.class);
     }
 
-    protected OperationType operationType = OperationType.CONSUME;
+    protected OperationType operationType = OperationType.READ_WRITE;
 
     public OperationType getOperationType() {
         return operationType;
@@ -149,8 +148,8 @@ public class Guard<E> implements IPredicate<E> {
     @Override
     public boolean test(Object value) {
         Object x = value;
-//        if (rc instanceof Ref){
-//            x = ((Ref) rc).get();
+//        if (rw instanceof Ref){
+//            x = ((Ref) rw).get();
 //        }
         if (x==null && !Void.class.equals(eventClazz)){
             return false;
@@ -166,7 +165,7 @@ public class Guard<E> implements IPredicate<E> {
             }
         }
 
-        // allows nulls to be return, allowing for an "option" rc
+        // allows nulls to be return, allowing for an "option" rw
         if (x==null || x== vd){
             try {
                 return this.predicate.test(x);
@@ -182,38 +181,18 @@ public class Guard<E> implements IPredicate<E> {
         }
 
         if (this.eventClazz.isInstance(x)) {
-            Set<Class<?>> classesLockKey = null;
             try {
                 Object xToUse = x;
-                if (operationType==OperationType.WRITE){// && this.eventClazz.isAnnotationPresent(Exclusive.class)){
-                    classesLockKey =
-                            ReflectUtils.getAllMethodsAccessibleFromObject(this.eventClazz)
-                                    .stream()
-                                    .filter(m->m.isAnnotationPresent(Exclusive.class) &&
-                                                m.getReturnType().isAnnotationPresent(Exclusive.class) &&
-                                                    m.getParameterCount()==0 &&
-                                                        Modifier.isPublic(m.getModifiers()))
-                                    .map(m->m.getReturnType())
-                                    .collect(Collectors.toSet());
-                    if (classesLockKey!=null && !classesLockKey.isEmpty() && Exclusives.tryAquireExclusive(classesLockKey)) {
-                        Exclusives.load(x, getTypeClass());
-                    }
-                } else
-
-                    if (RGraphComputer.getConfig().isDefensiveCopyAllInputsExceptForEffectedInputs()){
+                if (RGraphComputer.getConfig().isDefensiveCopyAllInputs()) {
                     try {
                         xToUse = copyer.copy(x);
-                    } catch (Exception e){
+                    } catch (Exception e) {
                         return false;
                     }
                 }
-                return this.predicate.test(x);
+                return this.predicate.test(xToUse);
             } catch (Exception e){
                 throw new TypeEvalException(e);
-            } finally {
-                if (classesLockKey!=null && !classesLockKey.isEmpty() && operationType==OperationType.WRITE){// && this.eventClazz.isAnnotationPresent(Exclusive.class)){
-                    Exclusives.returnExclusive(classesLockKey);
-                }
             }
         }
         return false;

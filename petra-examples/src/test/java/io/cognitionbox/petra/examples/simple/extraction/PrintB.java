@@ -21,19 +21,17 @@ package io.cognitionbox.petra.examples.simple.extraction;
 
 import io.cognitionbox.petra.examples.simple.common.B;
 import io.cognitionbox.petra.lang.PEdge;
-import io.cognitionbox.petra.lang.Void;
 
-import static io.cognitionbox.petra.lang.Void.vd;
-import static io.cognitionbox.petra.util.Petra.rc;
+import static io.cognitionbox.petra.util.Petra.rt;
 
 
-public class PrintB extends PEdge<B, Void> {
+public class PrintB extends PEdge<B> {
     {
-       pre(rc(B.class, b->true));
-       func(a->{
-           System.out.println(a.getClass().getSimpleName());
-           return vd;
+       type(B.class);
+       pre(b->true);
+       func(b->{
+           System.out.println(b.getClass().getSimpleName());
         });
-       postVoid();
+       post(b->true);
     }
 }

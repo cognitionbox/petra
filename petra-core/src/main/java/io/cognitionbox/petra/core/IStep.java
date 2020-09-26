@@ -17,15 +17,15 @@ package io.cognitionbox.petra.core;
 
 import io.cognitionbox.petra.lang.Guard;
 
-public interface IStep<I, O> extends IIdentifyable, IMaybeEffect {
+public interface IStep<X> extends IIdentifyable, IMaybeEffect {
 
-    boolean evalP(I e);
+    boolean evalP(X p);
 
-    boolean evalQ(O output);
+    boolean evalQ(X p);
 
-    Guard<I> p();
+    Guard<X> p();
 
-    Guard<O> q();
+    Guard<X> q();
 
     Class<?> getStepClazz();
 

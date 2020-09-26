@@ -17,4 +17,4 @@ package io.cognitionbox.petra.guarantees;
 
 import io.cognitionbox.petra.core.IStep;
 
-public interface StepCheck extends Check<IStep<?,?>> {}
+public interface StepCheck extends Check<IStep<?>> {}

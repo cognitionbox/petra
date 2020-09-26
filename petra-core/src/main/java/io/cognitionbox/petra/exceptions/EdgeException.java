@@ -15,12 +15,12 @@
  */
 package io.cognitionbox.petra.exceptions;
 
+import io.cognitionbox.petra.core.IStep;
+
+import java.util.Arrays;
+
 public class EdgeException extends PetraException {
-    private Object input;
-    private Object output;
-    public EdgeException(Object input, Object output, Throwable... causes) {
-        super(causes);
-        this.input = input;
-        this.output = output;
+    public EdgeException(IStep step, Object input, Object output, Throwable cause) {
+        super(step,input,output,Arrays.asList(cause));
     }
 }

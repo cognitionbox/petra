@@ -21,7 +21,7 @@ package io.cognitionbox.petra.lang.impls;
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.factory.PetraParallelComponentsFactory;
 import io.cognitionbox.petra.factory.PetraSequentialComponentsFactory;
-import io.cognitionbox.petra.lang.PGraphComputer;
+import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.RGraphComputer;
 import io.cognitionbox.petra.lang.config.PetraTestConfig;
 import org.junit.After;
@@ -56,11 +56,11 @@ public class BaseExecutionModesTest extends BaseTest {
 
   private long millisToWait = 1000;
 
-  final protected io.cognitionbox.petra.lang.PGraphComputer getGraphComputer() {
-    return PGraphComputer;
+  final protected PComputer getGraphComputer() {
+    return PComputer;
   }
 
-  protected io.cognitionbox.petra.lang.PGraphComputer PGraphComputer;
+  protected PComputer PComputer;
   //private HazelcastInstance instance;
   @Before
   public void setup(){
@@ -71,20 +71,21 @@ public class BaseExecutionModesTest extends BaseTest {
             .setMode(execMode)
             //.setHazelcastServerMode(HazelcastServerMode.LOCAL).
             .enableStatesLogging()
-            .setIsReachabilityChecksEnabled(true)
+            .enableAllStatesLogging()
+            .setIsReachabilityChecksEnabled(false)
             .setConstructionGuaranteeChecks(true)
             .setDefensiveCopyAllInputsExceptForEffectedInputs(false)
             .setStrictModeExtraConstructionGuarantee(false)
             .setSequentialModeFactory(new PetraSequentialComponentsFactory())
             .setParallelModeFactory(new PetraParallelComponentsFactory());
     RGraphComputer.setConfig(testConfig);
-    PGraphComputer = new PGraphComputer();
+    PComputer = new PComputer();
   }
 
   @After
   public void tearDown(){
-    PGraphComputer.shutdown();
-    PGraphComputer = null;
+    PComputer.shutdown();
+    PComputer = null;
 //    if (instance!=null){
 //      instance.shutdown();
 //      //instance.getCluster().shutdown();

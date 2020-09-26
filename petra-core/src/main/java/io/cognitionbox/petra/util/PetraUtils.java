@@ -30,7 +30,7 @@ public class PetraUtils {
         Class<?> commonSubType = null;
         for (int i=0;i<inputTypes.size()-1;i++){
             Class<?> t = inputTypes.get(i).getTypeClass();
-            if (inputTypes.get(i).getOperationType()==OperationType.WRITE){
+            if (inputTypes.get(i).getOperationType()==OperationType.READ_WRITE){
                 java.util.Optional<Class<?>> optional = ReflectUtils.getCommonSubType(t,ret);
                 if (optional.isPresent()){
                     count++;

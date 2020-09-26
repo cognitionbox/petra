@@ -20,18 +20,19 @@ import io.cognitionbox.petra.google.Optional;
 import io.cognitionbox.petra.util.function.ICallable;
 import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.core.engine.petri.IToken;
+import io.cognitionbox.petra.util.function.IPredicate;
 
 import java.io.IOException;
 
-public abstract class AbstractStep<I, O> extends Identifyable implements ICallable<O>, IStep<I, O> {
+public abstract class AbstractStep<X> extends Identifyable implements ICallable<X>, IStep<X> {
 
-    public IToken<I> getInput() {
+    public IToken<X> getInput() {
         return inputToken;
     }
 
-    private IToken<I> inputToken;
+    private IToken<X> inputToken;
 
-    public void setInput(IToken<I> input) {
+    public void setInput(IToken<X> input) {
         this.inputToken = input;
     }
 
@@ -45,17 +46,17 @@ public abstract class AbstractStep<I, O> extends Identifyable implements ICallab
         this.clazz = aClass;
     }
 
-    protected Guard<I> p = null;
+    protected Guard<X> p = null;
 
-    protected GuardXOR<O> q = null;
+    protected GuardXOR<X> q = null;
 
-    protected void setP(Guard<I> p) {
+    protected void setP(Guard<X> p) {
         assertNotNull(p);
         assertNull(this.p());
         this.p = p;
     }
 
-    protected void setQ(GuardXOR<O> q) {
+    protected void setQ(GuardXOR<X> q) {
         assertNotNull(q);
         //assertNull(this.q());
         this.q = q;
@@ -63,9 +64,8 @@ public abstract class AbstractStep<I, O> extends Identifyable implements ICallab
 
     protected AbstractStep() {
     }
-    protected AbstractStep(String description, boolean isEffect) {
+    protected AbstractStep(String description) {
         super(description);
-        this.isEffect = isEffect;
     }
 
 //    public AbstractStep(String description, Guard<I> p, Guard<O> q) {
@@ -93,26 +93,26 @@ public abstract class AbstractStep<I, O> extends Identifyable implements ICallab
     }
 
     @Override
-    final public boolean evalP(I e) {
+    final public boolean evalP(X e) {
         if (p == null)
             return false;
         return p.test(e);
     }
 
     @Override
-    final public boolean evalQ(O output) {
+    final public boolean evalQ(X output) {
         if (q == null)
             return false;
         return q.test(output);
     }
 
     @Override
-    public Guard<I> p() {
+    public Guard<X> p() {
         return p;
     }
 
     @Override
-    public GuardXOR<O> q() {
+    public GuardXOR<X> q() {
         return q;
     }
 
@@ -121,7 +121,7 @@ public abstract class AbstractStep<I, O> extends Identifyable implements ICallab
     private boolean sleepOk = true;
     private boolean failureDetected = false;
     private int milliSecondSretryDelay = 0;
-    public AbstractStep<I, O> retryDelay(int milliSeconds){
+    public AbstractStep<X> retryDelay(int milliSeconds){
         this.milliSecondSretryDelay = milliSeconds;
         return this;
     }
@@ -135,7 +135,7 @@ public abstract class AbstractStep<I, O> extends Identifyable implements ICallab
     public final Optional<Class<?>> getEffectType() {
         if (effectType==null){
             effectType = Optional.absent();
-            if (p().getOperationType()== OperationType.WRITE){
+            if (p().getOperationType()== OperationType.READ_WRITE){
                 java.util.Optional<Class<?>> optional = ReflectUtils.getCommonSubType(p().getTypeClass(),q().getTypeClass());
                 //Optional optional = Optional.absent();
                 if (optional.isPresent()){
@@ -147,25 +147,15 @@ public abstract class AbstractStep<I, O> extends Identifyable implements ICallab
         return effectType;
     }
 
-    public boolean isEffect() {
-        return isEffect || getEffectType().isPresent();
+    final GuardXOR<X> returnType = new GuardXOR<X>(OperationType.RETURN);
+
+    public Class<X> getType() {
+        return type;
     }
 
-    private boolean isEffect = false;
+    Class<X> type = null;
 
-    final GuardXOR<O> returnType =  new GuardXOR<O>(OperationType.RETURN);
-
-    public void pre(GuardInput<? super I> p) {
-        setP((GuardInput<I>) p);
+    public void type(Class<X> type) {
+        this.type = type;
     }
-
-    public void post(GuardReturn<? super O> q) {
-        returnType.addChoice(new Guard(q.getTypeClass(),q.predicate,OperationType.RETURN));
-        setQ(returnType);
-    }
-
-    public void postVoid() {
-        post(new GuardReturn(Void.class, x->true));
-    }
-
 }

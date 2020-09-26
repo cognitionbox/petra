@@ -31,11 +31,12 @@
 package io.cognitionbox.petra.lang.impls;
 
 import io.cognitionbox.petra.config.ExecMode;
+import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.RGraphComputer;
 import io.cognitionbox.petra.lang.config.IPetraTestConfig;
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.PGraph;
-import io.cognitionbox.petra.util.Petra;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -43,11 +44,11 @@ import org.junit.runners.Parameterized;
 import java.io.Serializable;
 
 
-import static io.cognitionbox.petra.util.Petra.rc;
 import static io.cognitionbox.petra.util.Petra.rt;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
+@Ignore
 public class DeadLockRecoveryTest extends BaseExecutionModesTest {
 
   public DeadLockRecoveryTest(ExecMode execMode) {
@@ -69,11 +70,12 @@ public class DeadLockRecoveryTest extends BaseExecutionModesTest {
     }
   }
 
-  public static class AtoA extends PEdge<A,A> {
+  public static class AtoA extends PEdge<A> {
     {
-      pre(rc(A.class, a->a.value==1));
+      type(A.class);
+      pre(a->a.value==1);
       func(a->{
-        if (Math.random()>0.2){
+        if (Math.random()>0.1){
           ThreadDemo1 T1 = new ThreadDemo1();
           ThreadDemo2 T2 = new ThreadDemo2();
           T1.start();
@@ -85,16 +87,17 @@ public class DeadLockRecoveryTest extends BaseExecutionModesTest {
             throw new IllegalStateException(e);
           }
         }
-        return new A(222);
+        a.value = 222;
       });
-      post(Petra.rt(A.class, a->a.value==222));
+      post(a->a.value==222);
     }
   }
 
-  public static class g extends PGraph<A,A> {
+  public static class g extends PGraph<A> {
     {
-      pre(rc(A.class, a->a.value==1));
-      post(Petra.rt(A.class, a->a.value==222));
+      type(A.class);
+      pre(a->a.value==1);
+      post(a->a.value==222);
       step(AtoA.class);
     }
   }
@@ -105,9 +108,9 @@ public class DeadLockRecoveryTest extends BaseExecutionModesTest {
 
     RGraphComputer.getConfig().setDeadLockRecovery(true);
     ((IPetraTestConfig) RGraphComputer.getConfig()).disableExceptionsPassthrough();
-    io.cognitionbox.petra.lang.PGraphComputer<A, A> lc = getGraphComputer();
+    PComputer<A> lc = getGraphComputer();
     g g = new g();
-    A result = lc.computeWithInput(g, new A(1));
+    A result = lc.eval(g, new A(1));
   }
 
   public static Object Lock1 = new Object();

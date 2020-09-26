@@ -22,7 +22,7 @@ import io.cognitionbox.petra.core.IStep;
 
 public class GraphMustHaveAtLeastOneStep implements StepCheck {
         @Override
-        public boolean test(IStep<?, ?> step) {
+        public boolean test(IStep<?> step) {
             if (step instanceof PEdge) {
                 return true;
             }

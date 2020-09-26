@@ -23,7 +23,7 @@ import io.cognitionbox.petra.core.IStep;
             // effect types can be interfaces
     public class EffectTypesMustBeClassesAndNotInterfaces implements StepCheck {
         @Override
-        public boolean test(IStep<?, ?> step) {
+        public boolean test(IStep<?> step) {
             if (step.getEffectType().isPresent()) {
                 return true;//!step.getEffectType().get().isInterface();
             } else if (step instanceof RGraph) {

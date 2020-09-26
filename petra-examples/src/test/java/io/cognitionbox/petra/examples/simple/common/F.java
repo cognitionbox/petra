@@ -18,7 +18,7 @@
  */
 package io.cognitionbox.petra.examples.simple.common;
 
-public class F{
+public class F {
     public void printMe(){
         System.out.println(getClass().getSimpleName());
     }

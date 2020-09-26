@@ -19,10 +19,8 @@ import io.cognitionbox.petra.core.impl.*;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import io.cognitionbox.petra.exceptions.EdgeException;
 import io.cognitionbox.petra.exceptions.IterationsTimeoutException;
-import io.cognitionbox.petra.exceptions.JoinException;
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.core.engine.petri.impl.Token;
-import io.cognitionbox.petra.util.Petra;
 import org.javatuples.Pair;
 import org.junit.*;
 import org.slf4j.Logger;
@@ -34,15 +32,13 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-
-import static io.cognitionbox.petra.util.Petra.rc;
 import static io.cognitionbox.petra.util.Petra.rt;
 import static junit.framework.TestCase.assertTrue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 
-public abstract class StepTest<I,O> extends BaseExecutionModesTest {
+public abstract class StepTest<X> extends BaseExecutionModesTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(StepTest.class);
     private static PGraphDotDiagramRendererImpl2 renderer;
@@ -61,51 +57,52 @@ public abstract class StepTest<I,O> extends BaseExecutionModesTest {
         stepFixture = new StepFixture(stepSupplier().get(),getExecMode());
     }
 
-    public static class EdgePGraph extends PGraph<Object,Object> {
+    public static class EdgePGraph extends PGraph<Object> {
         EdgePGraph(PEdge PEdge){
-            pre(rc(Object.class, x->true));
+            type(Object.class);
+            pre(x->true);
             step(PEdge);
-            post(Petra.rt(Object.class, x->true));
+            post(x->true);
         }
     }
 
-    public static class StepFixture<I,O> {
-        private AbstractStep<I,O> step;
-        private I in;
-        private O out;
+    public static class StepFixture<X> {
+        private AbstractStep<X> step;
+        private X in;
+        private X out;
 
-        private void setInput(I in) {
+        private void setInput(X in) {
             this.in = in;
         }
 
-        private O getOutput() {
+        private X getOutput() {
             return out;
         }
 
-        private I getInput() {
+        private X getInput() {
             return in;
         }
 
         ExecMode execMode;
-        private StepFixture(AbstractStep<I,O> step, ExecMode execMode) {
+        private StepFixture(AbstractStep<X> step, ExecMode execMode) {
             this.step = step;
             this.execMode = execMode;
         }
         private void execute(){
             if (step instanceof PGraph && execMode.isDIS()) {
-                io.cognitionbox.petra.lang.PGraphComputer computer;
-                computer = new PGraphComputer<>();
-                out = (O) computer.computeWithInput((RGraph) step, in);
+                PComputer computer;
+                computer = new PComputer<>();
+                out = (X) computer.eval((RGraph) step, in);
                 computer.shutdown();
             } else if (step instanceof PEdge && execMode.isDIS()){
-                io.cognitionbox.petra.lang.PGraphComputer computer;
-                computer = new PGraphComputer<>();
-                out = (O) computer.computeWithInput(new EdgePGraph((PEdge) step), in);
+                PComputer computer;
+                computer = new PComputer<>();
+                out = (X) computer.eval(new EdgePGraph((PEdge) step), in);
                 computer.shutdown();
             } else {
                 step.setInput(new Token(in));
                 try {
-                    out = step.call();
+                    out = (X) step.call();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -119,14 +116,14 @@ public abstract class StepTest<I,O> extends BaseExecutionModesTest {
             }
         }
     }
-    private StepFixture<I,O> stepFixture;
+    private StepFixture<X> stepFixture;
 
-    protected void setInput(I input){
+    protected void setInput(X input){
         stepFixture.setInput(input);
     }
 
-    private Predicate<O> expectation;
-    protected void setExpectation(Predicate<O> expectation){
+    private Predicate<X> expectation;
+    protected void setExpectation(Predicate<X> expectation){
         if (stepFixture.getInput()==null){
             throw new IllegalStateException("no input set!");
         }
@@ -134,7 +131,7 @@ public abstract class StepTest<I,O> extends BaseExecutionModesTest {
         stepFixture.execute();
     }
 
-    abstract Supplier<AbstractStep<I,O>> stepSupplier();
+    abstract Supplier<AbstractStep<X>> stepSupplier();
 
     public static int comp(String s1, String s2) {
         if (s1.contains("red") && !s2.contains("red")){
@@ -155,45 +152,14 @@ public abstract class StepTest<I,O> extends BaseExecutionModesTest {
 
     @After
     public void after(){
-        O out = stepFixture.getOutput();
+        X out = stepFixture.getOutput();
         if (out==null){
             fail("output is null");
         }
         boolean passes = false;
         if (stepFixture.step instanceof RGraph) {
             if (out instanceof IterationsTimeoutException) {
-                List<Throwable> throwables = (List<Throwable>) ((RGraph) stepFixture.step)
-                        .getPlace()
-                        .stream()
-                        .filter(s -> s instanceof Throwable)
-                        .map(s -> (Throwable) s)
-                        .peek(s -> printStackTrace((Throwable) s))
-                        .collect(Collectors.toList());
                 passes = false; // break when find all exceptions mode
-                String desc = ((Identifyable) stepFixture.step).getPartitionKey();
-                int joinNo = 0;
-                for (Object jt : ((RGraph) stepFixture.step).getJoinTypes()) {
-                    if (jt instanceof Pair) {
-                        for (Guard t : (List<Guard>) ((Pair) jt).getValue0()) {
-                            if (passes) {
-                                //LOG.info("PASSES: " + desc);
-                                String value = desc + "_join_" + joinNo + " [shape=rect style=filled, fillcolor=green fontcolor=black];\n";
-                                dotToRender.put(value, value);
-                            } else {
-                                if (throwables.stream().anyMatch(e -> e instanceof JoinException)) {
-                                    //LOG.info("FAILS: " + desc);
-                                    String value = desc + "_join_" + joinNo + " [shape=rect style=filled, fillcolor=red fontcolor=black];\n";
-                                    dotToRender.put(value, value);
-                                } else {
-                                    //LOG.info("PASSES: " + desc);
-                                    String value = desc + "_join_" + joinNo + " [shape=rect style=filled, fillcolor=green fontcolor=black];\n";
-                                    dotToRender.put(value, value);
-                                }
-                            }
-                        }
-                    }
-                    joinNo++;
-                }
             } else {
                 passes = true;
             }

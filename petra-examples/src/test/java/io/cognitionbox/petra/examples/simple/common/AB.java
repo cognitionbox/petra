@@ -23,7 +23,7 @@ import io.cognitionbox.petra.lang.annotations.Extract;
 
 import java.io.Serializable;
 
-@Extract
+//@Extract
 public class AB implements Serializable {
     A a;
     B b;
@@ -41,5 +41,13 @@ public class AB implements Serializable {
     @Extract
     public B getB() {
         return b;
+    }
+
+    @Override
+    public String toString() {
+        return "AB{" +
+                "a=" + a +
+                ", b=" + b +
+                '}';
     }
 }

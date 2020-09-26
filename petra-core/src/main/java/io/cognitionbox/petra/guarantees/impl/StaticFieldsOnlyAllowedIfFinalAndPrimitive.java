@@ -24,7 +24,7 @@ import java.lang.reflect.Modifier;
 
 public class StaticFieldsOnlyAllowedIfFinalAndPrimitive implements StepCheck {
         @Override
-        public boolean test(IStep<?, ?> step) {
+        public boolean test(IStep<?> step) {
             if (step.p() == null) {
                 return true;
             }

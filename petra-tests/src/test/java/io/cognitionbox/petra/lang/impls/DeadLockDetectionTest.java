@@ -20,7 +20,9 @@ import io.cognitionbox.petra.exceptions.GraphException;
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.PGraph;
-import io.cognitionbox.petra.util.Petra;
+import io.cognitionbox.petra.lang.RGraphComputer;
+import io.cognitionbox.petra.lang.config.IPetraTestConfig;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -28,18 +30,18 @@ import org.junit.runners.Parameterized;
 import java.io.Serializable;
 import java.util.concurrent.TimeoutException;
 
-import static io.cognitionbox.petra.util.Petra.rc;
 import static io.cognitionbox.petra.util.Petra.rt;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
+@Ignore
 public class DeadLockDetectionTest extends BaseExecutionModesTest {
 
   public DeadLockDetectionTest(ExecMode execMode) {
     super(execMode);
   }
 
-  public static class B {}
+  public static class B implements Serializable {}
   public static class A implements Serializable {
     int value = 0;
 
@@ -57,9 +59,10 @@ public class DeadLockDetectionTest extends BaseExecutionModesTest {
     }
   }
 
-  public static class AtoA extends PEdge<A,A> {
+  public static class AtoA extends PEdge<A> {
     {
-      pre(rc(A.class, a->a.value==1));
+      type(A.class);
+      pre(a->a.value==1);
       func(a->{
         ThreadDemo1 T1 = new ThreadDemo1();
         ThreadDemo2 T2 = new ThreadDemo2();
@@ -72,17 +75,18 @@ public class DeadLockDetectionTest extends BaseExecutionModesTest {
         } catch (InterruptedException e) {
           e.printStackTrace();
         }
-        return new A(222);
+        a.value = 222;
       });
-      post(Petra.rt(A.class, a->a.value==222));
+      post(a->a.value==222);
     }
   }
 
   //@Effect
-  public static class g extends PGraph<A,A> {
+  public static class g extends PGraph<A> {
     {
-      pre(rc(A.class, a->a.value==1));
-      post(Petra.rt(A.class, a->a.value==222));
+      type(A.class);
+      pre(a->a.value==1);
+      post(a->a.value==222);
       step(AtoA.class);
     }
   }
@@ -93,9 +97,10 @@ public class DeadLockDetectionTest extends BaseExecutionModesTest {
 
     getGraphComputer().getConfig().setDeadLockRecovery(true);
     getGraphComputer().getConfig().setDefensiveCopyAllInputsExceptForEffectedInputs(true);
-    Object res = getGraphComputer().computeWithInput(new g(), new A(1));
+    ((IPetraTestConfig) RGraphComputer.getConfig()).allowExceptionsPassthrough();
+    Object res = getGraphComputer().eval(new g(), new A(1));
     assertThat(res).isInstanceOf(GraphException.class);
-    TimeoutException to = (TimeoutException) ((GraphException)res).getCauses()[0].getCause();
+    TimeoutException to = (TimeoutException) ((GraphException)res).getCauses().get(0).getCause();
   }
 
   public static Object Lock1 = new Object();

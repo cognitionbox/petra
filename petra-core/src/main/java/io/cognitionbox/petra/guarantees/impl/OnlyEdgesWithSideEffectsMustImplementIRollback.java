@@ -16,7 +16,6 @@
 package io.cognitionbox.petra.guarantees.impl;
 
 import io.cognitionbox.petra.guarantees.StepCheck;
-import io.cognitionbox.petra.lang.AbstractJoin;
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.RGraph;
 import io.cognitionbox.petra.core.IMaybeEffect;
@@ -28,25 +27,13 @@ import io.cognitionbox.petra.core.IStep;
     // this can be checked for at runtime.
     public class OnlyEdgesWithSideEffectsMustImplementIRollback implements StepCheck {
         @Override
-        public boolean test(IStep<?, ?> step) {
+        public boolean test(IStep<?> step) {
             if (step instanceof PEdge) {
                 if (step.getEffectType().isPresent()) {
                     return step instanceof IRollback;
                 } else {
                     return !(step instanceof IRollback);
                 }
-            } else if (step instanceof RGraph) {
-                boolean ok = true;
-                for (Object jt : ((RGraph) step).getJoinTypes()) {
-                    if (jt instanceof IMaybeEffect && jt instanceof AbstractJoin) {
-                        if (((AbstractJoin) jt).getEffectType().isPresent()) {
-                            ok = ok && (jt instanceof IRollback);
-                        } else {
-                            ok = ok && !(jt instanceof IRollback);
-                        }
-                    }
-                }
-                return ok;
             }
             return true;
         }
