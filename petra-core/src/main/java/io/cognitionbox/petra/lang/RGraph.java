@@ -15,40 +15,36 @@
  */
 package io.cognitionbox.petra.lang;
 
-import io.cognitionbox.petra.core.*;
+import io.cognitionbox.petra.config.ExecMode;
+import io.cognitionbox.petra.core.IEdgeDotLogger;
+import io.cognitionbox.petra.core.IGraph;
+import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.core.engine.StepCallable;
 import io.cognitionbox.petra.core.engine.StepResult;
-import io.cognitionbox.petra.core.engine.extractors.ExtractedStore;
-import io.cognitionbox.petra.core.engine.extractors.impl.AbstractRootValueExtractor;
-import io.cognitionbox.petra.core.engine.extractors.impl.ExtractedStoreImpl;
-import io.cognitionbox.petra.core.engine.extractors.impl.SequentialRootValueExtractor;
+import io.cognitionbox.petra.core.engine.petri.IToken;
 import io.cognitionbox.petra.core.engine.petri.Place;
 import io.cognitionbox.petra.core.engine.petri.impl.Token;
-import io.cognitionbox.petra.core.impl.*;
-import io.cognitionbox.petra.lang.annotations.DoesNotTerminate;
-import io.cognitionbox.petra.lang.annotations.Extract;
+import io.cognitionbox.petra.core.impl.OperationType;
+import io.cognitionbox.petra.core.impl.PEdgeDotLoggerImpl;
 import io.cognitionbox.petra.exceptions.GraphException;
 import io.cognitionbox.petra.exceptions.PetraException;
-import io.cognitionbox.petra.config.ExecMode;
-import io.cognitionbox.petra.core.engine.petri.IToken;
+import io.cognitionbox.petra.lang.annotations.DoesNotTerminate;
+import io.cognitionbox.petra.lang.annotations.Extract;
+import io.cognitionbox.petra.util.Petra;
 import io.cognitionbox.petra.util.function.*;
 import io.cognitionbox.petra.util.impl.PList;
-import io.cognitionbox.petra.util.Petra;
 import org.javatuples.Triplet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.*;
+import java.lang.reflect.AnnotatedParameterizedType;
+import java.lang.reflect.AnnotatedType;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import static io.cognitionbox.petra.util.Petra.rt;
-import static java.lang.Math.min;
 
 public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> {
 
@@ -57,7 +53,6 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
     private boolean doesNotTerminate = this.getStepClazz().isAnnotationPresent(DoesNotTerminate.class);
     private List<IStep> parallizable = new ArrayList<>();
     private transient IEdgeDotLogger stepDotLogger = new PEdgeDotLoggerImpl();
-    private List<IJoin> joinsTypes = new ArrayList<>();
     private List<Triplet<Guard<IPredicate<X>>,IConsumer<X>,Guard<IPredicate<X>>>> newJoins = new ArrayList<>();
     private List<IBiConsumer<Collection<IToken>, RGraph>> joins =
             new ArrayList<>();
@@ -68,7 +63,6 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
     private long currentIteration;
     private Long maxIterations = RGraphComputer.getConfig().getMaxIterations();
     private long sleepPeriod = RGraphComputer.getConfig().getSleepPeriod();
-    private JoinRollbackHelper rollbackHelper = new JoinRollbackHelper();
 
     public RGraph() {
         init();
@@ -82,16 +76,6 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
     public boolean isDoesNotTerminate() {
         return doesNotTerminate;
     }
-
-    void setDoesNotTerminate(boolean doesNotTerminate) {
-        this.doesNotTerminate = doesNotTerminate;
-    }
-
-    public List<IJoin> getJoinTypes() {
-        return joinsTypes;
-    }
-
-    private AbstractRootValueExtractor rootValueExtractor = new SequentialRootValueExtractor();
 
     void initInput(){
         if (this.p().getTypeClass().isAnnotationPresent(Extract.class)){
@@ -733,23 +717,9 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         return false;
     }
 
-    private ExtractedStore extractedStore = new ExtractedStoreImpl();
-    private void deconstruct(IToken s, Predicate<IToken> extractIfMatches) {
-        Extract extract = s.getValue().getClass().getAnnotation(Extract.class);
-        rootValueExtractor.extractToPlace(s,place,extractedStore,extractIfMatches);
-        Extract ext = s.getClass().getAnnotation(Extract.class);
-        if (ext!=null && !extractedStore.isExtracted(s)){
-            place.addValue(s.getValue());
-        }
-    }
-
     private void deconstruct(IToken s) {
         putState(s.getValue());
     }
-
-//    private void deconstruct(IToken s) {
-//        deconstruct(s,t->true);
-//    }
 
     public RGraph copy() {
         // we dont copy the id as we need a unique id based on the hashcode of the new instance

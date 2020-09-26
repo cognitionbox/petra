@@ -16,7 +16,6 @@
 package io.cognitionbox.petra.guarantees.impl;
 
 import io.cognitionbox.petra.core.IGraph;
-import io.cognitionbox.petra.core.IJoin;
 import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.core.impl.OperationType;
 import io.cognitionbox.petra.core.impl.ReachabilityHelper;
@@ -64,12 +63,8 @@ public class GraphOutputCannotBeReachedFromInput implements GraphCheck {
 
         int reachable = 0;
         Map<IStep, AtomicInteger> stepsVisitCount = new ConcurrentHashMap<>();
-        Map<IJoin, AtomicInteger> joinsVisitCount = new ConcurrentHashMap<>();
         for (IStep s : step.getParallizable()) { //perm
             stepsVisitCount.put(s, new AtomicInteger(0));
-        }
-        for (IJoin j : step.getJoinTypes()) {
-            joinsVisitCount.put(j, new AtomicInteger(0));
         }
 
         if (RGraphComputer.getConfig().isStrictModeExtraConstructionGuarantee()) {
@@ -120,53 +115,6 @@ public class GraphOutputCannotBeReachedFromInput implements GraphCheck {
             state.removeAll(statesToRemove);
             state.addAll(statesToAdd);
 
-            for (IJoin jt : step.getJoinTypes()) {
-                Guard[] actualTypeArguments = null;
-                if (jt instanceof PJoin) {
-                    actualTypeArguments = new Guard<?>[2];
-                    actualTypeArguments[0] = ((PJoin) jt).a();
-                    actualTypeArguments[1] = ((PJoin) jt).r();
-                } else if (jt instanceof PJoin2) {
-                    actualTypeArguments = new Guard<?>[3];
-                    actualTypeArguments[0] = ((PJoin2) jt).a();
-                    actualTypeArguments[1] = ((PJoin2) jt).b();
-                    actualTypeArguments[2] = ((PJoin2) jt).r();
-                } else if (jt instanceof PJoin3) {
-                    actualTypeArguments = new Guard<?>[4];
-                    actualTypeArguments[0] = ((PJoin3) jt).a();
-                    actualTypeArguments[1] = ((PJoin3) jt).b();
-                    actualTypeArguments[2] = ((PJoin3) jt).c();
-                    actualTypeArguments[3] = ((PJoin3) jt).r();
-                }
-
-                int matches = 0;
-                for (int i = 0; i < actualTypeArguments.length - 1; i++) {
-                    Guard t = actualTypeArguments[i];
-                    for (Class<?> c : state) {
-                        if (matchesState(t, c)) {
-                            matches++;
-                        }
-                    }
-                }
-                boolean allMatch = matches == actualTypeArguments.length - 1;
-                if (allMatch) {
-                    joinsVisitCount.get(jt).incrementAndGet();
-                    for (int i = 0; i < actualTypeArguments.length - 1; i++) {
-                        Guard t = actualTypeArguments[i];
-                        Class<?> tOut = t.getTypeClass();
-                        for (Class<?> s : state) {
-                            if (tOut.isAssignableFrom(s)){// &&
-                                    //(t.getOperationType() == OperationType.CONSUME || t.getOperationType() == OperationType.WRITE)) {
-                                state.remove(s);
-                            }
-                        }
-                    }
-                    Guard r = actualTypeArguments[actualTypeArguments.length - 1];
-                    Class<?> rOut = r.getTypeClass();
-
-                    helper.deconstruct(new HashSet<>(), r.getOperationType(), rOut, state, 0);
-                }
-            }
             LOG.info("state: "+state);
 //            if (lastState != null && state.equals(lastState)) {
 //                throw new IllegalStateException("state not changing.");
@@ -190,13 +138,8 @@ public class GraphOutputCannotBeReachedFromInput implements GraphCheck {
                 if (RGraphComputer.getConfig().isStrictModeExtraConstructionGuarantee()) {
                     Set<IStep> deadSteps = stepsVisitCount.entrySet().stream()
                             .filter(e -> e.getValue().get() == 0).map(e -> e.getKey()).collect(toSet());
-                    Set<IJoin> deadJoins = joinsVisitCount.entrySet().stream()
-                            .filter(e -> e.getValue().get() == 0).map(e -> e.getKey()).collect(toSet());
                     if (deadSteps.size() > 0) {
                         throw new DeadStepsExist(deadSteps);
-                    }
-                    if (deadJoins.size() > 0) {
-                        throw new DeadJoinsExist(deadJoins);
                     }
                 }
                 reachable++;
@@ -246,20 +189,6 @@ class DeadStepsExist extends RuntimeException {
     }
 }
 
-class DeadJoinsExist extends RuntimeException {
-    private Set<IJoin> deadJoins;
-
-    DeadJoinsExist(Set<IJoin> deadJoins) {
-        this.deadJoins = deadJoins;
-    }
-
-    @Override
-    public String toString() {
-        return "DeadJoinsExist{" +
-                "deadJoins=" + deadJoins +
-                '}';
-    }
-}
 
 class PostConditionNotReachable extends Exception {
     private IGraph PRestrictedGraph;

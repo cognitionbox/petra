@@ -16,7 +16,6 @@
 package io.cognitionbox.petra.guarantees.impl;
 
 import io.cognitionbox.petra.guarantees.StepCheck;
-import io.cognitionbox.petra.core.IJoin;
 import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.lang.*;
 
@@ -104,15 +103,6 @@ public class PrePostTypesMustBeBoundToUniquePredicates implements StepCheck {
                 boolean ok = true;
                 for (IStep<?> s : ((RGraph<?, ?>) step).getParallizable()) {
                     ok = ok && checkPType(s.p()) && checkPType(s.q());
-                }
-                for (IJoin j : ((RGraph<?, ?>) step).getJoinTypes()) {
-                    if (j instanceof PJoin) {
-                        ok = ok && checkPType(((PJoin) j).a()) && checkPType(((PJoin) j).r());
-                    } else if (j instanceof PJoin2) {
-                        ok = ok && checkPType(((PJoin2) j).a()) && checkPType(((PJoin2) j).b()) && checkPType(((PJoin2) j).r());
-                    } else if (j instanceof PJoin3) {
-                        ok = ok && checkPType(((PJoin3) j).a()) && checkPType(((PJoin3) j).b()) && checkPType(((PJoin3) j).c()) && checkPType(((PJoin3) j).r());
-                    }
                 }
                 return ok;
             } else if (step instanceof PEdge) {

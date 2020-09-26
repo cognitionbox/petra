@@ -142,11 +142,7 @@ public class RGraphComputer<X extends D, D> implements Serializable {
   public static boolean isMaster = false;
 
   private X handle(X input) {
-    try {
-      return tryAquireLoopAndExecute(this.rootGraph,input);
-    } finally {
-      Exclusives.clearAll();
-    }
+    return tryAquireLoopAndExecute(this.rootGraph,input);
   }
 
   private X tryAquireLoopAndExecute(RGraph xGraphSafe, X input) {

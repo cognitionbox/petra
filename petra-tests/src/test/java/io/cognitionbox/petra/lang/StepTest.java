@@ -159,32 +159,7 @@ public abstract class StepTest<X> extends BaseExecutionModesTest {
         boolean passes = false;
         if (stepFixture.step instanceof RGraph) {
             if (out instanceof IterationsTimeoutException) {
-                List<Throwable> throwables = (List<Throwable>) ((RGraph) stepFixture.step)
-                        .getPlace()
-                        .stream()
-                        .filter(s -> s instanceof Throwable)
-                        .map(s -> (Throwable) s)
-                        .peek(s -> printStackTrace((Throwable) s))
-                        .collect(Collectors.toList());
                 passes = false; // break when find all exceptions mode
-                String desc = ((Identifyable) stepFixture.step).getPartitionKey();
-                int joinNo = 0;
-                for (Object jt : ((RGraph) stepFixture.step).getJoinTypes()) {
-                    if (jt instanceof Pair) {
-                        for (Guard t : (List<Guard>) ((Pair) jt).getValue0()) {
-                            if (passes) {
-                                //LOG.info("PASSES: " + desc);
-                                String value = desc + "_join_" + joinNo + " [shape=rect style=filled, fillcolor=green fontcolor=black];\n";
-                                dotToRender.put(value, value);
-                            } else {
-                                //LOG.info("PASSES: " + desc);
-                                String value = desc + "_join_" + joinNo + " [shape=rect style=filled, fillcolor=green fontcolor=black];\n";
-                                dotToRender.put(value, value);
-                            }
-                        }
-                    }
-                    joinNo++;
-                }
             } else {
                 passes = true;
             }

@@ -16,7 +16,6 @@
 package io.cognitionbox.petra.util;
 
 import io.cognitionbox.petra.config.ExecMode;
-import io.cognitionbox.petra.core.IJoin;
 import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.core.impl.OperationType;
 import io.cognitionbox.petra.factory.IPetraComponentsFactory;
@@ -74,14 +73,6 @@ public class Petra {
         }
     }
 
-    public static <T extends IJoin> T createJoin(Class<T> clazz) {
-        try {
-            return clazz.newInstance();
-        } catch (Exception e) {
-            throw new UnsupportedOperationException("cannot create joinSome.");
-        }
-    }
-
     // can potentially do rw checks here on the predicate itself, maybe on just the string,
     // or on the actually logic using a symbolic reasoner
     private static Map<Class<? extends Guard>, Guard> singletonTypeCache = new HashMap<>();
@@ -133,18 +124,6 @@ public class Petra {
             pTypeXOR.addChoice(q);
         }
         return new PEdge(p, function, pTypeXOR);
-    }
-
-    public static <A, R> PJoin<A, R> anonymousJ1(Guard<? super A> a, IFunction<List<A>, R> function, Guard<? super R> r) {
-        return new PJoin<>(a, function, r);
-    }
-
-    public static <A, B, R> PJoin2<A, B, R> anonymousJ2(Guard<? super A> a, Guard<? super B> b, IBiFunction<List<A>, List<B>, R> function, Guard<? super R> r) {
-        return new PJoin2(a, b, function, r);
-    }
-
-    public static <A, B, C, R> PJoin3<A, B, C, R> anonymousJ3(Guard<? super A> a, Guard<? super B> b, Guard<? super C> c, ITriFunction<List<A>, List<B>, List<C>, R> function, Guard<? super R> r) {
-        return new PJoin3(a, b, c, function, r);
     }
 
     public static IPetraComponentsFactory getFactory() {

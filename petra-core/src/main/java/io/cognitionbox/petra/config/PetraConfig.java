@@ -25,34 +25,20 @@ public class PetraConfig implements IPetraConfig {
     final public EdgeEffectMustHaveInputTypeEqualToOutputType
             EdgeEffectMustHaveInputTypeEqualToOutputType_ =
             new EdgeEffectMustHaveInputTypeEqualToOutputType();
-    final public ExclusivesMustBeMatchedOnlyByEffectSteps
-            ExclusivesMustBeMatchedOnlyByEffectSteps_ = new ExclusivesMustBeMatchedOnlyByEffectSteps();
     final public EffectTypesMustBeClassesAndNotInterfaces
             EffectTypesMustBeClassesAndNotInterfaces_ = new EffectTypesMustBeClassesAndNotInterfaces();
-    final public ExclusiveFieldsCanOnlyExistWithinAnExclusiveEffectTypes
-            ExclusiveFieldsCanOnlyExistWithinAnExclusiveEffectTypes_ =
-            new ExclusiveFieldsCanOnlyExistWithinAnExclusiveEffectTypes();
-    final public ExclusiveMethodsCanOnlyExistWithinAnExclusiveTypes
-            ExclusiveMethodsCanOnlyExistWithinAnExclusiveTypes_ =
-            new ExclusiveMethodsCanOnlyExistWithinAnExclusiveTypes();
     final public AllFieldsMustBeSerializableUnlessTransient
             AllFieldsMustBeSerializableUnlessTransient_ =
             new AllFieldsMustBeSerializableUnlessTransient();
     final public StaticFieldsOnlyAllowedIfFinalAndPrimitive
             StaticFieldsOnlyAllowedIfFinalAndPrimitive_ =
             new StaticFieldsOnlyAllowedIfFinalAndPrimitive();
-    final public NoJoinsCanHaveSameInputPreconditionTypes
-            NoJoinsCanHaveSameInputPreconditionTypes_ =
-            new NoJoinsCanHaveSameInputPreconditionTypes();
     final public StepsCanOnlyEverImplementOneInterfaceWhichIsIRollback
             StepsCanOnlyEverImplementOneInterfaceWhichIsIRollback_ =
             new StepsCanOnlyEverImplementOneInterfaceWhichIsIRollback();
     //     final public GraphContainingEffectStepsMustItselfBeAnEffect
 //            GraphContainingEffectStepsMustItselfBeAnEffect =
 //            new GraphContainingEffectStepsMustItselfBeAnEffect();
-    final public JoinsWithOverlappingInputAndOutputTypesMustBeSideEffects
-            JoinsWithOverlappingInputAndOutputTypesMustBeSideEffects_ =
-            new JoinsWithOverlappingInputAndOutputTypesMustBeSideEffects();
     final public OnlyEdgesWithSideEffectsMustImplementIRollback
             OnlyEdgesWithSideEffectsMustImplementIRollback_
             = new OnlyEdgesWithSideEffectsMustImplementIRollback();

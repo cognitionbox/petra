@@ -16,12 +16,9 @@
 package io.cognitionbox.petra.lang;
 
 import io.cognitionbox.petra.core.impl.*;
-import io.cognitionbox.petra.lang.annotations.Exclusive;
 import io.cognitionbox.petra.exceptions.EdgeException;
-import io.cognitionbox.petra.exceptions.conditions.PostConditionFailure;
 import io.cognitionbox.petra.util.function.IBiPredicate;
 import io.cognitionbox.petra.util.function.IConsumer;
-import io.cognitionbox.petra.util.function.IFunction;
 import io.cognitionbox.petra.util.function.IPredicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,7 +85,6 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
         if (!p().test(input)) {
             return (X) input;
         }
-        AtomicReference<Set<Class<?>>> classesLockKey = new AtomicReference<>();
         PEdgeRollbackHelper.capture(input, this);
         final ExecutorService executor = Executors.newSingleThreadExecutor();
         //ObjectTrans objectTrans = new ObjectTrans();
@@ -98,21 +94,6 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
                 //if (RGraphComputer.getConfig().isDefensiveCopyAllInputs()) {
                     //objectTrans.capture(input);
                 //}
-                if (this.p().getTypeClass().isAnnotationPresent(Exclusive.class)) {
-                    classesLockKey.set(ReflectUtils.getAllMethodsAccessibleFromObject(this.p().getTypeClass())
-                                    .stream()
-                                    .filter(m -> m.isAnnotationPresent(Exclusive.class) &&
-                                            m.getReturnType().isAnnotationPresent(Exclusive.class) &&
-                                            m.getParameterCount() == 0 &&
-                                            Modifier.isPublic(m.getModifiers()))
-                                    .map(m -> m.getReturnType())
-                                    .collect(Collectors.toSet()));
-                    if (classesLockKey.get() != null && !classesLockKey.get().isEmpty() && getEffectType().isPresent() && Exclusives.tryAquireExclusive(classesLockKey.get())) {
-                        Exclusives.load(input, getEffectType().get());
-                    } else {
-                        return (X) input;
-                    }
-                }
                 try {
                     if (RGraphComputer.getConfig().isTestMode() && (throwsRandomly != null && throwsRandomly.size() > 0)) {
                         throwRandomException(throwsRandomly);
@@ -130,9 +111,6 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
         X res = null;
         try {
             res = future.get(60, TimeUnit.SECONDS);
-            if (classesLockKey.get() != null && !classesLockKey.get().isEmpty() && this.getEffectType().isPresent()) {// && this.p().getTypeClass().isAnnotationPresent(Exclusive.class)){
-                Exclusives.returnExclusive(classesLockKey.get());
-            }
         } catch (InterruptedException | ExecutionException | TimeoutException e){
             throwableRef.set(e);
             LOG.error(this.getStepClazz().getSimpleName()+" "+this.getUniqueId(), e);

@@ -16,7 +16,6 @@
 package io.cognitionbox.petra.guarantees.impl;
 
 import io.cognitionbox.petra.guarantees.StepCheck;
-import io.cognitionbox.petra.lang.AbstractPureJoin;
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.RGraph;
 import io.cognitionbox.petra.core.IMaybeEffect;
@@ -35,18 +34,6 @@ import io.cognitionbox.petra.core.IStep;
                 } else {
                     return !(step instanceof IRollback);
                 }
-            } else if (step instanceof RGraph) {
-                boolean ok = true;
-                for (Object jt : ((RGraph) step).getJoinTypes()) {
-                    if (jt instanceof IMaybeEffect && jt instanceof AbstractPureJoin) {
-                        if (((AbstractPureJoin) jt).getEffectType().isPresent()) {
-                            ok = ok && (jt instanceof IRollback);
-                        } else {
-                            ok = ok && !(jt instanceof IRollback);
-                        }
-                    }
-                }
-                return ok;
             }
             return true;
         }

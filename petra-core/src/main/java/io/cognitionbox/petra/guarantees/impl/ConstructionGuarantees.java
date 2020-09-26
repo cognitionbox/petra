@@ -70,7 +70,6 @@ public class ConstructionGuarantees {
         if (config.isStrictModeExtraConstructionGuarantee()) {
             addCheck(new CheckAllPrePostTypesAreStates());
             addCheck(new NoStepsInSameStepHaveSamePreconditionType());
-            addCheck(new NoJoinsCanHaveSameInputPreconditionTypes());
         }
 
         if (config.isReachabilityChecksEnabled()) {
@@ -85,9 +84,6 @@ public class ConstructionGuarantees {
         addCheck(new StepsCanOnlyEverImplementOneInterfaceWhichIsIRollback());
         addCheck(new StepsMustHavePublicClasses());
         addCheck(new EffectTypesMustBeClassesAndNotInterfaces());
-        addCheck(new ExclusivesMustBeMatchedOnlyByEffectSteps());
-        addCheck(new ExclusiveFieldsCanOnlyExistWithinAnExclusiveEffectTypes());
-        addCheck(new ExclusiveMethodsCanOnlyExistWithinAnExclusiveTypes());
         addCheck(new StaticFieldsOnlyAllowedIfFinalAndPrimitive());
         addCheck(new ClassesWithExtractsOnFieldsMustHaveExtractAnnotation());
         addCheck(new ExtractsAtClassLevelMustBeAppliedOnlyToIterablesOrClassesWhichHaveExtractOnFields());
