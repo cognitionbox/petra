@@ -16,16 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with Petra.  If not, see <https://www.gnu.org/licenses/>.
  */
-package io.cognitionbox.petra.examples.tradingsystem.steps.trade;
-
+package io.cognitionbox.petra.examples.tradingsystem.steps;
 
 import io.cognitionbox.petra.examples.tradingsystem.objects.State;
-import io.cognitionbox.petra.examples.tradingsystem.objects.Traders;
 import io.cognitionbox.petra.lang.PEdge;
-import io.cognitionbox.petra.util.Petra;
 
-import static io.cognitionbox.petra.util.Petra.rt;
 
-public interface GetTraders{
-    Traders traders();
+public class CollectExposure extends PEdge<State> {
+    {
+       type(State.class);
+        pre(x->x.getDecisionStore().hasDecisions() && (x.exposureGtZero() || x.exposureEqZero()));
+        func(x->x.updateExposure());
+        post(x->x.exposureGtZero());
+    }
 }

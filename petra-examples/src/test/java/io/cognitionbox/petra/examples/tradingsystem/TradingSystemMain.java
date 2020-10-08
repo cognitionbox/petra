@@ -19,8 +19,8 @@
 package io.cognitionbox.petra.examples.tradingsystem;
 
 import io.cognitionbox.petra.config.ExecMode;
-import io.cognitionbox.petra.examples.tradingsystem.objects.*;
-import io.cognitionbox.petra.examples.tradingsystem.steps.StateOk;
+import io.cognitionbox.petra.examples.tradingsystem.objects.RandomTrader;
+import io.cognitionbox.petra.examples.tradingsystem.objects.State;
 import io.cognitionbox.petra.examples.tradingsystem.steps.TradingSystem;
 import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
@@ -52,23 +52,20 @@ public class TradingSystemMain extends BaseExecutionModesTest {
    public void test() {
        PComputer.getConfig()
                .enableStatesLogging()
-                        .setConstructionGuaranteeChecks(true)
-                        .setStrictModeExtraConstructionGuarantee(true);
+                        .setMode(ExecMode.PAR)
+                        .setConstructionGuaranteeChecks(false)
+                        .setStrictModeExtraConstructionGuarantee(false);
 
         PComputer<State> lc = new PComputer();
+        State state = new State();
 
-        Feeds feeds = new Feeds();
-        feeds.add(new RandomFeed(InstrumentId.DAX));
-        feeds.add(new RandomFeed(InstrumentId.FTSE));
-        State state = new State(feeds);
+        state.addTrader(new RandomTrader());
+        state.addTrader(new RandomTrader());
+        state.addTrader(new RandomTrader());
+        state.addTrader(new RandomTrader());
 
-        state.addTrader(new RandomTrader(TraderId.A, InstrumentId.FTSE));
-        state.addTrader(new RandomTrader(TraderId.B, InstrumentId.DAX));
-        state.addTrader(new RandomTrader(TraderId.C, InstrumentId.FTSE));
-        state.addTrader(new RandomTrader(TraderId.D, InstrumentId.DAX));
+       State output = lc.eval(new TradingSystem(), state);
 
-       StateOk output = lc.eval(new TradingSystem(), state);
-
-        assertThat(output.currentExp().get()).isEqualTo(200);
+        assertThat(output.getExposureStore().getExposure()).isEqualTo(200);
     }
 }

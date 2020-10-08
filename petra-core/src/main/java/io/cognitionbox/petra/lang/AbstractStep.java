@@ -93,7 +93,7 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
     }
 
     @Override
-    final public boolean evalP(X e) {
+    public boolean evalP(X e) {
         if (p == null)
             return false;
         return p.test(e);

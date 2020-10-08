@@ -86,11 +86,10 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         }
     }
 
-    private IPredicate<X> loopCondition = x->true;
+    private IPredicate<X> loopInvariant = x->true;
 
-    // this.loopCondition.test(getInput().getValue()) &&
-    public void loop(IPredicate<X> loopCondition) {
-        this.loopCondition = loopCondition;
+    public void invariant(IPredicate<X> predicate) {
+        this.loopInvariant = predicate;
     }
 
     private PollingTimer iterationTimer;
@@ -115,10 +114,10 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
                 if (!exceptions.isEmpty()) {
                     return (X) new GraphException(this,(X) this.getInput().getValue(), null, exceptions);
                 }
-                // breach of loop invariant i.e. pre invariant
-//                if (!this.p().test(getInput().getValue())) {
-//                    return (X) new GraphException(this,(X) this.getInput().getValue(), null, Arrays.asList(new IllegalStateException("invariant broken.")));
-//                }
+                // breach of loop invariant
+                if (!this.loopInvariant.test(getInput().getValue())) {
+                    return (X) new GraphException(this,(X) this.getInput().getValue(), null, Arrays.asList(new IllegalStateException("invariant broken.")));
+                }
 
                 // post con check for non terminating processes
                 if (this.getStepClazz().isAnnotationPresent(DoesNotTerminate.class) &&
@@ -305,7 +304,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
             boolean ok = true;
             Iterable<?> iterable = s.getTransformer().apply(getInput().getValue());
             for(Object o : iterable){
-                if (!s.getStep().p().test(o)){
+                if (!s.getStep().evalP(o)){
                     ok = false;
                     break;
                 }
@@ -359,7 +358,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
             boolean ok = true;
             Iterable<?> iterable = f.getTransformer().apply(getInput().getValue());
             for(Object o : iterable){
-                if (!f.getStep().p().test(o)){
+                if (!f.getStep().evalP(o)){
                     ok = false;
                     break;
                 }
@@ -721,12 +720,27 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         putState(s.getValue());
     }
 
+    @Override
+    final public boolean evalP(X e) {
+        if (loopInvariant!=null && p != null){
+            return loopInvariant.test(e) && p.test(e);
+        } else if (loopInvariant==null && p != null){
+            return p.test(e);
+        } else if (loopInvariant!=null && p == null){
+            return loopInvariant.test(e);
+        } else if (loopInvariant==null && p == null){
+            return false;
+        }
+        return false;
+    }
+
     public RGraph copy() {
         // we dont copy the id as we need a unique id based on the hashcode of the new instance
         RGraph copy = new RGraph(getPartitionKey());
         copy.setEffectType(this.getEffectType()); // so we dont have to re-compute
         copy.setClazz(getStepClazz());
         copy.setP(p());
+        copy.setInvariant(getInvariant());
 
         // copy steps
         copy.stateTransformerSteps.addAll(stateTransformerSteps);
@@ -747,6 +761,14 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         }
         returnType.getChoices().forEach(q -> copy.post(new GuardReturn(q.getTypeClass(), q.predicate)));
         return copy;
+    }
+
+    private IPredicate<X> getInvariant() {
+        return loopInvariant;
+    }
+
+    private void setInvariant(IPredicate<X> invariant) {
+        this.loopInvariant = invariant;
     }
 
     @Override
