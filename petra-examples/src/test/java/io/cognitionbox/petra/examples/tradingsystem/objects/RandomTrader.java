@@ -18,24 +18,9 @@
  */
 package io.cognitionbox.petra.examples.tradingsystem.objects;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.time.LocalTime;
 
 public class RandomTrader implements Trader {
-
-    static final Logger LOG = LoggerFactory.getLogger(RandomTrader.class);
-
-
-    private TraderId id;
-    private InstrumentId instrument;
-
-    public RandomTrader(TraderId id, InstrumentId instrument) {
-        this.id = id;
-        this.instrument = instrument;
-    }
-
 
     private Decisions decisions = new Decisions();
 
@@ -52,16 +37,6 @@ public class RandomTrader implements Trader {
     @Override
     public void addDecision(Decision d) {
         this.decisions.add(d);
-    }
-
-    @Override
-    public TraderId id() {
-        return this.id;
-    }
-
-    @Override
-    public InstrumentId getInstrument() {
-        return instrument;
     }
 
     @Override
@@ -97,5 +72,24 @@ public class RandomTrader implements Trader {
     @Override
     public Feed getFeed() {
         return this.feed;
+    }
+
+    @Override
+    public boolean hasFeed() {
+        return this.feed!=null;
+    }
+
+    private boolean decisionsNotNull() {
+        return getDecisions()!=null;
+    }
+
+    @Override
+    public boolean hasGtZeroDecisions() {
+        return decisionsNotNull() && getDecisions().size()>0;
+    }
+
+    @Override
+    public boolean hasEqZeroDecisions() {
+        return decisionsNotNull() && getDecisions().size()==0;
     }
 }

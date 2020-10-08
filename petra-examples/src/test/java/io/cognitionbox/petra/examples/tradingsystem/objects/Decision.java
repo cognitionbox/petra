@@ -10,6 +10,11 @@ public class Decision implements Serializable {
     final private Tick tick;
     final private LocalTime time;
     final private Trader.Direction dir;
+
+    public Double getLimit() {
+        return limit;
+    }
+
     final private Double limit;
     final private Double stop;
     final private Double exit;

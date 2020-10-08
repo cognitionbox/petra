@@ -1,11 +1,9 @@
 package io.cognitionbox.petra.examples.tradingsystem.objects;
 
-import io.cognitionbox.petra.examples.tradingsystem.steps.marketdata.TraderOk;
-
 import java.io.Serializable;
 
 
-public interface Trader extends Serializable, TraderOk {
+public interface Trader extends Serializable {
 
     boolean isEnabled();
 
@@ -13,14 +11,15 @@ public interface Trader extends Serializable, TraderOk {
 
     void addDecision(Decision d);
 
-    TraderId id();
-
-    InstrumentId getInstrument();
-
     Decisions runStrategy(Tick tick);
 
     void setFeed(Feed feed);
     Feed getFeed();
+
+    boolean hasFeed();
+
+    boolean hasGtZeroDecisions();
+    boolean hasEqZeroDecisions();
 
     enum Direction {
         BUY,

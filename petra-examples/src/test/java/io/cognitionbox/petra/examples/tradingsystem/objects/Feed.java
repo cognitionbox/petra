@@ -22,8 +22,4 @@ import java.io.Serializable;
 
 public interface Feed extends Serializable {
     Tick sourceTick();
-
-    void sinkTick(Tick tick);
-
-    InstrumentId getInstrument();
 }

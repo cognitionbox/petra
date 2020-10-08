@@ -27,14 +27,12 @@ public class Tick implements Serializable {
     private final static AtomicInteger counter = new AtomicInteger();
     LocalDateTime now = LocalDateTime.now();
     int id;
-    InstrumentId instrument;
     Double bid;
     Double ask;
     TraderId destinationTraderId;
 
-    public Tick(InstrumentId instrument, Double bid, Double ask) {
+    public Tick(Double bid, Double ask) {
         this.id = counter.getAndIncrement();
-        this.instrument = instrument;
         this.bid = bid;
         this.ask = ask;
     }
@@ -46,10 +44,6 @@ public class Tick implements Serializable {
 
     public Double getAsk() {
         return ask;
-    }
-
-    public InstrumentId getInstrument() {
-        return instrument;
     }
 
     public TraderId getDestination() {

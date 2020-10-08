@@ -18,17 +18,7 @@
  */
 package io.cognitionbox.petra.examples.tradingsystem.objects;
 
-import io.cognitionbox.petra.examples.tradingsystem.steps.trade.DecisionsOk;
 import io.cognitionbox.petra.util.impl.PList;
 
-import java.util.Collection;
 
-
-public class Decisions extends PList<Decision> implements DecisionsOk {
-    public Decisions() {
-    }
-
-    public Decisions(Collection<Decision> coll) {
-        super(coll);
-    }
-}
+public class Decisions extends PList<Decision> {}

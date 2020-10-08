@@ -16,27 +16,24 @@
  * You should have received a copy of the GNU General Public License
  * along with Petra.  If not, see <https://www.gnu.org/licenses/>.
  */
-package io.cognitionbox.petra.examples.tradingsystem.objects;
+package io.cognitionbox.petra.examples.tradingsystem.steps;
 
 
-import io.cognitionbox.petra.examples.tradingsystem.steps.TraderTickOk;
+import io.cognitionbox.petra.examples.tradingsystem.objects.Decisions;
+import io.cognitionbox.petra.examples.tradingsystem.objects.Trader;
+import io.cognitionbox.petra.lang.PEdge;
 
-import java.io.Serializable;
 
-public class TraderTick implements Serializable, TraderTickOk {
-    Trader trader;
-    Tick tick;
-
-    public TraderTick(Trader trader, Tick tick) {
-        this.trader = trader;
-        this.tick = tick;
-    }
-
-    public Trader trader() {
-        return trader;
-    }
-
-    public Tick tick() {
-        return tick;
+public class Trade extends PEdge<Trader> {
+    {
+       type(Trader.class);
+       pre(x->x.isEnabled() && x.hasFeed() && (x.hasGtZeroDecisions() || x.hasEqZeroDecisions())) ;
+       func(
+                x -> {
+                    Decisions decisions = x.runStrategy(x.getFeed().sourceTick());
+                    decisions.forEach(d -> x.addDecision(d));
+                }
+        );
+        post(x->x.hasGtZeroDecisions());
     }
 }

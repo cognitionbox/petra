@@ -19,49 +19,22 @@
 package io.cognitionbox.petra.examples.tradingsystem.objects;
 
 
-import io.cognitionbox.petra.examples.tradingsystem.steps.TradingSystem;
-import io.cognitionbox.petra.examples.tradingsystem.steps.StateOk;
-import io.cognitionbox.petra.examples.tradingsystem.steps.MaxExposure;
-import io.cognitionbox.petra.examples.tradingsystem.steps.risk.AfterExposure;
-import io.cognitionbox.petra.examples.tradingsystem.steps.risk.BeforeExposure;
-import io.cognitionbox.petra.examples.tradingsystem.steps.trade.GetTraders;
-import io.cognitionbox.petra.lang.Ref;
 import io.cognitionbox.petra.lang.annotations.Extract;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
-
-import static io.cognitionbox.petra.util.Petra.ref;
+import java.util.stream.Collectors;
 
 @Extract
-public class State implements Serializable, GetTraders, StateOk, MaxExposure, BeforeExposure, AfterExposure {
-    private Ref<Double> lastExp = ref();
-    private Ref<Double> currentExp = ref();
-
-    public boolean state(){
-        return true;
-    }
-
+public class State implements Serializable {
+    private DecisionsStore decisionsStore = new DecisionsStore();
+    private ExposureStore exposureStore = new ExposureStore();
     private Traders traders = new Traders();
     @Extract
     public Traders traders(){
         return traders;
     }
-    private Feeds feeds;
-
-    public State(Feeds feeds) {
-        this.feeds = feeds;
-        if (!hasAllFeeds()) {
-            throw new IllegalStateException();
-        }
-        lastExp.set(0d);
-        currentExp.set(0d);
-    }
 
     public void addTrader(Trader trader) {
-        trader.setFeed(getFeedForInstrument(trader.getInstrument()));
         traders.add(trader);
     }
 
@@ -69,44 +42,44 @@ public class State implements Serializable, GetTraders, StateOk, MaxExposure, Be
         return traders;
     }
 
-    public Ref<Double> currentExp() {
-        return currentExp;
-    }
-
-    @Override
-    public Ref<Double> lastExp() {
-        return lastExp;
-    }
-
-    synchronized public void addExposure(Double exp) {
-        currentExp.set(currentExp.get()+exp);
-    }
-
-    public int getTimeInSeconds() {
-        return LocalDateTime.now().getSecond();
-    }
-
-    public Feed getFeedForInstrument(InstrumentId instrument) {
-        return feeds.stream().filter(f -> f.getInstrument().equals(instrument)).findFirst().orElse(null);
-    }
-
-    public boolean hasFeed(InstrumentId instrument) {
-        return getFeedForInstrument(instrument) != null;
-    }
-
-    public boolean hasAllFeeds() {
-        for (Trader t : traders) {
-            if (!hasFeed(t.getInstrument())) {
-                return false;
-            }
-        }
-        return true;
+    public void collectDecisions(){
+        decisionsStore.getAllDecisions().addAll(traders().stream().flatMap(d->d.getDecisions().stream()).collect(Collectors.toList()));
+        traders().forEach(t->t.getDecisions().clear());
     }
 
     public void updateExposure(){
-        lastExp().set(currentExp().get());
-        currentExp().set(
-                traders().stream()
-                        .flatMap(d -> d.getDecisions().stream()).mapToDouble(d->d.exposure()).sum());
+        exposureStore.addExposure(decisionsStore.getAllDecisions().stream().mapToDouble(d->d.exposure()).sum());
+    }
+
+    private boolean exposureStoreNotNull() {
+        return exposureStore!=null;
+    }
+
+    private boolean exposureNotNull() {
+        return exposureStoreNotNull() && exposureStore.getExposure()!=null;
+    }
+
+    public boolean exposureGtZero() {
+        return exposureNotNull() && exposureStore.getExposure()>0;
+    }
+
+    public boolean exposureEqZero() {
+        return exposureNotNull() && exposureStore.getExposure()==0;
+    }
+
+    public boolean exposureLt200() {
+        return exposureNotNull() && exposureStore.getExposure()<200;
+    }
+
+    public boolean exposureEq200() {
+        return exposureNotNull() && exposureStore.getExposure()==200;
+    }
+
+    public DecisionsStore getDecisionStore() {
+        return decisionsStore;
+    }
+
+    public ExposureStore getExposureStore() {
+        return exposureStore;
     }
 }
