@@ -82,4 +82,8 @@ public class State implements Serializable {
     public ExposureStore getExposureStore() {
         return exposureStore;
     }
+
+    public boolean hasDecisions() {
+        return getDecisionStore().hasDecisions();
+    }
 }

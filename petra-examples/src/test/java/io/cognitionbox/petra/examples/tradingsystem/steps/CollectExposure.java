@@ -19,14 +19,19 @@
 package io.cognitionbox.petra.examples.tradingsystem.steps;
 
 import io.cognitionbox.petra.examples.tradingsystem.objects.State;
+import io.cognitionbox.petra.examples.tradingsystem.objects.Trader;
 import io.cognitionbox.petra.lang.PEdge;
+
+import static io.cognitionbox.petra.util.Petra.forAll;
 
 
 public class CollectExposure extends PEdge<State> {
     {
        type(State.class);
-        pre(x->x.getDecisionStore().hasDecisions() && (x.exposureGtZero() || x.exposureEqZero()));
-        func(x->x.updateExposure());
-        post(x->x.exposureGtZero());
+        pre(state->state.getDecisionStore().hasDecisions());
+        func(state->state.updateExposure());
+        post(state->state.getDecisionStore().hasDecisions() &&
+                state.getExposureStore().hasExposures() &&
+                forAll(Trader.class,state.traders(), trader->trader.hasEqZeroDecisions()));
     }
 }

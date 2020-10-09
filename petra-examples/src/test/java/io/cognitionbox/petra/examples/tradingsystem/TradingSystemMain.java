@@ -67,5 +67,7 @@ public class TradingSystemMain extends BaseExecutionModesTest {
        State output = lc.eval(new TradingSystem(), state);
 
         assertThat(output.getExposureStore().getExposure()).isEqualTo(200);
+        assertThat(output.getExposureStore().hasAvgExposure()).isEqualTo(true);
+        assertThat(output.getDecisionStore().hasAvgLimitPrice()).isEqualTo(true);
     }
 }

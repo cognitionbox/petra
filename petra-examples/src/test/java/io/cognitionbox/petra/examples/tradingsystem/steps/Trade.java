@@ -27,13 +27,13 @@ import io.cognitionbox.petra.lang.PEdge;
 public class Trade extends PEdge<Trader> {
     {
        type(Trader.class);
-       pre(x->x.isEnabled() && x.hasFeed() && (x.hasGtZeroDecisions() || x.hasEqZeroDecisions())) ;
+       pre(trader->trader.hasFeed() && (trader.hasGtZeroDecisions() || trader.hasEqZeroDecisions())) ;
        func(
-                x -> {
-                    Decisions decisions = x.runStrategy(x.getFeed().sourceTick());
-                    decisions.forEach(d -> x.addDecision(d));
+               trader -> {
+                    Decisions decisions = trader.runStrategy(trader.getFeed().sourceTick());
+                    decisions.forEach(decision -> trader.addDecision(decision));
                 }
         );
-        post(x->x.hasGtZeroDecisions());
+        post(trader->trader.hasGtZeroDecisions());
     }
 }

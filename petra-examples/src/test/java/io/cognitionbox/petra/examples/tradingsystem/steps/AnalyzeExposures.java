@@ -6,8 +6,8 @@ import io.cognitionbox.petra.lang.PEdge;
 public class AnalyzeExposures extends PEdge<ExposureStore> {
     {
         type(ExposureStore.class);
-        pre(x->x.hasExposures());
-        func(x->x.analyzeExposure());
-        post(x->x.hasAvgExposure());
+        pre(exposureStore->exposureStore.hasExposures());
+        func(exposureStore->exposureStore.analyzeExposure());
+        post(exposureStore->exposureStore.hasAvgExposure());
     }
 }

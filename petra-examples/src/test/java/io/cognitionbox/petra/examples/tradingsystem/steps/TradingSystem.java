@@ -28,13 +28,13 @@ public class TradingSystem extends PGraph<State> {
     {
         type(State.class); // required to match State instances at runtime
         setSleepPeriod(1000); // sets the time period between iterations, its not actually a sleep now, the time is actually measured
-        invariant(x->(x.exposureGtZero() || x.exposureEqZero()) && (x.exposureLt200() || x.exposureEq200())); // safety invariant holds at beginning and after each iteration
-        pre(x->(x.exposureGtZero() || x.exposureEqZero()) && forAll(Trader.class,x.traders(),t->t.isEnabled())); // pre-condition
+        invariant(state->(state.exposureGtZero() || state.exposureEqZero()) && (state.exposureLt200() || state.exposureEq200())); // safety invariant holds at beginning and after each iteration
+        pre(state->forAll(Trader.class,state.traders(),trader->!trader.hasFeed() && (trader.hasGtZeroDecisions() || trader.hasEqZeroDecisions()))); // pre-condition
         stepForall(state->state.getTraders(),new SubscribeToFeed(),seq()); // has to be a sequential step as more than 1 steps in graph operate on same or smaller than type Traders, although it is scheduled sequentially stepForall iterator is executed in parallel
         stepForall(state->state.getTraders(),new Trade(),seq()); // has to be a sequential step as more than 1 steps in graph operate on same or smaller than type Traders, although it is scheduled sequentially stepForall iterator is executed in parallel
         step(state->state,new CollectData(),seq()); // has to be a sequential step as more than 1 steps in graph operate on same or smaller than type State, see steps above and below
         step(state->state.getDecisionStore(),new AnalyzeDecisions(),par()); // can be a parallel step as no other steps operate on same or smaller than type DecisionsStore
         step(state->state.getExposureStore(),new AnalyzeExposures(),par()); // can be a parallel step as no other steps operate on same or smaller than type ExposureStore
-        post(x->x.exposureEq200()); // post-condition, causes the while loop to break once it is met, hence the graph terminates and returns the result
+        post(state->state.exposureEq200() && state.getExposureStore().hasAvgExposure() && state.getDecisionStore().hasAvgLimitPrice()); // post-condition, causes the while loop to break once it is met, hence the graph terminates and returns the result
     }
 }
