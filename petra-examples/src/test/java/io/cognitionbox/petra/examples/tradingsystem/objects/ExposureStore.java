@@ -34,12 +34,4 @@ public class ExposureStore {
     public boolean hasAvgExposure() {
         return averageExposure.get()!=null;
     }
-
-    public boolean hasGtZeroExposures(){
-        return exposures.size()>0;
-    }
-
-    public boolean hasEqZeroExposures(){
-        return exposures.size()==0;
-    }
 }

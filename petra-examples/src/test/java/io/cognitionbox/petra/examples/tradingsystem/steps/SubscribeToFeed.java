@@ -7,8 +7,8 @@ import io.cognitionbox.petra.lang.PEdge;
 public class SubscribeToFeed extends PEdge<Trader> {
     {
         type(Trader.class);
-        pre(x->!x.hasFeed());
-        func(x ->x.setFeed(new RandomFeed()));
-        post(x->x.hasFeed());
+        pre(trader->!trader.hasFeed());
+        func(trader ->trader.setFeed(new RandomFeed()));
+        post(trader->trader.hasFeed());
     }
 }

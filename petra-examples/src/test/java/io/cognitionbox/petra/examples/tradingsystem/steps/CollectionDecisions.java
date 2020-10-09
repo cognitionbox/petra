@@ -9,8 +9,8 @@ import static io.cognitionbox.petra.util.Petra.forAll;
 public class CollectionDecisions extends PEdge<State> {
     {
         type(State.class);
-        pre(state->forAll(Trader.class,state.traders(), t->t.hasGtZeroDecisions()));
+        pre(state->forAll(Trader.class,state.traders(), trader->trader.hasGtZeroDecisions()));
         func(state->state.collectDecisions());
-        post(state->forAll(Trader.class,state.traders(), t->t.hasEqZeroDecisions()));
+        post(state->state.hasDecisions() && forAll(Trader.class,state.traders(), trader->trader.hasEqZeroDecisions()));
     }
 }
