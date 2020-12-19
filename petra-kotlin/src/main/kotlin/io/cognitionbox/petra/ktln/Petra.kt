@@ -15,7 +15,6 @@
  */
 package io.cognitionbox.petra.ktln
 
-import io.cognitionbox.petra.core.impl.OperationType
 import io.cognitionbox.petra.lang.*
 import kotlin.reflect.KClass
 
@@ -23,12 +22,8 @@ object Petra {
 
     fun <X> anonymous(p: Guard<X>,
                          function: (X)->Unit,
-                         vararg qs: Guard<X>): PEdge<X> {
-        val pTypeXOR = GuardXOR<X>(OperationType.RETURN)
-        for (q in qs) {
-            pTypeXOR.addChoice(q)
-        }
-        return PEdge(p, function, pTypeXOR)
+                         q: Guard<X>): PEdge<X> {
+        return PEdge(p, function, q)
     }
 
 }

@@ -20,7 +20,7 @@ package io.cognitionbox.petra.examples.simple.helloworld;
 
 import io.cognitionbox.petra.lang.PGraph;
 
-import static io.cognitionbox.petra.util.Petra.rt;
+
 
 
 public class AtoAGraph extends PGraph<A> {

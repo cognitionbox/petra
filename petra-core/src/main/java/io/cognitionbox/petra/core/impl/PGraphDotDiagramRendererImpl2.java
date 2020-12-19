@@ -49,7 +49,7 @@ public class PGraphDotDiagramRendererImpl2 implements ILogicBoxDotDiagramRendere
         diagram.append(s);
         diagramSet.add(s);
         if (graph.getStepClazz().isAnnotationPresent(DoesNotTerminate.class)){
-          String cycleBack = v+"->"+graph.p().getTypeClass().getSimpleName()+" [label=cycle];\n";
+          String cycleBack = v+"->"+graph.getType().getSimpleName()+" [label=cycle];\n";
           if (!diagramSet.contains(cycleBack)){
             diagram.append(cycleBack);
             diagramSet.add(cycleBack);
@@ -98,33 +98,27 @@ public class PGraphDotDiagramRendererImpl2 implements ILogicBoxDotDiagramRendere
     List<AbstractStep> steps =
             LogicStepsCollector.getAllSteps(logic,joinTypes)
                     .stream()
-                    .filter(s->!(s.p().getTypeClass().getSimpleName().equals("ThrowableList") &&
-                            s.q().getTypeClass().getSimpleName().equals("ExtractableThrowableList")))
+                    .filter(s->!(s.getType().getSimpleName().equals("ThrowableList") &&
+                            s.getType().getSimpleName().equals("ExtractableThrowableList")))
                     .collect(Collectors.toList());
 
     //collectObjectClasses(steps);
 
     append("start [shape=circle, style=filled, fillcolor=green];\n",logic);
-    append("start->"+logic.p().getTypeClass().getSimpleName()+";\n",logic);
+    append("start->"+logic.getType().getSimpleName()+";\n",logic);
 
-    if (logic.q()!=null){
-      append("stop [shape=doubleoctagon, style=filled, fillcolor=red];\n",logic);
-      if ((logic.q()).isVoid()){
-        append(Void.class.getSimpleName()+"->stop;\n",logic);
-      } else {
-        for (Guard<?> q : ((GuardXOR<?>) logic.q()).getChoices()){
-          append(q.getTypeClass().getSimpleName()+"->stop;\n",logic);
-        }
-      }
+    if (!logic.getKases().isEmpty()){
+        append("stop [shape=doubleoctagon, style=filled, fillcolor=red];\n",logic);
+        append(logic.getType().getSimpleName()+"->stop;\n",logic);
     }
 
     // render all steps and states individually
     for (AbstractStep step : steps){
       String stepDesc = ((Identifyable)step).getPartitionKey();
-      if (step.p()!=null){
+      if (!step.getKases().isEmpty()){
         // diagram.append
-        append(step.p().getTypeClass().getSimpleName()+" [style=filled, fillcolor=blue fontcolor=white];\n",logic);
-        append(step.p().getTypeClass().getSimpleName()+" [style=filled, fillcolor=blue fontcolor=white];\n",logic);
+        append(step.getType().getSimpleName()+" [style=filled, fillcolor=blue fontcolor=white];\n",logic);
+        append(step.getType()+" [style=filled, fillcolor=blue fontcolor=white];\n",logic);
 //        if (step.p() instanceof ExtractPType){
 //          // flip the flow for better visuals
 //          append(step.p().getTypeClass().getSimpleName()+"->"+step.p().getTypeClass().getSimpleName()+";\n");
@@ -139,9 +133,9 @@ public class PGraphDotDiagramRendererImpl2 implements ILogicBoxDotDiagramRendere
 //        }
 
       }
-      if (step.q()!=null){
-        append(step.q().getTypeClass().getSimpleName()+" [style=filled, fillcolor=blue fontcolor=white];\n",logic);
-        append(step.q().getTypeClass().getSimpleName()+" [style=filled, fillcolor=blue fontcolor=white];\n",logic);
+      if (!step.getKases().isEmpty()){
+        append(step.getType().getSimpleName()+" [style=filled, fillcolor=blue fontcolor=white];\n",logic);
+        append(step.getType().getSimpleName()+" [style=filled, fillcolor=blue fontcolor=white];\n",logic);
 //        if (step.q() instanceof ExtractPType){
 //          // flip the flow for better visuals
 //          append(step.q().getTypeClass().getSimpleName()+"->"+step.q().getTypeClass().getSimpleName()+";\n");
@@ -161,28 +155,25 @@ public class PGraphDotDiagramRendererImpl2 implements ILogicBoxDotDiagramRendere
 
     for (AbstractStep step : steps){
       String stepDesc = ((Identifyable)step).getPartitionKey();
-      if (step.p()!=null){
-        append(step.p().getTypeClass().getSimpleName()+"->"+stepDesc+" [label=PRE];\n",logic);
+      if (!step.getKases().isEmpty()){
+        append(step.getType().getSimpleName()+"->"+stepDesc+" [label=PRE];\n",logic);
       }
 
-      if (step.q()!=null){
-        if (step.q() instanceof GuardXOR<?>){
-          for (Guard<?> clazz : ((GuardXOR<?>) step.q()).getChoices()){
-            clazzes.add(clazz.getTypeClass());
-            append(clazz.getTypeClass().getSimpleName()+" [style=filled, fillcolor=blue fontcolor=white];\n",logic);
-            append(stepDesc+"->"+clazz.getTypeClass().getSimpleName()+" [label=POST];\n",logic);
+      if (!step.getKases().isEmpty()){
+          Class<?> clazz = step.getType();
+          clazzes.add(clazz);
+          append(clazz.getSimpleName()+" [style=filled, fillcolor=blue fontcolor=white];\n",logic);
+          append(stepDesc+"->"+clazz.getSimpleName()+" [label=POST];\n",logic);
 
-            if (step.getStepClazz().isAnnotationPresent(Feedback.class)){
-              append(clazz.getTypeClass().getSimpleName()+"->"+step.p().getTypeClass().getSimpleName()+" [label=feedback];\n",logic);
-            }
+          if (step.getStepClazz().isAnnotationPresent(Feedback.class)){
+              append(clazz.getSimpleName()+"->"+step.getType().getSimpleName()+" [label=feedback];\n",logic);
           }
-        }
       }
-      if (step.p()!=null){
-        deconstructType(logic,step.p());
+      if (!step.getKases().isEmpty()){
+        deconstructType(logic,step.getType());
       }
-      if (step.q()!=null){
-        deconstructType(logic,step.q());
+      if (!step.getKases().isEmpty()){
+        deconstructType(logic,step.getType());
       }
     }
 
@@ -199,10 +190,6 @@ public class PGraphDotDiagramRendererImpl2 implements ILogicBoxDotDiagramRendere
 
   private void deconstructType(RGraph step, Class<?> clazz){
     deconstruct(step,clazz);
-  }
-
-  private void deconstructType(RGraph step, Guard<?> some){
-    deconstruct(step,some.getTypeClass());
   }
 
   private boolean isAnnotatedWithDeconstruct(Class<?> clazz) {
@@ -252,16 +239,6 @@ public class PGraphDotDiagramRendererImpl2 implements ILogicBoxDotDiagramRendere
           append(clazz.getSimpleName()+"->"+singular.getSimpleName()+" [label=extract];\n",step);
         }
         deconstruct(step,singular);
-      }
-    }
-    if (isAnnotatedWithDeconstruct(clazz)) {
-      for (Method m : ReflectUtils.getAllMethodsAccessibleFromObject(clazz)) {
-        if (m.isAnnotationPresent(Extract.class) &&
-                m.getParameterCount()==0 &&
-                Modifier.isPublic(m.getModifiers())){
-          append(clazz.getSimpleName()+"->"+m.getReturnType().getSimpleName()+" [label=extract];\n",step);
-          deconstruct(step,m.getReturnType());
-        }
       }
     }
   }

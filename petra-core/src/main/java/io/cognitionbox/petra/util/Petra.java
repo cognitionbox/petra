@@ -17,9 +17,7 @@ package io.cognitionbox.petra.util;
 
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.core.IStep;
-import io.cognitionbox.petra.core.impl.OperationType;
 import io.cognitionbox.petra.factory.IPetraComponentsFactory;
-import io.cognitionbox.petra.lang.Void;
 import io.cognitionbox.petra.lang.*;
 import io.cognitionbox.petra.util.function.*;
 import org.slf4j.Logger;
@@ -102,28 +100,6 @@ public class Petra {
 
     public static <T> boolean thereExists(Class<T> eventClazz, Collection<? extends T> collection, IPredicate<T> predicate) {
         return collection.stream().anyMatch(predicate);
-    }
-
-    public static <T> GuardWrite<T> rw(Class<T> eventClazz, IPredicate<T> predicate) {
-        return new GuardWrite<>(eventClazz, predicate);
-    }
-
-    public static <T> GuardReturn<T> rt(Class<T> eventClazz, IPredicate<T> predicate) {
-        return new GuardReturn<>(eventClazz, predicate);
-    }
-
-    public static GuardReturn<Void> rt(Class<Void> eventClazz) {
-        return new GuardReturn<>(eventClazz, x -> true);
-    }
-
-    public static <X> PEdge<X> anonymous(Guard<X> p,
-                                               IConsumer<X> function,
-                                               Guard<X>... qs) {
-        GuardXOR<X> pTypeXOR = new GuardXOR<>(OperationType.RETURN);
-        for (Guard q : qs) {
-            pTypeXOR.addChoice(q);
-        }
-        return new PEdge(p, function, pTypeXOR);
     }
 
     public static IPetraComponentsFactory getFactory() {

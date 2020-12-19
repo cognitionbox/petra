@@ -18,7 +18,6 @@ package io.cognitionbox.petra.guarantees.impl;
 import io.cognitionbox.petra.config.IPetraConfig;
 import io.cognitionbox.petra.core.IGraph;
 import io.cognitionbox.petra.core.IStep;
-import io.cognitionbox.petra.core.impl.PGraphDotDiagramRendererImpl2;
 import io.cognitionbox.petra.core.impl.StepError;
 import io.cognitionbox.petra.guarantees.Check;
 import io.cognitionbox.petra.guarantees.EdgeCheck;
@@ -52,24 +51,19 @@ public class ConstructionGuarantees {
 
         initAllChecksExceptForThoseNotCompatibleWithGraphsGeneratedByReachabilityCheck();
 
-        addCheck(new EdgeEffectMustHaveInputTypeEqualToOutputType());
-
 //        if (!config.JoinEffectMustHaveOnlyOneInputTypeEqualToTheOutputType_.test( step)){
 //            stepErrors.add(new StepError(step,config.JoinEffectMustHaveOnlyOneInputTypeEqualToTheOutputType.getClass().getSimpleName()));
 //        }
 
         //addCheck(new OnlyEdgesWithSideEffectsMustImplementIRollback());
         addCheck(new OnlyStepWithSideAffectTrueMustImplementSideEffect());
-        addCheck(new StepWithImmutablePreOrPostConditionTypesCannotBeSideEffects());
         //addCheck(new StepsCannotHaveFields());
 
         //addCheck(new StepsCanCannotDeclareConstructors());
-        addCheck(new PrePostTypesMustBeBoundToUniquePredicates());
         //addCheck(new StepsCannotHaveFields());
 
         if (config.isStrictModeExtraConstructionGuarantee()) {
-            addCheck(new CheckAllPrePostTypesAreStates());
-            addCheck(new NoStepsInSameStepHaveSamePreconditionType());
+
         }
 
         if (config.isReachabilityChecksEnabled()) {
@@ -85,8 +79,6 @@ public class ConstructionGuarantees {
         addCheck(new StepsMustHavePublicClasses());
         addCheck(new EffectTypesMustBeClassesAndNotInterfaces());
         addCheck(new StaticFieldsOnlyAllowedIfFinalAndPrimitive());
-        addCheck(new ClassesWithExtractsOnFieldsMustHaveExtractAnnotation());
-        addCheck(new ExtractsAtClassLevelMustBeAppliedOnlyToIterablesOrClassesWhichHaveExtractOnFields());
         addCheck(new CheckAllPrePostTypesHaveNoGenericsUnlessTheyAreRefsWhichCanOnlyHaveNonGenericTypes());
         addCheck(new GraphMustHaveAtLeastOneStepOrJoin());
         addCheck(new EdgeMustHaveAfunction());
@@ -110,12 +102,5 @@ public class ConstructionGuarantees {
 
     public static boolean isSideEffect(AbstractStep<?> step) {
         return true;
-    }
-
-    String printErrorDotDiagram(RGraph xGraphSafe) {
-        PGraphDotDiagramRendererImpl2 renderer = new PGraphDotDiagramRendererImpl2();
-        renderer.render(xGraphSafe);
-        renderer.finish();
-        return renderer.getDotOutput();
     }
 }

@@ -25,7 +25,7 @@ import org.junit.runners.Parameterized;
 
 import java.io.Serializable;
 
-import static io.cognitionbox.petra.util.Petra.rt;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
@@ -77,8 +77,7 @@ public class SimpleTest extends BaseExecutionModesTest {
   @Test
   public void testSimple() {
 
-    getGraphComputer().getConfig().setDeadLockRecovery(true);
-    getGraphComputer().getConfig().setDefensiveCopyAllInputsExceptForEffectedInputs(true);
+    getGraphComputer().getConfig().setIsReachabilityChecksEnabled(false);
     A res = (A) getGraphComputer().eval(new g(), new A(1));
     assertThat(res.value).isEqualTo(222);
   }

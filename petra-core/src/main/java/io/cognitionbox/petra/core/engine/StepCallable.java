@@ -52,7 +52,7 @@ public class StepCallable extends Identifyable implements Callable<StepResult>, 
     public StepResult call() throws Exception {
         try {
             Object out = step.call();
-            return new StepResult(step.p().getOperationType(), step.getInput(),new Token(out));
+            return new StepResult(step.getInput(),new Token(out));
 //            if (step instanceof RGraph){
 //                if (out instanceof GraphException){
 //                    return new StepResult(step.p().getOperationType(), step.getInput(),new Token(out),((GraphException) out).getCauses());

@@ -18,6 +18,7 @@ package io.cognitionbox.petra.guarantees.impl;
 import io.cognitionbox.petra.guarantees.StepCheck;
 import io.cognitionbox.petra.core.impl.ReflectUtils;
 import io.cognitionbox.petra.core.IStep;
+import io.cognitionbox.petra.lang.Kase;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -26,8 +27,12 @@ import java.lang.reflect.Modifier;
 public class AllFieldsMustBeSerializableUnlessTransient implements StepCheck {
         @Override
         public boolean test(IStep<?> step) {
-            return checkClassFields((step.p().getTypeClass())) &&
-                    checkClassFields((step.q().getTypeClass()));
+            boolean ok = true;
+            for (Kase k : step.getKases()){
+               ok = ok && ( checkClassFields((k.p().getTypeClass())) &&
+                        checkClassFields((k.q().getTypeClass())) );
+            }
+            return ok;
         }
 
         private boolean checkClassFields(Class<?> clazz) {

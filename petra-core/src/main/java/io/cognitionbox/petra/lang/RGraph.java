@@ -24,7 +24,6 @@ import io.cognitionbox.petra.core.engine.StepResult;
 import io.cognitionbox.petra.core.engine.petri.IToken;
 import io.cognitionbox.petra.core.engine.petri.Place;
 import io.cognitionbox.petra.core.engine.petri.impl.Token;
-import io.cognitionbox.petra.core.impl.OperationType;
 import io.cognitionbox.petra.core.impl.PEdgeDotLoggerImpl;
 import io.cognitionbox.petra.exceptions.GraphException;
 import io.cognitionbox.petra.exceptions.PetraException;
@@ -78,12 +77,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
     }
 
     void initInput(){
-        if (this.p().getTypeClass().isAnnotationPresent(Extract.class)){
-            deconstruct(getInput());
-            putState(getInput().getValue());
-        } else {
-            putState(getInput().getValue());
-        }
+        putState(getInput().getValue());
     }
 
     private IPredicate<X> loopInvariant = x->true;
@@ -101,7 +95,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         boolean doesNotTerminate = getStepClazz().isAnnotationPresent(DoesNotTerminate.class);
         // use in while loop to prevent termination.
         while (this.getStepClazz().isAnnotationPresent(DoesNotTerminate.class) ||
-                (!this.q().test(getInput().getValue())) ) {
+                (setActiveKase(getInput().getValue()) && !getActiveKase().q().test(getInput().getValue())) ) {
             iterationId.getAndIncrement();
             currentIteration++;
             if (iterationTimer!=null && !iterationTimer.periodHasPassed(LocalDateTime.now())){
@@ -121,7 +115,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 
                 // post con check for non terminating processes
                 if (this.getStepClazz().isAnnotationPresent(DoesNotTerminate.class) &&
-                        !this.q().test(getInput().getValue())) {
+                        !getActiveKase().q().test(getInput().getValue())) {
                     return (X) new GraphException(this,(X) this.getInput().getValue(), null, Arrays.asList(new IllegalStateException("cycle not correct.")));
                 }
             } catch (Exception e){
@@ -267,7 +261,8 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         for (StateTransformerStep<X,?> f : seqTransformerSteps){
             try {
                 Object value = f.getTransformer().apply(getInput().getValue());
-                if (f.getStep().evalP(value)){
+                f.getStep().setActiveKase(value);
+                if (f.getStep().getActiveKase().evalP(value)){
                     AbstractStep copy = f.getStep().copy();
                     copy.setInput(new Token(value));
                     StepCallable stepCallable = new StepCallable(this,copy);
@@ -275,10 +270,8 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
                     if (sr.getOutputValue().getValue() instanceof Throwable){
                         this.place.addValue(sr.getOutputValue().getValue());
                     }
-                    if (OperationType.READ_WRITE != sr.getOperationType()) {
-                        deconstruct(sr.getOutputValue());
-                        //putState(f.get().getOutputValue());
-                    }
+                    deconstruct(sr.getOutputValue());
+                    //putState(f.get().getOutputValue());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -289,7 +282,8 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         for (StateTransformerStep<X,?> f : parTransformerSteps){
             try {
                 Object value = f.getTransformer().apply(getInput().getValue());
-                if (f.getStep().evalP(value)){
+                f.getStep().setActiveKase(value);
+                if (f.getStep().getActiveKase().evalP(value)){
                     AbstractStep copy = f.getStep().copy();
                     copy.setInput(new Token(value));
                     collectCallable(new StepCallable(this,copy), callables);
@@ -304,9 +298,17 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
             boolean ok = true;
             Iterable<?> iterable = s.getTransformer().apply(getInput().getValue());
             for(Object o : iterable){
-                if (!s.getStep().evalP(o)){
-                    ok = false;
+                boolean kaseOk = true;
+                for (Object k : s.getStep().getKases()){
+                    if (!((Kase)k).evalP(o)){
+                        kaseOk = false;
+                        break;
+                    }
+                }
+                if (kaseOk){
                     break;
+                } else {
+                    ok = false;
                 }
             }
             iterable = s.getTransformer().apply(getInput().getValue());
@@ -329,10 +331,8 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
                             if (sr.getOutputValue().getValue() instanceof Throwable){
                                 this.place.addValue(sr.getOutputValue().getValue());
                             }
-                            if (OperationType.READ_WRITE != sr.getOperationType()) {
-                                deconstruct(sr.getOutputValue());
-                                //putState(f.get().getOutputValue());
-                            }
+                            deconstruct(sr.getOutputValue());
+                            //putState(f.get().getOutputValue());
                         }
                     } else {
                         List<Future<StepResult>> futures = RGraphComputer.getWorkerExecutor().invokeAll(callables);
@@ -341,10 +341,8 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
                             if (sr.getOutputValue().getValue() instanceof Throwable){
                                 this.place.addValue(sr.getOutputValue().getValue());
                             }
-                            if (OperationType.READ_WRITE != sr.getOperationType()) {
-                                deconstruct(sr.getOutputValue());
-                                //putState(f.get().getOutputValue());
-                            }
+                            deconstruct(sr.getOutputValue());
+                            //putState(f.get().getOutputValue());
                         }
                     }
                 } catch (Throwable e){
@@ -358,9 +356,17 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
             boolean ok = true;
             Iterable<?> iterable = f.getTransformer().apply(getInput().getValue());
             for(Object o : iterable){
-                if (!f.getStep().evalP(o)){
-                    ok = false;
+                boolean kaseOk = true;
+                for (Object k : f.getStep().getKases()){
+                    if (!((Kase)k).evalP(o)){
+                        kaseOk = false;
+                        break;
+                    }
+                }
+                if (kaseOk){
                     break;
+                } else {
+                    ok = false;
                 }
             }
             iterable = f.getTransformer().apply(getInput().getValue());
@@ -455,10 +461,8 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
                     if (sr.getOutputValue().getValue() instanceof Throwable){
                         this.place.addValue(sr.getOutputValue().getValue());
                     }
-                    if (OperationType.READ_WRITE != sr.getOperationType()) {
-                        deconstruct(sr.getOutputValue());
-                        //putState(f.get().getOutputValue());
-                    }
+                    deconstruct(sr.getOutputValue());
+                    //putState(f.get().getOutputValue());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -471,10 +475,8 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
                     if (sr.getOutputValue().getValue() instanceof Throwable){
                         this.place.addValue(sr.getOutputValue().getValue());
                     }
-                    if (OperationType.READ_WRITE != sr.getOperationType()) {
-                        deconstruct(sr.getOutputValue());
-                        //putState(f.get().getOutputValue());
-                    }
+                    deconstruct(sr.getOutputValue());
+                    //putState(f.get().getOutputValue());
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -505,7 +507,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
     }
 
     <D> void addParallizable(IStep<? extends D> computation) {
-        if (Throwable.class.isAssignableFrom(computation.p().getTypeClass())) {
+        if (Throwable.class.isAssignableFrom(computation.getType())) {
             throw new UnsupportedOperationException("Cannot match directly on Throwable types, please handle errors inside XEdges instead.");
         }
         parallizable.add((AbstractStep) computation);
@@ -544,10 +546,6 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         return opt.get().getValue();
     }
 
-    private boolean doReturnVOID() {
-        return this.getPlace().size() == 0 && this.q().isVoid();
-    }
-
     private List<Throwable> exceptions() {
         return this.getPlace()
                 .stream()
@@ -578,19 +576,24 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
             /*
              * Arpad's Kotlin Hack
              */
-            if (this.q().getTypeClass().equals(int.class) && Integer.class.isInstance(obj)) {
-                if (this.evalQ((X) obj)) {
-                    return (X) obj;
-                }
-            }
-
-            if (this.q().getTypeClass().equals(int.class)) {
-                if (Integer.class.isInstance(obj)) {
-                    if (this.evalQ((X) obj)) {
+            for (Kase k : getKases()){
+                if (k.q().getTypeClass().equals(int.class) && Integer.class.isInstance(obj)) {
+                    if (k.evalQ((X) obj)) {
                         return (X) obj;
                     }
                 }
             }
+
+            for (Kase k : getKases()){
+                if (k.q().getTypeClass().equals(int.class)) {
+                    if (Integer.class.isInstance(obj)) {
+                        if (k.evalQ((X) obj)) {
+                            return (X) obj;
+                        }
+                    }
+                }
+            }
+
             if (checkOutput(obj)) {
                 return (X) obj;
             }
@@ -599,7 +602,12 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
     }
 
     private boolean checkOutput(Object output) {
-        return (this.q() != null && this.q().generic().test(output));
+        for (Kase k : getKases()){
+            if (k.q() != null && k.q().generic().test(output)){
+                return true;
+            }
+        }
+        return false;
     }
 
     private void Lg() {
@@ -720,7 +728,6 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         putState(s.getValue());
     }
 
-    @Override
     final public boolean evalP(X e) {
         if (loopInvariant!=null && p != null){
             return loopInvariant.test(e) && p.test(e);
@@ -737,9 +744,8 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
     public RGraph copy() {
         // we dont copy the id as we need a unique id based on the hashcode of the new instance
         RGraph copy = new RGraph(getPartitionKey());
-        copy.setEffectType(this.getEffectType()); // so we dont have to re-compute
         copy.setClazz(getStepClazz());
-        copy.setP(p());
+        copy.setKases(getKases());
         copy.setInvariant(getInvariant());
 
         // copy steps
@@ -759,7 +765,6 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
                 joins.get(iFinal).accept((Collection<IToken>) list, (RGraph) toWrite);
             });
         }
-        returnType.getChoices().forEach(q -> copy.post(new GuardReturn(q.getTypeClass(), q.predicate)));
         return copy;
     }
 
@@ -775,23 +780,5 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
     public X call() throws Exception {
         initInput();
         return executeMatchingLoopUntilPostCondition();
-    }
-
-    public void pre(GuardInput<X> p) {
-        setP(p);
-    }
-
-    public void pre(IPredicate<X> predicate) {
-        setP(new GuardWrite(type, predicate));
-    }
-
-    public void post(GuardReturn<X> q) {
-        returnType.addChoice(new Guard(q.getTypeClass(),q.predicate,OperationType.RETURN));
-        setQ(returnType);
-    }
-
-    public void post(IPredicate<X> predicate) {
-        returnType.addChoice(new Guard(type,predicate,OperationType.RETURN));
-        setQ(returnType);
     }
 }

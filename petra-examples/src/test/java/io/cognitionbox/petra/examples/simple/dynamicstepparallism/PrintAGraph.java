@@ -22,7 +22,7 @@ package io.cognitionbox.petra.examples.simple.dynamicstepparallism;
 import io.cognitionbox.petra.examples.simple.extraction.PrintA;
 import io.cognitionbox.petra.lang.PGraph;
 
-import static io.cognitionbox.petra.util.Petra.rt;
+
 
 
 public class PrintAGraph extends PGraph<X> {

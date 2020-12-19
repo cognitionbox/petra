@@ -60,7 +60,7 @@ public class PEdgeRollbackHelper implements Serializable {
                     synchronized (this){
                         ((IRollback) step).rollback(input);
                     }
-                    if (abstractStep.p().test(input)){
+                    if (abstractStep.getActiveKase().p().test(input)){
                         break;
                     }
                 } catch (Exception ex) {

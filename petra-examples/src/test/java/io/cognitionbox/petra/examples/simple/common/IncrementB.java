@@ -22,7 +22,7 @@ import io.cognitionbox.petra.core.IRollback;
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.annotations.Feedback;
 
-import static io.cognitionbox.petra.util.Petra.rt;
+
 
 @Feedback
 public class IncrementB extends PEdge<B> implements IRollback<B> {

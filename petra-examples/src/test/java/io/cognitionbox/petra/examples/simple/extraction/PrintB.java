@@ -22,7 +22,7 @@ package io.cognitionbox.petra.examples.simple.extraction;
 import io.cognitionbox.petra.examples.simple.common.B;
 import io.cognitionbox.petra.lang.PEdge;
 
-import static io.cognitionbox.petra.util.Petra.rt;
+
 
 
 public class PrintB extends PEdge<B> {

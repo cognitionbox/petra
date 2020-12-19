@@ -16,13 +16,12 @@
 package io.cognitionbox.petra.util;
 
 import com.hazelcast.core.IList;
-import io.cognitionbox.petra.lang.Guard;
 import io.cognitionbox.petra.util.impl.JetListWrapper;
 import io.cognitionbox.petra.util.impl.PList;
 
 import java.util.List;
 
-public class PetraJetUtils extends PetraUtils {
+public class PetraJetUtils {
 
     public static IList unwrap(List list){
         if (list instanceof JetListWrapper){

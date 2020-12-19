@@ -56,7 +56,7 @@ public final class HashMapPlace extends AbstractPlace<Map<String, IToken>> {
                         int matches = 0;
                         for (Object step : steps) {
                             if (step instanceof AbstractStep){
-                                if (((AbstractStep) step).evalP(s.getValue())) {
+                                if (((AbstractStep) step).getActiveKase().evalP(s.getValue())) {
                                     matches++;
                                     if (matches > 1) {
                                         return true;

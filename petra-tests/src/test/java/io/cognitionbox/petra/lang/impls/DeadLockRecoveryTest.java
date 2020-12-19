@@ -44,7 +44,7 @@ import org.junit.runners.Parameterized;
 import java.io.Serializable;
 
 
-import static io.cognitionbox.petra.util.Petra.rt;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)

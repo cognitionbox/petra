@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import static io.cognitionbox.petra.util.Petra.rt;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
@@ -42,7 +42,7 @@ public class PGraphSingleHandledThrowableFlowTest extends BaseExecutionModesTest
 
   @Test
   public void testThrowableFlow() {
-
+    getGraphComputer().getConfig().setIsReachabilityChecksEnabled(false);
     X result = (X) getGraphComputer().eval(new MainLoop(),new X(0));
     assertThat(result).isInstanceOf(X.class);
     assertThat(result.value).isEqualTo(3);
@@ -50,7 +50,7 @@ public class PGraphSingleHandledThrowableFlowTest extends BaseExecutionModesTest
 
   @Test
   public void testThrowableFlowWithDirectStepHandledThrowable() {
-
+    getGraphComputer().getConfig().setIsReachabilityChecksEnabled(false);
     X result = (X) getGraphComputer().eval(new MainLoopWithDirectStepHandledThrowable(),new X(0));
     assertThat(result).isInstanceOf(X.class);
     assertThat(result.value).isEqualTo(3);

@@ -27,10 +27,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import static io.cognitionbox.petra.util.Petra.rw;
-import static io.cognitionbox.petra.util.Petra.rt;
-
-
 @RunWith(Parameterized.class)
 public class ResourceConflictTest extends BaseExecutionModesTest {
 
@@ -78,16 +74,18 @@ public class ResourceConflictTest extends BaseExecutionModesTest {
 
   public static class AtoA extends PEdge<A> {
     {
-      pre(rw(A.class, x->true));
+      type(A.class);
+      pre(x->true);
       func(a->new A(222));
-      post(Petra.rt(A.class, x->true));
+      post(x->true);
     }
   }
 
   public static class g extends PGraph<A> {
     {
-      pre(rw(A.class, x->true));
-      post(Petra.rt(A.class, x->true));
+      type(A.class);
+      pre(x->true);
+      post(x->true);
       step(AtoA.class);
     }
   }

@@ -27,7 +27,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import static io.cognitionbox.petra.util.Petra.rt;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)

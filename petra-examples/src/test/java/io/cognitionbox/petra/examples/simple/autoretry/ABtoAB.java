@@ -21,7 +21,7 @@ package io.cognitionbox.petra.examples.simple.autoretry;
 import io.cognitionbox.petra.examples.simple.common.AB;
 import io.cognitionbox.petra.lang.PGraph;
 
-import static io.cognitionbox.petra.util.Petra.rt;
+
 
 public class ABtoAB extends PGraph<AB> {
     {

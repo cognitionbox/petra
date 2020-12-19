@@ -16,15 +16,20 @@
 package io.cognitionbox.petra.guarantees.impl;
 
 import io.cognitionbox.petra.guarantees.StepCheck;
+import io.cognitionbox.petra.lang.Kase;
 import io.cognitionbox.petra.lang.annotations.DoesNotTerminate;
 import io.cognitionbox.petra.core.IStep;
 
 public class StepMustHaveValidPreAndPostCondition implements StepCheck {
         @Override
         public boolean test(IStep<?> step) {
-            boolean a = step.p() != null && step.p().getTypeClass() != null;
-            boolean b = step.q() != null && step.q().getTypeClass() != null;
-            boolean c = step.q() == null && step.getStepClazz().isAnnotationPresent(DoesNotTerminate.class);
-            return (a && b) || (a && c);
+            boolean ok = true;
+            for (Kase k : step.getKases()){
+                boolean a = k.p() != null && k.p().getTypeClass() != null;
+                boolean b = k.q() != null && k.q().getTypeClass() != null;
+                boolean c = k.q() == null && step.getStepClazz().isAnnotationPresent(DoesNotTerminate.class);
+                ok = ok && ( (a && b) || (a && c) );
+            }
+            return ok;
         }
     }

@@ -21,8 +21,12 @@ import io.cognitionbox.petra.util.function.ICallable;
 import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.core.engine.petri.IToken;
 import io.cognitionbox.petra.util.function.IPredicate;
+import org.javatuples.Pair;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public abstract class AbstractStep<X> extends Identifyable implements ICallable<X>, IStep<X> {
 
@@ -48,17 +52,15 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
 
     protected Guard<X> p = null;
 
-    protected GuardXOR<X> q = null;
+    protected Guard<X> q = null;
 
     protected void setP(Guard<X> p) {
         assertNotNull(p);
-        assertNull(this.p());
         this.p = p;
     }
 
-    protected void setQ(GuardXOR<X> q) {
+    protected void setQ(Guard<X> q) {
         assertNotNull(q);
-        //assertNull(this.q());
         this.q = q;
     }
 
@@ -92,30 +94,6 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
         }
     }
 
-    @Override
-    public boolean evalP(X e) {
-        if (p == null)
-            return false;
-        return p.test(e);
-    }
-
-    @Override
-    final public boolean evalQ(X output) {
-        if (q == null)
-            return false;
-        return q.test(output);
-    }
-
-    @Override
-    public Guard<X> p() {
-        return p;
-    }
-
-    @Override
-    public GuardXOR<X> q() {
-        return q;
-    }
-
     public abstract AbstractStep copy();
 
     private boolean sleepOk = true;
@@ -126,28 +104,49 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
         return this;
     }
 
-    private Optional<Class<?>> effectType = null;
-    public void setEffectType(Optional<Class<?>> effectType) {
-        this.effectType = effectType;
-    }
-
     @Override
     public final Optional<Class<?>> getEffectType() {
-        if (effectType==null){
-            effectType = Optional.absent();
-            if (p().getOperationType()== OperationType.READ_WRITE){
-                java.util.Optional<Class<?>> optional = ReflectUtils.getCommonSubType(p().getTypeClass(),q().getTypeClass());
-                //Optional optional = Optional.absent();
-                if (optional.isPresent()){
-                    effectType = Optional.of(optional.get()); // Optional.absent();//
-                }
-            }
-
-        }
-        return effectType;
+        return Optional.of(kases.get(0).p().getTypeClass());
     }
 
-    final GuardXOR<X> returnType = new GuardXOR<X>(OperationType.RETURN);
+    boolean setActiveKase(X value) {
+        for (Kase k : kases){
+            if (k.evalP(value)){
+                activeKase = k;
+                break;
+            }
+        }
+        return true;
+    }
+
+    public Kase<X> getActiveKase() {
+        return activeKase;
+    }
+
+    private Kase<X> activeKase;
+
+    private List<Kase<X>> kases = new ArrayList<>();
+
+    public List<Kase<X>> getKases(){
+        return new ArrayList<>(kases);
+    }
+
+    public void kase(IPredicate<X> pre, IPredicate<X> post) {
+        kases.add(new Kase<X>(type,pre,post));
+    }
+
+    public void setKases(List<Kase<X>> kases){
+        this.kases = kases;
+    }
+
+    public void pre(IPredicate<X> predicate) {
+        setP(new Guard(type, predicate));
+    }
+
+    public void post(IPredicate<X> predicate) {
+        setQ(new Guard(type,predicate));
+        kases.add(new Kase<X>(type,p,q));
+    }
 
     public Class<X> getType() {
         return type;

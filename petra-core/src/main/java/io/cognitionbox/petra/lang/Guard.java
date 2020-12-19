@@ -16,31 +16,14 @@
 package io.cognitionbox.petra.lang;
 
 import io.cognitionbox.petra.core.impl.ObjectCopyerViaSerialization;
-import io.cognitionbox.petra.core.impl.OperationType;
-import io.cognitionbox.petra.core.impl.ReflectUtils;
-import io.cognitionbox.petra.google.Optional;
 import io.cognitionbox.petra.exceptions.TypeEvalException;
 import io.cognitionbox.petra.util.function.IPredicate;
-
-import java.lang.reflect.Modifier;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static io.cognitionbox.petra.lang.Void.vd;
 
 public class Guard<E> implements IPredicate<E> {
 
     public Guard(){}
-
-    public boolean isVoid(){
-        return getTypeClass().equals(Void.class);
-    }
-
-    protected OperationType operationType = OperationType.READ_WRITE;
-
-    public OperationType getOperationType() {
-        return operationType;
-    }
 
     //Class<? extends E> getEffectType() {
     //    return effectType.get();
@@ -49,11 +32,11 @@ public class Guard<E> implements IPredicate<E> {
     //private Optional<Class<? extends E>> effectType;
 
     public Guard<E> copy(){
-        return new Guard(eventClazz,predicate,operationType);
+        return new Guard(eventClazz,predicate);
     }
 
     public Guard<E> copyWithClass(Class<?> clazz){
-        return new Guard(clazz,predicate,operationType);
+        return new Guard(clazz,predicate);
     }
 
     protected Class<E> eventClazz;
@@ -77,27 +60,13 @@ public class Guard<E> implements IPredicate<E> {
     public Guard(Class<E> eventClazz) {
         this.eventClazz = eventClazz;
         this.predicate = x->true;
-        this.operationType = null;
     }
 
-    public Guard(Class<E> eventClazz, IPredicate<E> predicate, OperationType operationType) {
+    public Guard(Class<E> eventClazz, IPredicate<E> predicate) {
 //        assertNotNull(eventClazz);
 //        assertNotNull(predicate);
         this.eventClazz = eventClazz;
         this.predicate = (IPredicate<Object>) predicate;
-        this.operationType = operationType;
-    }
-
-    public Guard(IPredicate predicate, OperationType operationType) {
-//        assertNotNull(eventClazz);
-//        assertNotNull(predicate);
-        this.eventClazz = (Class<E>) Object.class;
-        this.predicate = (IPredicate<Object>) predicate;
-        this.operationType = operationType;
-    }
-
-    public Guard(Optional<Class<? extends E>> effectType) {
-        this(null,null);
     }
 
 //    public Guard(IPredicate predicate, Class<? extends PEdge>[] xorReturnTypes) {

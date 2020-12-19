@@ -17,7 +17,6 @@ package io.cognitionbox.petra.guarantees.impl;
 
 import io.cognitionbox.petra.core.IGraph;
 import io.cognitionbox.petra.core.IStep;
-import io.cognitionbox.petra.core.impl.OperationType;
 import io.cognitionbox.petra.core.impl.ReachabilityHelper;
 import io.cognitionbox.petra.guarantees.GraphCheck;
 import io.cognitionbox.petra.lang.*;
@@ -39,11 +38,7 @@ public class GraphOutputCannotBeReachedFromInput implements GraphCheck {
     ReachabilityHelper helper = new ReachabilityHelper();
 
     boolean matchesState(Guard<?> type, Class<?> state) {
-        if (type instanceof GuardXOR<?>) {
-            return ((GuardXOR<?>) type).getChoices().stream().anyMatch(c -> c.getTypeClass().isAssignableFrom(state));
-        } else {
-            return type.getTypeClass().isAssignableFrom(state);
-        }
+        return type.getTypeClass().isAssignableFrom(state);
     }
 
     private int isPostConditionReachable(IGraph<?> step, List<Guard<?>> list) throws PostConditionNotReachable {
@@ -53,9 +48,9 @@ public class GraphOutputCannotBeReachedFromInput implements GraphCheck {
         Set<Set<Class<?>>> previousStates = new HashSet<>();
         Set<Class<?>> lastState = null;
 
-        Class<?> input = step.p().getTypeClass();
-        if (step.p().getTypeClass().isAnnotationPresent(Extract.class)) {
-            helper.deconstruct(new HashSet<>(), step.p().getOperationType(), step.p().getTypeClass(), state, 0);
+        Class<?> input = step.getType();
+        if (step.getType().isAnnotationPresent(Extract.class)) {
+            helper.deconstruct(new HashSet<>(), step.getType(), state, 0);
             state.add(input);
         } else {
             state.add(input);
@@ -71,7 +66,7 @@ public class GraphOutputCannotBeReachedFromInput implements GraphCheck {
             for (Class<?> s : state) {
                 int matches = 0;
                 for (IStep<?> stp : step.getParallizable()) {
-                    if (stp.p().getTypeClass().isAssignableFrom(s)) {
+                    if (stp.getType().isAssignableFrom(s)) {
                         matches++;
                         if (matches > 1) {
                             throw new IllegalStateException("pre condition conflicts, pre conditions compete for same type");
@@ -83,32 +78,24 @@ public class GraphOutputCannotBeReachedFromInput implements GraphCheck {
 
         int count = 0;
         while (true) {
-            if (((state.size() == 1 && (step.p().getTypeClass().isAssignableFrom(new ArrayList<>(state).get(0)))))) {
-                if (step.p().getTypeClass().isAnnotationPresent(Extract.class)) {
-                    helper.deconstruct(new HashSet<>(), step.p().getOperationType(), step.p().getTypeClass(), state, 0);
+            if (((state.size() == 1 && (step.getType().isAssignableFrom(new ArrayList<>(state).get(0)))))) {
+                if (step.getType().isAnnotationPresent(Extract.class)) {
+                    helper.deconstruct(new HashSet<>(), step.getType(), state, 0);
                 }
             }
             Set<Class<?>> statesToRemove = new HashSet<>();
             Set<Class<?>> statesToAdd = new HashSet<>();
             for (IStep<?> stp : step.getParallizable()) { //perm
                 for (Class<?> st : state) {
-                    if (stp.p().getTypeClass().isAssignableFrom(st)) {
+                    if (stp.getType().isAssignableFrom(st)) {
                         stepsVisitCount.get(stp).incrementAndGet();
 
                         // if consume or write need to replace the input type with output type
                         // if read just add the output type and leave the input type
                         // it works differently to for equivalent semantics in execution runtime where we
                         // do not remove the state for effects.
-                        if (stp.p().getOperationType() == OperationType.READ_WRITE) {
-                            statesToRemove.add(st);
-                        }
-                        if (stp.q() instanceof GuardXOR<?>) {
-                            for (Guard<?> qs : ((GuardXOR<?>) stp.q()).getChoices()) {
-                                // writes don't consume and operate on an instance hence no need to deconstruct the output instance
-                                // as this instance would already be atomic in size and cannot be deconstructed
-                                helper.deconstruct(new HashSet<>(), qs.getOperationType(), qs.getTypeClass(), statesToAdd, 0);
-                            }
-                        }
+                        statesToRemove.add(st);
+                        helper.deconstruct(new HashSet<>(), stp.getType(), statesToAdd, 0);
                     }
                 }
             }
@@ -132,27 +119,27 @@ public class GraphOutputCannotBeReachedFromInput implements GraphCheck {
             } else {
                 previousStates.add(new HashSet<>(state));
             }
-            if ((state.size() == 0 && step.q().isVoid())
-                    || (state.size() == 1 && step.q() != null && matchesState(step.q(), new ArrayList<>(state).get(0)))) {
-
-                if (RGraphComputer.getConfig().isStrictModeExtraConstructionGuarantee()) {
-                    Set<IStep> deadSteps = stepsVisitCount.entrySet().stream()
-                            .filter(e -> e.getValue().get() == 0).map(e -> e.getKey()).collect(toSet());
-                    if (deadSteps.size() > 0) {
-                        throw new DeadStepsExist(deadSteps);
-                    }
-                }
-                reachable++;
-                break;
-            }
+//            if ((state.size() == 0 && step.q().isVoid())
+//                    || (state.size() == 1 && step.q() != null && matchesState(step.q(), new ArrayList<>(state).get(0)))) {
+//
+//                if (RGraphComputer.getConfig().isStrictModeExtraConstructionGuarantee()) {
+//                    Set<IStep> deadSteps = stepsVisitCount.entrySet().stream()
+//                            .filter(e -> e.getValue().get() == 0).map(e -> e.getKey()).collect(toSet());
+//                    if (deadSteps.size() > 0) {
+//                        throw new DeadStepsExist(deadSteps);
+//                    }
+//                }
+//                reachable++;
+//                break;
+//            }
             count++;
         }
 
-        if (reachable == 0) {
-            throw new PostConditionNotReachable(step, state);
-        } else {
-            return reachable;
-        }
+//        if (reachable == 0) {
+//            throw new PostConditionNotReachable(step, state);
+//        } else {
+//            return reachable;
+//        }
     }
 
     @Override

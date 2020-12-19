@@ -49,7 +49,7 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
         super(description);
     }
 
-    public PEdge(Guard<X> p, IConsumer<X> function, GuardXOR<X> q) {
+    public PEdge(Guard<X> p, IConsumer<X> function, Guard<X> q) {
         this.p = p;
         this.function = function;
         this.q = q;
@@ -82,7 +82,8 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
     public X call() {
         X input = getInput().getValue();
         Lg_ALL_STATES("[Eg in]",input);
-        if (!p().test(input)) {
+        setActiveKase(getInput().getValue());
+        if (!getActiveKase().p().test(input)) {
             return (X) input;
         }
         PEdgeRollbackHelper.capture(input, this);
@@ -115,7 +116,7 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
             throwableRef.set(e);
             LOG.error(this.getStepClazz().getSimpleName()+" "+this.getUniqueId(), e);
         }
-        boolean postConditionOk = throwableRef.get()==null && (res!=null && q().test(res) && evalV(res));
+        boolean postConditionOk = throwableRef.get()==null && (res!=null && getActiveKase().q().test(res) && evalV(res));
         if (postConditionOk) {
             Lg_ALL_STATES("[Eg out]",input);
             return res;
@@ -132,11 +133,9 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
     public PEdge copy() {
         // we dont copy the id as we need a unique id based on the hashcode of the new instance
         PEdge PEdge = new PEdge(getPartitionKey());
-        PEdge.setEffectType(this.getEffectType()); // so we dont have to re-compute
+        PEdge.setKases(getKases());
         PEdge.setClazz(getStepClazz());
-        PEdge.setP(p());
         PEdge.func(function);
-        PEdge.setQ(q());
         return PEdge;
     }
 
@@ -150,22 +149,8 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
         return false;
     }
 
-    public void pre(GuardInput<X> p) {
+    public void pre(Guard<X> p) {
         setP(p);
-    }
-
-    public void pre(IPredicate<X> predicate) {
-        setP(new GuardWrite(type, predicate));
-    }
-
-    public void post(GuardReturn<X> q) {
-        returnType.addChoice(new Guard(q.getTypeClass(),q.predicate,OperationType.RETURN));
-        setQ(returnType);
-    }
-
-    public void post(IPredicate<X> predicate) {
-        returnType.addChoice(new Guard(type,predicate,OperationType.RETURN));
-        setQ(returnType);
     }
 
     private IBiPredicate<X,X> v = null;

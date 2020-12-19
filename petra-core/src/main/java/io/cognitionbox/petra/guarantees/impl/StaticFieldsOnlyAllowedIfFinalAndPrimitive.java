@@ -18,6 +18,7 @@ package io.cognitionbox.petra.guarantees.impl;
 import io.cognitionbox.petra.guarantees.StepCheck;
 import io.cognitionbox.petra.core.impl.ReflectUtils;
 import io.cognitionbox.petra.core.IStep;
+import io.cognitionbox.petra.lang.Kase;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -25,17 +26,21 @@ import java.lang.reflect.Modifier;
 public class StaticFieldsOnlyAllowedIfFinalAndPrimitive implements StepCheck {
         @Override
         public boolean test(IStep<?> step) {
-            if (step.p() == null) {
-                return true;
-            }
-            Class<?> preType = step.p().getTypeClass();
+            boolean ok = true;
+            for (Kase k : step.getKases()){
+                if (k.p() == null) {
+                    return true;
+                }
+                Class<?> preType = k.p().getTypeClass();
 
-            if (step.q() == null) {
-                return true;
-            }
-            Class<?> postType = step.q().getTypeClass();
+                if (k.q() == null) {
+                    return true;
+                }
+                Class<?> postType = k.q().getTypeClass();
 
-            return checkTypeRecursively(preType) && checkTypeRecursively(postType);
+                ok = ok && ( checkTypeRecursively(preType) && checkTypeRecursively(postType) );
+            }
+            return ok;
         }
 
         private boolean checkTypeRecursively(Class<?> type) {

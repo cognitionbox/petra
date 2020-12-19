@@ -20,9 +20,6 @@ package io.cognitionbox.petra.examples.simple.loop;
 
 import io.cognitionbox.petra.lang.PGraph;
 
-import static io.cognitionbox.petra.util.Petra.rt;
-
-
 public class AtoA extends PGraph<A> {
     {
         type(A.class);

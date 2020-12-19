@@ -22,7 +22,7 @@ package io.cognitionbox.petra.examples.simple.extraction;
 import io.cognitionbox.petra.examples.simple.common.AB;
 import io.cognitionbox.petra.lang.PGraph;
 
-import static io.cognitionbox.petra.util.Petra.rt;
+
 
 public class ExtractAB extends PGraph<AB> {
    {

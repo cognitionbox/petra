@@ -16,15 +16,12 @@
 package io.cognitionbox.petra.core.engine;
 
 import io.cognitionbox.petra.core.engine.petri.IToken;
-import io.cognitionbox.petra.core.impl.OperationType;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 public final class StepResult implements Serializable {
-    private OperationType operationType;
     private IToken input;
     private IToken outputValue;
 
@@ -34,23 +31,18 @@ public final class StepResult implements Serializable {
 
     private Collection<Throwable> errors;
 
-    public StepResult(OperationType operationType, IToken input, IToken outputValue) {
-        this(operationType,input,outputValue, Arrays.asList());
+    public StepResult(IToken input, IToken outputValue) {
+        this(input,outputValue, Arrays.asList());
     }
 
-    public StepResult(OperationType operationType, IToken input, IToken outputValue, Throwable error) {
-        this(operationType,input,outputValue, Arrays.asList(error));
+    public StepResult(IToken input, IToken outputValue, Throwable error) {
+        this(input,outputValue, Arrays.asList(error));
     }
 
-    public StepResult(OperationType operationType, IToken input, IToken outputValue, Collection<Throwable> errors) {
-        this.operationType = operationType;
+    public StepResult(IToken input, IToken outputValue, Collection<Throwable> errors) {
         this.input = input;
         this.outputValue = outputValue;
         this.errors = errors;
-    }
-
-    public OperationType getOperationType() {
-        return operationType;
     }
 
     public IToken getInput() {

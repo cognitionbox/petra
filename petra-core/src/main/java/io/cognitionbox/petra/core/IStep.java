@@ -16,18 +16,13 @@
 package io.cognitionbox.petra.core;
 
 import io.cognitionbox.petra.lang.Guard;
+import io.cognitionbox.petra.lang.Kase;
+
+import java.util.Collection;
 
 public interface IStep<X> extends IIdentifyable, IMaybeEffect {
-
-    boolean evalP(X p);
-
-    boolean evalQ(X p);
-
-    Guard<X> p();
-
-    Guard<X> q();
-
+    Collection<Kase<X>> getKases();
     Class<?> getStepClazz();
-
+    Class<X> getType();
     boolean isDoesNotTerminate();
 }

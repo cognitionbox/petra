@@ -26,7 +26,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import static io.cognitionbox.petra.util.Petra.rt;
 
 
 @RunWith(Parameterized.class)
