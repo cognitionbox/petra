@@ -48,6 +48,7 @@ public class ConstructionGuarantees {
 
     public void initAllChecks(){
         addCheck(new StepMustHaveValidPreAndPostCondition());
+        addCheck(new PrePostTypesMustBeBoundToUniquePredicates());
 
         initAllChecksExceptForThoseNotCompatibleWithGraphsGeneratedByReachabilityCheck();
 

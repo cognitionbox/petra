@@ -24,9 +24,8 @@ import io.cognitionbox.petra.util.function.IPredicate;
 import org.javatuples.Pair;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AbstractStep<X> extends Identifyable implements ICallable<X>, IStep<X> {
 
@@ -125,6 +124,8 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
 
     private Kase<X> activeKase;
 
+    final AtomicInteger kaseId = new AtomicInteger();
+
     private List<Kase<X>> kases = new ArrayList<>();
 
     public List<Kase<X>> getKases(){
@@ -132,10 +133,19 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
     }
 
     public void kase(IPredicate<X> pre, IPredicate<X> post) {
-        kases.add(new Kase<X>(type,pre,post));
+        kases.add(new Kase<X>(this,type,pre,post));
     }
 
-    public void setKases(List<Kase<X>> kases){
+    public Set<Pair<AbstractStep,Integer>> getIgnoredKases() {
+        return ignoredKases;
+    }
+
+    private Set<Pair<AbstractStep,Integer>> ignoredKases = new HashSet<>();
+    public void ignoreKase(int kase){
+        this.ignoredKases.add(Pair.with(this,kase));
+    }
+
+    void setKases(List<Kase<X>> kases){
         this.kases = kases;
     }
 
@@ -145,7 +155,7 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
 
     public void post(IPredicate<X> predicate) {
         setQ(new Guard(type,predicate));
-        kases.add(new Kase<X>(type,p,q));
+        kases.add(new Kase<X>(this,type,p,q));
     }
 
     public Class<X> getType() {

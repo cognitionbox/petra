@@ -15,7 +15,9 @@
  */
 package io.cognitionbox.petra.lang;
 
+import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.core.impl.*;
+import io.cognitionbox.petra.examples.kases.objects.Foo;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import io.cognitionbox.petra.exceptions.EdgeException;
 import io.cognitionbox.petra.exceptions.IterationsTimeoutException;
@@ -23,6 +25,7 @@ import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.core.engine.petri.impl.Token;
 import org.javatuples.Pair;
 import org.junit.*;
+import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,13 +34,16 @@ import java.util.concurrent.*;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
+import static java.util.stream.Collectors.toSet;
 import static junit.framework.TestCase.assertTrue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public abstract class StepTest<X> extends BaseExecutionModesTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(StepTest.class);
@@ -52,10 +58,36 @@ public abstract class StepTest<X> extends BaseExecutionModesTest {
         super(execMode);
     }
 
+
+    private static void collectSteps(PGraph<?> graph, Set<AbstractStep> steps) {
+        steps.add(graph);
+        for (IStep g : graph.getParallizable()) {
+            if (g instanceof RGraph) {
+                collectSteps((PGraph<?>) g, steps);
+            } else {
+                //if (g instanceof PEdge){
+                    steps.add((AbstractStep) g);
+                //}
+            }
+        }
+    }
+
+    private static volatile AbstractStep step = null;
+    public static volatile Set<Kase> kases = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    public static volatile Set<Pair<AbstractStep,Integer>> ignoredkases = Collections.newSetFromMap(new ConcurrentHashMap<>());
+
     @Before
     public void before(){
-        stepFixture = new StepFixture(stepSupplier().get(),getExecMode());
+        if (kases.isEmpty()){
+            step = stepSupplier().get();
+            Set<AbstractStep> steps = new HashSet<>();
+            collectSteps((PGraph<?>)step,steps);
+            kases = steps.stream().flatMap(s->(Stream<Kase>)s.getKases().stream()).collect(toSet());
+            ignoredkases = steps.stream().flatMap(s->(Stream<Pair<AbstractStep,Integer>>)s.getIgnoredKases().stream()).collect(toSet());
+        }
+        stepFixture = new StepFixture(step,getExecMode());
     }
+
 
     public static class EdgePGraph extends PGraph<Object> {
         EdgePGraph(PEdge PEdge){
@@ -131,7 +163,7 @@ public abstract class StepTest<X> extends BaseExecutionModesTest {
         stepFixture.execute();
     }
 
-    abstract Supplier<AbstractStep<X>> stepSupplier();
+    protected abstract Supplier<AbstractStep<X>> stepSupplier();
 
     public static int comp(String s1, String s2) {
         if (s1.contains("red") && !s2.contains("red")){

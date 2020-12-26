@@ -161,7 +161,8 @@ public class Guard<E> implements IPredicate<E> {
                 }
                 return this.predicate.test(xToUse);
             } catch (Exception e){
-                throw new TypeEvalException(e);
+                //throw new TypeEvalException(e);
+                return false;
             }
         }
         return false;
