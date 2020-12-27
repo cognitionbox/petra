@@ -1,12 +1,13 @@
 package io.cognitionbox.petra.examples.kases2.math;
 
 import io.cognitionbox.petra.lang.PEdge;
+import io.cognitionbox.petra.lang.math.IBigDecimalOp;
 
 import java.math.BigDecimal;
 
 import static io.cognitionbox.petra.examples.kases.math.R.*;
 
-public class Mult extends PEdge<IMath> {
+public class Mult extends PEdge<IBigDecimalOp> {
     public Mult(int b){
         this(new BigDecimal(b));
     }
@@ -15,7 +16,7 @@ public class Mult extends PEdge<IMath> {
     }
     public Mult(BigDecimal b)
     {
-        type(IMath.class);
+        type(IBigDecimalOp.class);
         kase(x -> isPos(x.result()) && isNeg(b), x -> isPos(x.result()));
         kase(x -> isPos(x.result()) && isPos(b), x -> isPos(x.result()));
         kase(x -> isPos(x.result()) && isNeg(b), x -> isNeg(x.result()));

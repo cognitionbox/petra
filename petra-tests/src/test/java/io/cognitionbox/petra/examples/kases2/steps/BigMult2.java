@@ -1,19 +1,16 @@
 package io.cognitionbox.petra.examples.kases2.steps;
 
-import io.cognitionbox.petra.examples.kases2.math.IMath;
-import io.cognitionbox.petra.examples.kases2.math.Multi;
-import io.cognitionbox.petra.lang.PEdge;
+import io.cognitionbox.petra.lang.math.IBigDecimalOp;
+import io.cognitionbox.petra.lang.math.BigMult;
 import io.cognitionbox.petra.util.function.IFunction;
 
 import java.math.BigDecimal;
 
-import static io.cognitionbox.petra.examples.kases.math.R.*;
-
-public class Multi2<T extends IMath> extends Multi<T> {
-    public Multi2(IFunction<T,BigDecimal> value)
+public class BigMult2<T extends IBigDecimalOp> extends BigMult<T> {
+    public BigMult2(IFunction<T,BigDecimal> value)
     {
         super(value);
-        type((Class<T>) IMath.class);
+        type((Class<T>) IBigDecimalOp.class);
         ignoreKase(0);
         ignoreKase(2);
         ignoreKase(3);

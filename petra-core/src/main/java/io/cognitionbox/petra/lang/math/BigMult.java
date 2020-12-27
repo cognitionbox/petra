@@ -1,16 +1,16 @@
-package io.cognitionbox.petra.examples.kases2.math;
+package io.cognitionbox.petra.lang.math;
 
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.util.function.IFunction;
 
 import java.math.BigDecimal;
 
-import static io.cognitionbox.petra.examples.kases.math.R.*;
+import static io.cognitionbox.petra.lang.math.BigDecimalUtils.*;
 
-public class Multi<T extends IMath> extends PEdge<T> {
-    public Multi(IFunction<T,BigDecimal> value)
+public class BigMult<T extends IBigDecimalOp> extends PEdge<T> {
+    public BigMult(IFunction<T,BigDecimal> value)
     {
-        type((Class<T>) IMath.class);
+        type((Class<T>) IBigDecimalOp.class);
         kase(x -> isPos(x.result()) && isNeg(value.apply(x)), x -> isPos(x.result()));
         kase(x -> isPos(x.result()) && isPos(value.apply(x)), x -> isPos(x.result()));
         kase(x -> isPos(x.result()) && isNeg(value.apply(x)), x -> isNeg(x.result()));

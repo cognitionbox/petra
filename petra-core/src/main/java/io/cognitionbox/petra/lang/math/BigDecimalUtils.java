@@ -1,8 +1,8 @@
-package io.cognitionbox.petra.examples.kases2.math;
+package io.cognitionbox.petra.lang.math;
 
 import java.math.BigDecimal;
 
-public final class R {
+public final class BigDecimalUtils {
 
     static public boolean notNull(BigDecimal value){
         return value!=null;

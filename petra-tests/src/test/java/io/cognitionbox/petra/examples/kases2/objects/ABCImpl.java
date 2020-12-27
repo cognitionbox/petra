@@ -1,6 +1,6 @@
 package io.cognitionbox.petra.examples.kases2.objects;
 
-import io.cognitionbox.petra.examples.kases2.math.Unary;
+import io.cognitionbox.petra.lang.math.Unary;
 
 import java.math.BigDecimal;
 

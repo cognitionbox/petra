@@ -1,9 +1,9 @@
-package io.cognitionbox.petra.examples.kases2.math;
+package io.cognitionbox.petra.lang.math;
 
 
 import java.math.BigDecimal;
 
-public interface IMath {
+public interface IBigDecimalOp extends IOp<BigDecimal> {
     BigDecimal result();
     void result(BigDecimal result);
 }
