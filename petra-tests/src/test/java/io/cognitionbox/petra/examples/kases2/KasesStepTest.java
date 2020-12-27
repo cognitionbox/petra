@@ -20,19 +20,15 @@ package io.cognitionbox.petra.examples.kases2;
 
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.examples.kases2.objects.Foo;
-import io.cognitionbox.petra.examples.kases2.steps.FooSum;
 import io.cognitionbox.petra.examples.kases2.steps.FooSum2;
 import io.cognitionbox.petra.lang.*;
-import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
+import io.cognitionbox.petra.util.Petra;
 import org.javatuples.Pair;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
 import org.junit.runners.Parameterized;
 
 import java.lang.reflect.Method;
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -62,8 +58,8 @@ public class KasesStepTest extends StepTest<Foo> {
             throw new IllegalStateException("other method name exists which comes after zappedAllKases.");
         }
 
-        setInput(new Foo());
-        setExpectation(x->true);
+//        setInput(new Foo());
+//        setExpectation(x->true);
         long requiredToCover = kases.stream().filter(k->k.getStep() instanceof PEdge).filter(k->!ignoredkases.contains(Pair.with(k.getStep(),k.getId()))).count();
         long covered = kases.stream().filter(k->k.getStep() instanceof PEdge).filter(k->k.isCovered()).count();
         if (kases.size()==0 || covered!=requiredToCover){
@@ -78,6 +74,29 @@ public class KasesStepTest extends StepTest<Foo> {
                         .forEach(k->System.out.println(s.getStepClazz().getSimpleName()+" "+Pair.with(k.getStep().getStepClazz().getSimpleName(),k.getId())));
             }
             throw new IllegalStateException("not all kases covered.");
+        }
+        if (Petra.getVariables().size()!=0 &&
+                Petra.getVariables().stream().filter(v->!v.getId().contains("RESULT")).allMatch(v->{
+         if ((v instanceof RO) && (v instanceof RW)){
+             return ((RO<?>) v).isRead() && ((RW<?>) v).isWritten();
+         } else if (v instanceof RO){
+             return ((RO<?>) v).isRead();
+         } else {
+             return false;
+         }
+        })){
+            // ok
+        } else {
+            Petra.getVariables().stream().filter(v->!v.getId().contains("RESULT")).filter(v->{
+                if ((v instanceof RO) && (v instanceof RW)){
+                    return !(((RO<?>) v).isRead() && ((RW<?>) v).isWritten());
+                } else if (v instanceof RO){
+                    return !((RO<?>) v).isRead();
+                } else {
+                    return false;
+                }
+            }).forEach(v->System.out.println(((v instanceof RW)?"RW":"RO")+" "+v.getId()));
+            throw new IllegalStateException("not all variables covered.");
         }
     }
 

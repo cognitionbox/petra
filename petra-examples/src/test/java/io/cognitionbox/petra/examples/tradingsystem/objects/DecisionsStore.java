@@ -1,13 +1,13 @@
 package io.cognitionbox.petra.examples.tradingsystem.objects;
 
-import io.cognitionbox.petra.lang.Ref;
+import io.cognitionbox.petra.lang.RW;
 import io.cognitionbox.petra.util.impl.PList;
 
-import static io.cognitionbox.petra.util.Petra.ref;
+import static io.cognitionbox.petra.util.Petra.rw;
 
 public class DecisionsStore {
     private PList<Decision> allDecisions = new PList<>();
-    private Ref<Double> averageDecisionLimitPrice = ref();
+    private RW<Double> averageDecisionLimitPrice = rw();
 
     public PList<Decision> getAllDecisions() {
         return allDecisions;

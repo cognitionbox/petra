@@ -4,18 +4,18 @@ import java.io.Serializable;
 
 class X implements Serializable {
 
+    private State state;
+
+    public X(State state) {
+        this.state = state;
+    }
+
     @Override
     public String toString() {
         return "X{" +
                 "state='" + state + '\'' +
                 '}';
     }
-
-    public X(State state) {
-        this.state = state;
-    }
-
-    private State state;
 
     public State state() {
         return state;
@@ -25,10 +25,21 @@ class X implements Serializable {
         this.state = state;
     }
 
-    public boolean isA(){ return state== State.A; }
-    public boolean isB(){ return state== State.B; }
-    public boolean isC(){ return state== State.C; }
-    public boolean isAB(){ return isA() ^ isB();}
+    public boolean isA() {
+        return state == State.A;
+    }
+
+    public boolean isB() {
+        return state == State.B;
+    }
+
+    public boolean isC() {
+        return state == State.C;
+    }
+
+    public boolean isAB() {
+        return isA() ^ isB();
+    }
 
 
 }

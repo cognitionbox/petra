@@ -1,12 +1,13 @@
 package io.cognitionbox.petra.examples.trafficlights.objects;
 
-import io.cognitionbox.petra.lang.Ref;
+import io.cognitionbox.petra.lang.RW;
+import io.cognitionbox.petra.util.Petra;
 
-import static io.cognitionbox.petra.util.Petra.ref;
+import static io.cognitionbox.petra.util.Petra.rw;
 
 public class Lights {
-    private final Ref<Boolean> red = ref(true);
-    private final Ref<Boolean> green = ref(false);
+    private final RW<Boolean> red = Petra.rw(true);
+    private final RW<Boolean> green = Petra.rw(false);
 
     public boolean isRed() {
         return red.get();

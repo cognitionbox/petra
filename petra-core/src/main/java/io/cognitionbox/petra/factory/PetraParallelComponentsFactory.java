@@ -17,10 +17,10 @@ package io.cognitionbox.petra.factory;
 
 import io.cognitionbox.petra.core.engine.petri.Place;
 import io.cognitionbox.petra.core.engine.petri.impl.ConcurrentHashMapPlace;
-import io.cognitionbox.petra.core.impl.AbstractRef;
+import io.cognitionbox.petra.core.impl.AbstractRO;
 import io.cognitionbox.petra.core.impl.MapBasedRingBuffer;
-import io.cognitionbox.petra.lang.RGraphComputer;
-import io.cognitionbox.petra.lang.Ref;
+import io.cognitionbox.petra.lang.RO;
+import io.cognitionbox.petra.lang.RW;
 import io.cognitionbox.petra.core.IRingbuffer;
 
 
@@ -30,7 +30,6 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -104,34 +103,13 @@ public class PetraParallelComponentsFactory implements IPetraComponentsFactory {
     return new ConcurrentHashMapPlace(name);
   }
 
-  private static class AtomicReferenceImpl<T> extends AbstractRef<T> {
-
-    private AtomicReference<T> atomicReference;
-
     @Override
-    public String toString() {
-      return "AtomicReferenceImpl{" +
-          "ref=" + atomicReference +
-          '}';
-    }
-
-    public AtomicReferenceImpl(T value){
-      atomicReference = new AtomicReference<>(value);
+    public <T> RW<T> createRW(T value, String name) {
+        return new AtomicReferenceRW(value,name);
     }
 
     @Override
-    public T get() {
-      return atomicReference.get();
+    public <T> RO<T> createRO(T value, String name) {
+        return new AtomicReferenceRO(value,name);
     }
-
-    @Override
-    public void set(T value) {
-      atomicReference.set(value);
-    }
-  }
-
-  @Override
-  public <T> Ref<T> createRef(T value, String name) {
-    return new AtomicReferenceImpl(value);
-  }
 }

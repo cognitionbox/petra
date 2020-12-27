@@ -16,12 +16,12 @@
 package io.cognitionbox.petra.factory;
 
 import io.cognitionbox.petra.config.IPetraHazelcastConfig;
-import io.cognitionbox.petra.config.IPetraHazelcastConfig;
 import io.cognitionbox.petra.core.IRingbuffer;
 import io.cognitionbox.petra.core.engine.petri.Place;
 import io.cognitionbox.petra.core.engine.petri.impl.HazelcastPlace;
 import io.cognitionbox.petra.lang.RGraphComputer;
-import io.cognitionbox.petra.lang.Ref;
+import io.cognitionbox.petra.lang.RO;
+import io.cognitionbox.petra.lang.RW;
 import io.cognitionbox.petra.util.impl.*;
 
 import java.util.List;
@@ -107,8 +107,13 @@ public class PetraHazelcastComponentsFactory implements IPetraComponentsFactory 
     }
 
     @Override
-    public <T> Ref<T> createRef(T value, String name) {
-        return new HazelcastAtomicReferenceWrapper(value, name);
+    public <T> RW<T> createRW(T value, String name) {
+        return new HazelcastAtomicReferenceWrapperRW(value, name);
+    }
+
+    @Override
+    public <T> RO<T> createRO(T value, String name) {
+        return new HazelcastAtomicReferenceWrapperRO(value, name);
     }
 
 }

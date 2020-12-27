@@ -13,26 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.cognitionbox.petra.core.impl;
+package io.cognitionbox.petra.lang;
 
-import io.cognitionbox.petra.lang.Ref;
+import java.io.Serializable;
 
-public abstract class AbstractRef<T> implements Ref<T> {
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-
-    return get().equals(((AbstractRef)o).get());
-  }
-
-  @Override
-  public int hashCode() {
-    return get().hashCode();
-  }
+public interface RW<T> extends RO<T> {
+  boolean isWritten();
+  void set(T value);
 }

@@ -33,7 +33,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
-import static io.cognitionbox.petra.util.Petra.ref;
+import static io.cognitionbox.petra.util.Petra.rw;
 
 public class RGraphComputer<X extends D, D> implements Serializable {
 
@@ -67,7 +67,7 @@ public class RGraphComputer<X extends D, D> implements Serializable {
   final static Logger LOG = LoggerFactory.getLogger(RGraphComputer.class);
 
   private boolean invoked = false;
-  Ref<X> result;
+  RW<X> result;
   private transient Lock initializerLock;
   private transient Lock masterLock;
   private String dotDiagram;
@@ -81,7 +81,7 @@ public class RGraphComputer<X extends D, D> implements Serializable {
   }
 
   private void init() {
-    result = ref(null,RESULT);
+    result = Petra.rw(null,RESULT);
     initializerLock = Petra.getFactory().createLock(INITIALIZER_LOCK);
     masterLock = Petra.getFactory().createLock(MASTER_LOCK);
     taskQueue = Petra.getFactory().createRingbuffer("tasks");

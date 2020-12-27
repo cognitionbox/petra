@@ -25,6 +25,7 @@ import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.core.engine.petri.impl.Token;
 import org.javatuples.Pair;
 import org.junit.*;
+import org.junit.rules.TestName;
 import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +50,8 @@ public abstract class StepTest<X> extends BaseExecutionModesTest {
     private static final Logger LOG = LoggerFactory.getLogger(StepTest.class);
     private static PGraphDotDiagramRendererImpl2 renderer;
     private static Map<String,String> dotToRender = new ConcurrentHashMap<>();
+
+    @Rule public TestName testName = new TestName();
 
     {
         renderer = new PGraphDotDiagramRendererImpl2();
@@ -184,6 +187,9 @@ public abstract class StepTest<X> extends BaseExecutionModesTest {
 
     @After
     public void after(){
+        if (testName.getMethodName().contains("zappedAllKases")){
+            return;
+        }
         X out = stepFixture.getOutput();
         if (out==null){
             fail("output is null");

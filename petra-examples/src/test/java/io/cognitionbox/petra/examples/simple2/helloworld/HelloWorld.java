@@ -50,29 +50,7 @@ public class HelloWorld extends BaseExecutionModesTest {
      */
     @Test
     public void test(){
-
-        class AtoA extends PEdge<X> {
-            {
-                type(X.class);
-                pre(x -> x.isBlankOrHelloWorld());
-                func(x ->{
-                    x.value = "hello world.";
-                });
-                post(x -> x.isHelloWorld());
-            }
-        }
-
-        class AtoAGraph extends PGraph<X> {
-            {
-                type(X.class);
-                pre(x -> x.isBlank());
-                step(new AtoA());
-                post(x -> x.isHelloWorld());
-            }
-        }
-
         X output = new PComputer<X>().eval(new AtoAGraph(),new X(""));
         assertThat(output.value).isEqualTo("hello world.");
-
     }
 }

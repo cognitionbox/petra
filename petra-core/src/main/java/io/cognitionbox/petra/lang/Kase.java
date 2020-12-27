@@ -1,14 +1,14 @@
 package io.cognitionbox.petra.lang;
 
-import io.cognitionbox.petra.util.function.IBiPredicate;
+import io.cognitionbox.petra.util.Petra;
 import io.cognitionbox.petra.util.function.IPredicate;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import static io.cognitionbox.petra.util.Petra.ref;
+import static io.cognitionbox.petra.util.Petra.rw;
 
 public final class Kase<E> {
-    private Ref<Boolean> covered = ref(false);
+    private AtomicBoolean covered = new AtomicBoolean(false);
     public void markCovered(){
         covered.set(true);
     }

@@ -16,20 +16,16 @@
 package io.cognitionbox.petra.core.impl;
 
 import io.cognitionbox.petra.lang.Guard;
-import io.cognitionbox.petra.lang.Ref;
+import io.cognitionbox.petra.lang.RW;
 import io.cognitionbox.petra.lang.Void;
 import io.cognitionbox.petra.lang.annotations.Extract;
 import io.cognitionbox.petra.lang.annotations.SharedResource;
-
-import io.cognitionbox.petra.core.IStep;
-import org.javatuples.Pair;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class ReachabilityHelper {
 
@@ -104,7 +100,7 @@ public class ReachabilityHelper {
                             m.getParameterCount()==0 &&
                             Modifier.isPublic(m.getModifiers())){
                         Class<?> selectedClazz = null;
-                        if (m.getReturnType().equals(Ref.class)){
+                        if (m.getReturnType().equals(RW.class)){
                             ParameterizedType pt = (ParameterizedType) m.getGenericReturnType();
                             selectedClazz = (Class<?>) pt.getActualTypeArguments()[0];
                             deconstruct(resourceTypes,selectedClazz,types,depth+1);

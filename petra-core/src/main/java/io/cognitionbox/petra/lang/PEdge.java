@@ -99,6 +99,7 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
                     if (RGraphComputer.getConfig().isTestMode() && (throwsRandomly != null && throwsRandomly.size() > 0)) {
                         throwRandomException(throwsRandomly);
                     }
+                    Thread.currentThread().setName(getStepClazz().getCanonicalName());
                     function.accept(input);
                     return input;
                 } catch (Throwable e){

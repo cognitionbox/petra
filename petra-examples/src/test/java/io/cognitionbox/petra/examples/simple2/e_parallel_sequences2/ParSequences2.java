@@ -50,42 +50,8 @@ public class ParSequences2 extends BaseExecutionModesTest {
      */
     @Test
     public void test(){
-
-        class SeqEdge1 extends PEdge<X> {
-            {
-                type(X.class);
-                pre(x -> x.y1().isA() ^ x.y1().isB());
-                func(x ->{
-                    x.y1().state(State.values()[x.y1().state().ordinal() + 1]);
-                });
-                post(x -> x.y1().isB() ^ x.y1().isC());
-            }
-        }
-        class SeqEdge2 extends PEdge<X> {
-            {
-                type(X.class);
-                pre(x -> x.y2().isA() ^ x.y2().isB());
-                func(x ->{
-                    x.y2().state(State.values()[x.y2().state().ordinal() + 1]);
-                });
-                post(x -> x.y2().isB() ^ x.y2().isC());
-            }
-        }
-
-
-        class SeqGraph extends PGraph<X> {
-            {
-                type(X.class);
-                pre(x->x.y1().isAB() && x.y2().isAB());
-                step(new SeqEdge2());
-                step(new SeqEdge1());
-                post(x->x.y1().isC() && x.y2().isC());
-            }
-        }
-
         X output = new PComputer<X>().eval(new SeqGraph(),new X(State.A));
         assertThat(output.y1().state()).isEqualTo(State.C);
         assertThat(output.y2().state()).isEqualTo(State.C);
-
     }
 }

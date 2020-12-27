@@ -18,7 +18,8 @@ package io.cognitionbox.petra.lang.impls.collections;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import io.cognitionbox.petra.config.ExecMode;
 
-import io.cognitionbox.petra.lang.Ref;
+import io.cognitionbox.petra.lang.RW;
+import io.cognitionbox.petra.util.Petra;
 import io.cognitionbox.petra.util.impl.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +28,7 @@ import org.junit.runners.Parameterized;
 import java.io.Serializable;
 import java.util.LinkedList;
 
-import static io.cognitionbox.petra.util.Petra.ref;
+import static io.cognitionbox.petra.util.Petra.rw;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
@@ -56,44 +57,44 @@ public class PCollectionsTest extends BaseExecutionModesTest {
 
   @Test
   public void testLinkedList(){
-    Ref ref = ref(new IntegerLinkedList());
+    RW ref = Petra.rw(new IntegerLinkedList());
     assertThat(ref.get()).isInstanceOf(IntegerLinkedList.class);
   }
   @Test
   public void testArrayList(){
-    Ref ref = ref(new IntegerArrayList());
+    RW ref = Petra.rw(new IntegerArrayList());
     assertThat(ref.get()).isInstanceOf(IntegerArrayList.class);
   }
 
 
   @Test
   public void testArrayBlockingQueue(){
-    Ref ref = ref(new IntegerPArrayBlockingQueue(10));
+    RW ref = Petra.rw(new IntegerPArrayBlockingQueue(10));
     assertThat(ref.get()).isInstanceOf(IntegerPArrayBlockingQueue.class);
   }
 
   @Test
   public void testIntegerXLinkedBlockingQueue(){
-    Ref ref = ref(new IntegerPLinkedBlockingQueue());
+    RW ref = Petra.rw(new IntegerPLinkedBlockingQueue());
     assertThat(ref.get()).isInstanceOf(IntegerPLinkedBlockingQueue.class);
   }
 
   @Test
   public void testIntegerXLinkedTransferQueue(){
-    Ref ref = ref(new IntegerPLinkedTransferQueue());
+    RW ref = Petra.rw(new IntegerPLinkedTransferQueue());
     assertThat(ref.get()).isInstanceOf(IntegerPLinkedTransferQueue.class);
   }
 
   @Test
   public void testSet(){
-    Ref<IntegerSet> ref = ref(new IntegerSet());
+    RW<IntegerSet> ref = Petra.rw(new IntegerSet());
 
     assertThat(ref.get()).isInstanceOf(IntegerSet.class);
   }
 
   @Test
   public void testMap(){
-    Ref ref = ref(new IntegerMap());
+    RW ref = Petra.rw(new IntegerMap());
     assertThat(ref.get()).isInstanceOf(IntegerMap.class);
   }
 
@@ -112,7 +113,7 @@ public class PCollectionsTest extends BaseExecutionModesTest {
   @Test
   public void testBoxedSet(){
     // when boxed by another class, does not rw info in all modes
-    Ref<IntegerSetBox> ref = ref(new IntegerSetBox(new IntegerSet()));
+    RW<IntegerSetBox> ref = Petra.rw(new IntegerSetBox(new IntegerSet()));
     assertThat(ref.get().getSet()).isInstanceOf(IntegerSet.class);
   }
 }

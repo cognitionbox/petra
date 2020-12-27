@@ -4,16 +4,15 @@ import io.cognitionbox.petra.core.impl.ObjectCopyerViaSerialization;
 import io.cognitionbox.petra.core.impl.ReflectUtils;
 import io.cognitionbox.petra.factory.PetraParallelComponentsFactory;
 import io.cognitionbox.petra.factory.PetraSequentialComponentsFactory;
+import io.cognitionbox.petra.util.Petra;
 import io.cognitionbox.petra.util.impl.PList;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiConsumer;
 
-import static io.cognitionbox.petra.util.Petra.ref;
+import static io.cognitionbox.petra.util.Petra.rw;
 
 public class ObjectTrans {
 
@@ -21,7 +20,7 @@ public class ObjectTrans {
         String x = "x";
         String y = "y";
         List<Integer> list = new PList<>();
-        Ref<Integer> i = ref(1);
+        RW<Integer> i = Petra.rw(1);
 
         {
             list.add(1);

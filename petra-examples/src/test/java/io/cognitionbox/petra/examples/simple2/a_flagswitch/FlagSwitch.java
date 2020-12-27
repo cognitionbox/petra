@@ -51,27 +51,6 @@ public class FlagSwitch extends BaseExecutionModesTest {
     @Test
     public void test(){
 
-        class FlagEdge extends PEdge<X> {
-            {
-                type(X.class);
-                pre(x -> x.value==false);
-                func(x ->{
-                    x.value=true;
-                });
-                post(x -> x.value==true);
-            }
-        }
-
-        class FlagGraph extends PGraph<X> {
-            {
-                type(X.class);
-                //invariant(x -> x.value==true ^ x.value==false);
-                pre(x -> x.value==false);
-                step(new FlagEdge());
-                post(x -> x.value==true);
-            }
-        }
-
         X output = new PComputer<X>().eval(new FlagGraph(),new X(false));
 
         assertThat(output.value).isEqualTo(true);

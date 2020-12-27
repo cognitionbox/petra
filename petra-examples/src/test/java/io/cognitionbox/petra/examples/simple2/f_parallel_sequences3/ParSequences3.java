@@ -51,27 +51,6 @@ public class ParSequences3 extends BaseExecutionModesTest {
      */
     @Test
     public void test(){
-
-        class SeqEdge extends PEdge<Y> {
-            {
-                type(Y.class);
-                pre(y -> y.isA() ^ y.isB());
-                func(y ->{
-                    y.state(State.values()[y.state().ordinal() + 1]);
-                });
-                post(y -> y.isB() ^ y.isC());
-            }
-        }
-
-        class SeqGraph extends PGraph<X> {
-            {
-                type(X.class);
-                pre(x->forAll(Y.class,x.ys(), y->y.isAB()));
-                stepForall(x->x.ys(),new SeqEdge());
-                post(x->forAll(Y.class,x.ys(), y->y.isC()));
-            }
-        }
-
         X output = new PComputer<X>().eval(new SeqGraph(),new X(State.A));
         assertThat(output.ys()).allMatch(y->y.state()==State.C);
     }

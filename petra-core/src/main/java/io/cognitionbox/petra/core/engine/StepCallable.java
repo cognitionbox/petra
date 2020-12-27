@@ -15,27 +15,18 @@
  */
 package io.cognitionbox.petra.core.engine;
 
-import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.core.engine.petri.impl.Token;
-import io.cognitionbox.petra.exceptions.EdgeException;
-import io.cognitionbox.petra.exceptions.GraphException;
-import io.cognitionbox.petra.exceptions.conditions.PostConditionFailure;
 import io.cognitionbox.petra.lang.AbstractStep;
 import io.cognitionbox.petra.core.impl.Identifyable;
 import io.cognitionbox.petra.lang.RGraph;
 import io.cognitionbox.petra.util.function.ICallable;
-import io.cognitionbox.petra.lang.Ref;
-import io.cognitionbox.petra.util.Petra;
-import io.cognitionbox.petra.util.impl.PLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.concurrent.Callable;
-import java.util.concurrent.locks.Lock;
 
-import static io.cognitionbox.petra.util.Petra.ref;
+import static io.cognitionbox.petra.util.Petra.rw;
 
 public class StepCallable extends Identifyable implements Callable<StepResult>, Serializable, ICallable<StepResult> {
     final static Logger LOG = LoggerFactory.getLogger(StepCallable.class);

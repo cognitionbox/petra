@@ -1,13 +1,12 @@
 package io.cognitionbox.petra.examples.kases.objects;
 
-import io.cognitionbox.petra.examples.kases.math.R;
-import io.cognitionbox.petra.lang.PGraphIterable;
+import io.cognitionbox.petra.lang.PIterable;
 import io.cognitionbox.petra.util.impl.PList;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-public class Foo implements PGraphIterable<BigDecimal> {
+public class Foo implements PIterable<BigDecimal> {
 
     private ABC abc = new ABCImpl();
 

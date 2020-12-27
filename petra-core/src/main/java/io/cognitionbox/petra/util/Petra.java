@@ -150,16 +150,43 @@ public class Petra {
 //        return (C) getFactory().createRef(rw, UUID.randomUUID().toString());
 //    }
 
-    public static <T> Ref<T> ref(T value, String id) {
-        return (Ref<T>) getFactory().createRef(value, id);
+    public static List<V<?>> getVariables() {
+        return variables;
     }
 
-    public static <T> Ref<T> ref(T value) {
-        return ref(value, UUID.randomUUID().toString());
+    private static List<V<?>> variables = new ArrayList<>();
+
+    public static <T> RW<T> rw(T value, String id) {
+        // use current thread get name to get the step name, create special thread type for this and executor
+        // service which uses this thread type.
+        RW<T> rw = getFactory().createRW(value, Thread.currentThread().getName()+"-"+id);
+        variables.add(rw);
+        return (RW<T>)rw;
     }
 
-    public static <T> Ref<T> ref() {
-        return ref(null);
+    public static <T> RW<T> rw(T value) {
+        return rw(value, UUID.randomUUID().toString());
+    }
+
+    public static <T> RW<T> rw() {
+        return rw(null);
+    }
+
+
+    public static <T> RO<T> ro(T value, String id) {
+        // use current thread get name to get the step name, create special thread type for this and executor
+        // service which uses this thread type.
+        RO<T> ro = getFactory().createRO(value, Thread.currentThread().getName()+"-"+id);
+        variables.add(ro);
+        return (RO<T>)ro;
+    }
+
+    public static <T> RO<T> ro(T value) {
+        return ro(value, UUID.randomUUID().toString());
+    }
+
+    public static <T> RO<T> ro() {
+        return ro(null);
     }
 
 }

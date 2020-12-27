@@ -17,46 +17,48 @@ package io.cognitionbox.petra.util.impl;
 
 import com.hazelcast.core.IAtomicReference;
 import io.cognitionbox.petra.config.IPetraHazelcastConfig;
-import io.cognitionbox.petra.config.PetraHazelcastConfig;
-import io.cognitionbox.petra.core.impl.AbstractRef;
+import io.cognitionbox.petra.core.impl.AbstractRO;
 import io.cognitionbox.petra.lang.RGraphComputer;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public class HazelcastAtomicReferenceWrapper<T> extends AbstractRef<T> {
+public class HazelcastAtomicReferenceWrapperRO<T> extends AbstractRO<T> {
+
+    protected final AtomicBoolean isRead = new AtomicBoolean(false);
+
+    public boolean isRead(){
+        return isRead.get();
+    }
 
     @Override
     public String toString() {
       return "HazelcastAtomicReferenceWrapper{" +
-          "value=" + ref.get() +
+          "value=" + atomicReference.get() +
           '}';
     }
 
-    private transient IAtomicReference<T> ref;
+    protected transient IAtomicReference<T> atomicReference;
 
     private void readObject(java.io.ObjectInputStream stream)
         throws IOException, ClassNotFoundException {
       stream.defaultReadObject();
-      this.ref = ((IPetraHazelcastConfig) RGraphComputer.getConfig())
-              .getHazelcastClient().getAtomicReference(this.name);
+      this.atomicReference = ((IPetraHazelcastConfig) RGraphComputer.getConfig())
+              .getHazelcastClient().getAtomicReference(this.id);
     }
 
-    private String name;
-
-    public HazelcastAtomicReferenceWrapper(T value, String name) {
-      this.name = name;
-      ref = ((IPetraHazelcastConfig) RGraphComputer.getConfig())
-              .getHazelcastClient().getAtomicReference(this.name);
-      ref.set(value);
+    public HazelcastAtomicReferenceWrapperRO(T value, String id) {
+        super(id);
+        atomicReference = ((IPetraHazelcastConfig) RGraphComputer.getConfig())
+              .getHazelcastClient().getAtomicReference(this.id);
+        atomicReference.set(value);
     }
 
     @Override
     public T get() {
-      return ref.get();
+        T value = atomicReference.get();
+        this.isRead.set(true);
+        return value;
     }
 
-    @Override
-    public void set(T value) {
-      ref.set(value);
-    }
   }

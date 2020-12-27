@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
-public class FGraph<X extends PGraphIterable<Y>,Y> extends PGraph<X> {
+public class FGraph<X extends PIterable<Y>,Y> extends PGraph<X> {
 
     private IFunction<X,Iterable<Y>> transformer;
 

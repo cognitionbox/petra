@@ -1,18 +1,18 @@
 package io.cognitionbox.petra.examples.tradingsystem.objects;
 
-import io.cognitionbox.petra.lang.Ref;
+import io.cognitionbox.petra.lang.RW;
 import io.cognitionbox.petra.util.impl.PList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static io.cognitionbox.petra.util.Petra.ref;
+import static io.cognitionbox.petra.util.Petra.rw;
 
 public class ExposureStore {
 
     static final Logger LOG = LoggerFactory.getLogger(ExposureStore.class);
 
     private PList<Double> exposures = new PList<>();
-    private Ref<Double> averageExposure = ref();
+    private RW<Double> averageExposure = rw();
 
     public void addExposure(Double exp){
         exposures.add(exp);
