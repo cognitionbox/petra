@@ -259,13 +259,13 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IPGraph<X>
             parIterableTransformerSteps.add(currentStep);
         }
         addParallizable(step);
-//        IPredicate<X> pre1 = x->!transformer.apply(x).isEmpty();
-//        IPredicate<X> post1 = x->false;
-//        kase(pre1,post1);
-//
-//        IPredicate<X> pre2 = x->transformer.apply(x).isEmpty();
-//        IPredicate<X> post2 = x->false;
-//        kase(pre2,post2);
+        IPredicate<X> pre1 = x->!transformer.apply(x).isEmpty();
+        IPredicate<X> post1 = x->false;
+        kase(pre1,post1);
+
+        IPredicate<X> pre2 = x->transformer.apply(x).isEmpty();
+        IPredicate<X> post2 = x->false;
+        kase(pre2,post2);
     }
     public <P> void step(IFunction<X,P> transformer, IStep<P> step){
         step(transformer,step,ExecMode.PAR);
@@ -326,17 +326,10 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IPGraph<X>
             boolean ok = true;
             Iterable<?> iterable = s.getTransformer().apply(getInput().getValue());
             for(Object o : iterable){
-                boolean kaseOk = true;
-                for (Object k : s.getStep().getKases()){
-                    if (!((Kase)k).evalP(o)){
-                        kaseOk = false;
-                        break;
-                    }
-                }
-                if (kaseOk){
-                    break;
-                } else {
+                s.getStep().setActiveKase(o);
+                if (!s.getStep().getActiveKase().evalP(o)){
                     ok = false;
+                    break;
                 }
             }
             iterable = s.getTransformer().apply(getInput().getValue());
@@ -384,17 +377,10 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IPGraph<X>
             boolean ok = true;
             Iterable<?> iterable = f.getTransformer().apply(getInput().getValue());
             for(Object o : iterable){
-                boolean kaseOk = true;
-                for (Object k : f.getStep().getKases()){
-                    if (!((Kase)k).evalP(o)){
-                        kaseOk = false;
-                        break;
-                    }
-                }
-                if (kaseOk){
-                    break;
-                } else {
+                f.getStep().setActiveKase(o);
+                if (!f.getStep().getActiveKase().evalP(o)){
                     ok = false;
+                    break;
                 }
             }
             iterable = f.getTransformer().apply(getInput().getValue());
@@ -771,9 +757,9 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IPGraph<X>
         if (this instanceof PGraph){
             copy = new PGraph(getPartitionKey());
             ((PGraph) copy).iterations(((PGraph) this).iterations());
-        } else if (this instanceof CGraph){
-            copy = new CGraph(getPartitionKey());
-            ((CGraph) copy).collection(((CGraph) this).collection());
+        } else if (this instanceof PCollectionGraph){
+            copy = new PCollectionGraph(getPartitionKey());
+            ((PCollectionGraph) copy).collection(((PCollectionGraph) this).collection());
         } else {
             copy = new RGraph(getPartitionKey());
         }

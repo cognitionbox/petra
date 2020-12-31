@@ -7,8 +7,9 @@ import static io.cognitionbox.petra.util.Petra.forAll;
 public class SeqGraph extends PGraph<X> {
     {
         type(X.class);
+        iterations(2);
         pre(x -> forAll(Y.class, x.ys(), y -> y.isAB()));
-        stepForall(x -> x.ys(), new SeqEdge());
         post(x -> forAll(Y.class, x.ys(), y -> y.isC()));
+        stepForall(x -> x.ys(), new SeqEdge());
     }
 }

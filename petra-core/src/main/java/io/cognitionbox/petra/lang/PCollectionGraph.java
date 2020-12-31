@@ -19,13 +19,14 @@ import io.cognitionbox.petra.exceptions.GraphException;
 import io.cognitionbox.petra.exceptions.conditions.PostConditionFailure;
 import io.cognitionbox.petra.lang.annotations.DoesNotTerminate;
 import io.cognitionbox.petra.util.function.IFunction;
+import io.cognitionbox.petra.util.function.IPredicate;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-public class CGraph<X extends PIterableCollection<Y>,Y> extends PGraph<X> {
+public class PCollectionGraph<X extends PIterableCollection<Y>,Y> extends PGraph<X> {
 
     public IFunction<X, Collection<Y>> collection() {
         return collection;
@@ -33,13 +34,20 @@ public class CGraph<X extends PIterableCollection<Y>,Y> extends PGraph<X> {
 
     private IFunction<X,Collection<Y>> collection;
 
-    public CGraph(){}
-    public CGraph(String partitionKey) {
+    public PCollectionGraph(){}
+    public PCollectionGraph(String partitionKey) {
         super(partitionKey);
     }
 
     final public void collection(IFunction<X,Collection<Y>> collection) {
          this.collection = collection;
+        IPredicate<X> pre1 = x->!collection.apply(x).isEmpty();
+        IPredicate<X> post1 = x->false;
+        kase(pre1,post1);
+
+        IPredicate<X> pre2 = x->collection.apply(x).isEmpty();
+        IPredicate<X> post2 = x->false;
+        kase(pre2,post2);
      }
 
     X executeMatchingLoopUntilPostCondition() {
