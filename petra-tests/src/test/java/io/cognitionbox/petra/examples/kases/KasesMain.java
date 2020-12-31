@@ -25,6 +25,7 @@ import io.cognitionbox.petra.examples.kases.steps.FooSum;
 import io.cognitionbox.petra.examples.kases.steps.FooSum2;
 import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -84,6 +85,7 @@ public class KasesMain extends BaseExecutionModesTest {
         System.out.println(output);
     }
 
+    @Ignore
     @Test
     public void test3() {
         PComputer.getConfig()

@@ -15,7 +15,7 @@
  */
 package io.cognitionbox.petra.guarantees.impl;
 
-import io.cognitionbox.petra.core.IGraph;
+import io.cognitionbox.petra.core.IPGraph;
 import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.core.impl.ReachabilityHelper;
 import io.cognitionbox.petra.guarantees.GraphCheck;
@@ -29,8 +29,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static java.util.stream.Collectors.toSet;
-
 public class GraphOutputCannotBeReachedFromInput implements GraphCheck {
 
     final Logger LOG = LoggerFactory.getLogger(GraphOutputCannotBeReachedFromInput.class);
@@ -41,7 +39,7 @@ public class GraphOutputCannotBeReachedFromInput implements GraphCheck {
         return type.getTypeClass().isAssignableFrom(state);
     }
 
-    private int isPostConditionReachable(IGraph<?> step, List<Guard<?>> list) throws PostConditionNotReachable {
+    private int isPostConditionReachable(IPGraph<?> step, List<Guard<?>> list) throws PostConditionNotReachable {
 
         Set<Class<?>> state = new CopyOnWriteArraySet<>();
 
@@ -143,7 +141,7 @@ public class GraphOutputCannotBeReachedFromInput implements GraphCheck {
     }
 
     @Override
-    public boolean test(IGraph<?> step) {
+    public boolean test(IPGraph<?> step) {
 
         try {
             //runAllChecksExceptForThoseNotCompatibleWithGraphsGeneratedByReachabilityCheck(new ArrayList<>(), step);
@@ -178,10 +176,10 @@ class DeadStepsExist extends RuntimeException {
 
 
 class PostConditionNotReachable extends Exception {
-    private IGraph PRestrictedGraph;
+    private IPGraph PRestrictedGraph;
     private Set<Class<?>> remainingStates;
 
-    PostConditionNotReachable(IGraph PRestrictedGraph, Set<Class<?>> remainingStates) {
+    PostConditionNotReachable(IPGraph PRestrictedGraph, Set<Class<?>> remainingStates) {
         this.PRestrictedGraph = PRestrictedGraph;
         this.remainingStates = remainingStates;
     }

@@ -109,11 +109,15 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
     }
 
     boolean setActiveKase(X value) {
+        activeKase = null;
         for (Kase k : kases){
             if (k.evalP(value)){
                 activeKase = k;
                 break;
             }
+        }
+        if (activeKase==null){
+            activeKase = new Kase<X>(this,type,x->false,x->false);
         }
         return true;
     }

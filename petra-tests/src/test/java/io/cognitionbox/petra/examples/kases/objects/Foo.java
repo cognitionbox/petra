@@ -1,12 +1,12 @@
 package io.cognitionbox.petra.examples.kases.objects;
 
-import io.cognitionbox.petra.lang.PIterable;
+import io.cognitionbox.petra.lang.PIterableCollection;
 import io.cognitionbox.petra.util.impl.PList;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-public class Foo implements PIterable<BigDecimal> {
+public class Foo implements PIterableCollection<BigDecimal> {
 
     private ABC abc = new ABCImpl();
 

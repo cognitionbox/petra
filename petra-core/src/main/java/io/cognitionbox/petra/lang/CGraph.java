@@ -18,36 +18,29 @@ package io.cognitionbox.petra.lang;
 import io.cognitionbox.petra.exceptions.GraphException;
 import io.cognitionbox.petra.exceptions.conditions.PostConditionFailure;
 import io.cognitionbox.petra.lang.annotations.DoesNotTerminate;
+import io.cognitionbox.petra.util.function.IFunction;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
-public class PGraph<X> extends RGraph<X, Object> {
-    public PGraph(String description) {
-        super(description);
+public class CGraph<X extends PIterableCollection<Y>,Y> extends PGraph<X> {
+
+    public IFunction<X, Collection<Y>> collection() {
+        return collection;
     }
 
-    public PGraph() {
+    private IFunction<X,Collection<Y>> collection;
+
+    public CGraph(){}
+    public CGraph(String partitionKey) {
+        super(partitionKey);
     }
 
-    private Integer iterations = 1;
-
-    @Deprecated
-    final public int iterations() {
-        return iterations;
-    }
-
-    @Deprecated
-    final public void iterations(int iterations) {
-        this.iterations = iterations;
-    }
-
-    private boolean infinite = false;
-
-    public void infinite() {
-        this.infinite = true;
-    }
+    final public void collection(IFunction<X,Collection<Y>> collection) {
+         this.collection = collection;
+     }
 
     X executeMatchingLoopUntilPostCondition() {
 
@@ -60,12 +53,13 @@ public class PGraph<X> extends RGraph<X, Object> {
             return out;
         }
 
-        if (this.iterations!=null){
+        if (this.collection!=null){
             // use in while loop to prevent termination.
-            while (infinite || currentIteration<=this.iterations) {
+            for (Y y : this.collection.apply(getInput().getValue())) {
                 if (iterationTimer!=null && !iterationTimer.periodHasPassed(LocalDateTime.now())){
                     continue;
                 }
+                this.getInput().getValue().setIterationValue(y);
                 iterationId.getAndIncrement();
                 currentIteration++;
                 try {

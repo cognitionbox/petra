@@ -17,7 +17,7 @@ package io.cognitionbox.petra.lang;
 
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.core.IEdgeDotLogger;
-import io.cognitionbox.petra.core.IGraph;
+import io.cognitionbox.petra.core.IPGraph;
 import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.core.engine.StepCallable;
 import io.cognitionbox.petra.core.engine.StepResult;
@@ -46,7 +46,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> {
+public class RGraph<X extends D,D> extends AbstractStep<X> implements IPGraph<X> {
 
     final static Logger LOG = LoggerFactory.getLogger(RGraph.class);
     List<StepCallable> callables = new ArrayList<>();
@@ -102,12 +102,12 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         boolean doesNotTerminate = getStepClazz().isAnnotationPresent(DoesNotTerminate.class);
         // use in while loop to prevent termination.
         while (this.getStepClazz().isAnnotationPresent(DoesNotTerminate.class) ||
-                ((finite?currentIteration<=0:true) && setActiveKase(getInput().getValue()) && !getActiveKase().q(getInput().getValue())) ) {
-            iterationId.getAndIncrement();
-            currentIteration++;
+                ((finite?currentIteration<=0:true) && setActiveKase(getInput().getValue() ))) {
             if (iterationTimer!=null && !iterationTimer.periodHasPassed(LocalDateTime.now())){
                 continue;
             }
+            iterationId.getAndIncrement();
+            currentIteration++;
             try {
                 Lg();
                 iteration();
@@ -119,6 +119,10 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
                 if (!this.loopInvariant.test(getInput().getValue())) {
                     return (X) new GraphException(this,(X) this.getInput().getValue(), null, Arrays.asList(new IllegalStateException("invariant broken.")));
                 }
+
+//                if (getActiveKase().q(getInput().getValue())){
+//                    break;
+//                }
 
                 // post con check for non terminating processes
                 if (this.getStepClazz().isAnnotationPresent(DoesNotTerminate.class) &&
@@ -242,10 +246,10 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 //        }
 //    }
 
-    public <P> void stepForall(IFunction<X,Iterable<P>> transformer, IStep<P> step){
+    public <P> void stepForall(IFunction<X,Collection<P>> transformer, IStep<P> step){
         stepForall(transformer,step,ExecMode.PAR);
     }
-    public <P> void stepForall(IFunction<X,Iterable<P>> transformer, IStep<P> step, ExecMode execMode){
+    public <P> void stepForall(IFunction<X,Collection<P>> transformer, IStep<P> step, ExecMode execMode){
         StateIterableTransformerStep currentStep = new StateIterableTransformerStep(transformer, (AbstractStep) step);
         stateIterableTransformerSteps.add((StateIterableTransformerStep) currentStep);
         //parIterableTransformerSteps.add((StateIterableTransformerStep) currentStep);
@@ -255,6 +259,13 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
             parIterableTransformerSteps.add(currentStep);
         }
         addParallizable(step);
+//        IPredicate<X> pre1 = x->!transformer.apply(x).isEmpty();
+//        IPredicate<X> post1 = x->false;
+//        kase(pre1,post1);
+//
+//        IPredicate<X> pre2 = x->transformer.apply(x).isEmpty();
+//        IPredicate<X> post2 = x->false;
+//        kase(pre2,post2);
     }
     public <P> void step(IFunction<X,P> transformer, IStep<P> step){
         step(transformer,step,ExecMode.PAR);
@@ -663,10 +674,6 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         sleep((long) (Math.random() * 10));
     }
 
-    public long getCurrentIteration() {
-        return currentIteration;
-    }
-
     public Long getMaxIterations() {
         return RGraphComputer.getConfig().isTestMode() ? getTestModeMaxIterations() : Long.MAX_VALUE;
     }
@@ -760,7 +767,16 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 
     public RGraph copy() {
         // we dont copy the id as we need a unique id based on the hashcode of the new instance
-        RGraph copy = new RGraph(getPartitionKey());
+        RGraph copy;
+        if (this instanceof PGraph){
+            copy = new PGraph(getPartitionKey());
+            ((PGraph) copy).iterations(((PGraph) this).iterations());
+        } else if (this instanceof CGraph){
+            copy = new CGraph(getPartitionKey());
+            ((CGraph) copy).collection(((CGraph) this).collection());
+        } else {
+            copy = new RGraph(getPartitionKey());
+        }
         copy.setClazz(getStepClazz());
         copy.setKases(getKases());
         copy.setInvariant(getInvariant());

@@ -16,7 +16,7 @@
 package io.cognitionbox.petra.guarantees.impl;
 
 import io.cognitionbox.petra.config.IPetraConfig;
-import io.cognitionbox.petra.core.IGraph;
+import io.cognitionbox.petra.core.IPGraph;
 import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.core.impl.StepError;
 import io.cognitionbox.petra.guarantees.Check;
@@ -25,7 +25,6 @@ import io.cognitionbox.petra.guarantees.GraphCheck;
 import io.cognitionbox.petra.guarantees.StepCheck;
 import io.cognitionbox.petra.lang.AbstractStep;
 import io.cognitionbox.petra.lang.PEdge;
-import io.cognitionbox.petra.lang.RGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,7 +88,7 @@ public class ConstructionGuarantees {
         for (Check c : checks){
             if ((c instanceof EdgeCheck && step instanceof PEdge) ||
                     (c instanceof StepCheck && step instanceof IStep) ||
-                    (c instanceof GraphCheck && step instanceof IGraph)){
+                    (c instanceof GraphCheck && step instanceof IPGraph)){
                 if (!c.test(step)){
                     stepErrors.add(new StepError(step,c.getClass().getSimpleName()));
                     if (c instanceof StepMustHaveValidPreAndPostCondition &&

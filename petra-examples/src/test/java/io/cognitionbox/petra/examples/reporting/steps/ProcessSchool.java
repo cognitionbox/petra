@@ -10,10 +10,10 @@ public class ProcessSchool extends PGraph<School> {
 
         type(School.class);
         pre(p->p.hasPupils() && (!p.allPupilsHaveAverage() ^ p.allPupilsHaveAverage()));
+        post(p->p.allPupilsHaveAverage());
         stepForall(s->s.getAllPupils(),
                 new ProcessExamResults());
         stepForall(s->s.getAllPupils(),
                 new SitExams());
-        post(p->p.allPupilsHaveAverage());
     }
 }

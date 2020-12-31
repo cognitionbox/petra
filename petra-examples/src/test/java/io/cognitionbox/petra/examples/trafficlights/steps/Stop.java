@@ -9,6 +9,7 @@ public class Stop extends PEdge<Lights> {
         pre(lights -> lights.isGreen());
         func(lights -> {
             lights.setRed(true);
+            lights.setGreen(false);
         });
         post(lights -> lights.isRed());
     }

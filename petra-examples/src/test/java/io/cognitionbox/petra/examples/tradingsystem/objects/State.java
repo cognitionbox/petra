@@ -75,6 +75,10 @@ public class State implements Serializable {
         return exposureNotNull() && exposureStore.getExposure()==200;
     }
 
+    public boolean exposureEq160() {
+        return exposureNotNull() && exposureStore.getExposure()==160;
+    }
+
     public DecisionsStore getDecisionStore() {
         return decisionsStore;
     }

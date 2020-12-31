@@ -16,11 +16,11 @@
 package io.cognitionbox.petra.guarantees.impl;
 
 import io.cognitionbox.petra.guarantees.GraphCheck;
-import io.cognitionbox.petra.core.IGraph;
+import io.cognitionbox.petra.core.IPGraph;
 
 public class GraphMustHaveAtLeastOneStepOrJoin implements GraphCheck {
         @Override
-        public boolean test(IGraph<?> graphSafe) {
+        public boolean test(IPGraph<?> graphSafe) {
             if (graphSafe.getNoOfSteps() > 0) {
                 return true;
             } else {
