@@ -5,6 +5,7 @@ import io.cognitionbox.petra.lang.PGraph;
 public class SeqGraph extends PGraph<X> {
     {
         type(X.class);
+        iterations(2);
         pre(x -> x.isAB());
         step(new SeqEdge());
         post(x -> x.isC());

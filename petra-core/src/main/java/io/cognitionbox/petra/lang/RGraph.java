@@ -259,13 +259,13 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IPGraph<X>
             parIterableTransformerSteps.add(currentStep);
         }
         addParallizable(step);
-        IPredicate<X> pre1 = x->!transformer.apply(x).isEmpty();
-        IPredicate<X> post1 = x->false;
-        kase(pre1,post1);
-
-        IPredicate<X> pre2 = x->transformer.apply(x).isEmpty();
-        IPredicate<X> post2 = x->false;
-        kase(pre2,post2);
+//        IPredicate<X> pre1 = x->!transformer.apply(x).isEmpty();
+//        IPredicate<X> post1 = x->false;
+//        defaultKase(pre1,post1);
+//
+//        IPredicate<X> pre2 = x->transformer.apply(x).isEmpty();
+//        IPredicate<X> post2 = x->false;
+//        defaultKase(pre2,post2);
     }
     public <P> void step(IFunction<X,P> transformer, IStep<P> step){
         step(transformer,step,ExecMode.PAR);

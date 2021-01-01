@@ -41,13 +41,13 @@ public class PCollectionGraph<X extends PIterableCollection<Y>,Y> extends PGraph
 
     final public void collection(IFunction<X,Collection<Y>> collection) {
          this.collection = collection;
-        IPredicate<X> pre1 = x->!collection.apply(x).isEmpty();
-        IPredicate<X> post1 = x->false;
-        kase(pre1,post1);
-
-        IPredicate<X> pre2 = x->collection.apply(x).isEmpty();
-        IPredicate<X> post2 = x->false;
-        kase(pre2,post2);
+//        IPredicate<X> pre1 = x->!collection.apply(x).isEmpty();
+//        IPredicate<X> post1 = x->false;
+//        defaultKase(pre1,post1);
+//
+//        IPredicate<X> pre2 = x->collection.apply(x).isEmpty();
+//        IPredicate<X> post2 = x->false;
+//        defaultKase(pre2,post2);
      }
 
     X executeMatchingLoopUntilPostCondition() {

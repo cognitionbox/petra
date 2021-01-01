@@ -18,10 +18,6 @@ public class Something2 {
         lookup.add(ro(1));
         lookup.add(ro(1));
         lookup.add(ro(1));
-        lookup.add(ro(1));
-        lookup.add(ro(1));
-        lookup.add(ro(2));
-        lookup.add(ro(2));
         lookup.add(ro(2));
         lookup.add(ro(2));
         lookup.add(ro(2));

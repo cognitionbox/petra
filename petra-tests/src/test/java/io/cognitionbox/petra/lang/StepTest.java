@@ -15,14 +15,15 @@
  */
 package io.cognitionbox.petra.lang;
 
+import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.core.IStep;
-import io.cognitionbox.petra.core.impl.*;
-import io.cognitionbox.petra.examples.kases.objects.Foo;
-import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
+import io.cognitionbox.petra.core.engine.petri.impl.Token;
+import io.cognitionbox.petra.core.impl.Identifyable;
+import io.cognitionbox.petra.core.impl.PGraphDotDiagramRendererImpl2;
 import io.cognitionbox.petra.exceptions.EdgeException;
 import io.cognitionbox.petra.exceptions.IterationsTimeoutException;
-import io.cognitionbox.petra.config.ExecMode;
-import io.cognitionbox.petra.core.engine.petri.impl.Token;
+import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
+import io.cognitionbox.petra.util.Petra;
 import org.javatuples.Pair;
 import org.junit.*;
 import org.junit.rules.TestName;
@@ -30,19 +31,17 @@ import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Method;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-
 import static java.util.stream.Collectors.toSet;
 import static junit.framework.TestCase.assertTrue;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeTrue;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public abstract class StepTest<X> extends BaseExecutionModesTest {
@@ -75,19 +74,25 @@ public abstract class StepTest<X> extends BaseExecutionModesTest {
         }
     }
 
-    private static volatile AbstractStep step = null;
-    public static volatile Set<Kase> kases = Collections.newSetFromMap(new ConcurrentHashMap<>());
-    public static volatile Set<Pair<AbstractStep,Integer>> ignoredkases = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    private volatile AbstractStep step = null;
+    public volatile Set<Kase> kases = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    public volatile Set<Pair<AbstractStep,Integer>> ignoredkases = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    public static volatile List<Kase> allKases = new ArrayList<>();
+
+    @BeforeClass
+    public static void beforeClass() {
+        allKases.clear();
+        Petra.getVariables().clear();
+    }
 
     @Before
     public void before(){
-        if (kases.isEmpty()){
-            step = stepSupplier().get();
-            Set<AbstractStep> steps = new HashSet<>();
-            collectSteps((PGraph<?>)step,steps);
-            kases = steps.stream().flatMap(s->(Stream<Kase>)s.getKases().stream()).collect(toSet());
-            ignoredkases = steps.stream().flatMap(s->(Stream<Pair<AbstractStep,Integer>>)s.getIgnoredKases().stream()).collect(toSet());
-        }
+        step = stepSupplier().get();
+        Set<AbstractStep> steps = new HashSet<>();
+        collectSteps((PGraph<?>)step,steps);
+        kases = steps.stream().flatMap(s->(Stream<Kase>)s.getKases().stream()).collect(toSet());
+        allKases.addAll(kases);
+        ignoredkases = steps.stream().flatMap(s->(Stream<Pair<AbstractStep,Integer>>)s.getIgnoredKases().stream()).collect(toSet());
         stepFixture = new StepFixture(step,getExecMode());
     }
 
@@ -233,6 +238,81 @@ public abstract class StepTest<X> extends BaseExecutionModesTest {
         dotToRender.values().stream().sorted(StepTest::comp).forEach(s->renderer.append(s,null));
         renderer.finish();
         System.out.println(renderer.getDotOutput());
+    }
+
+    @Test
+    public void zappedAllKases(){
+
+        List<Method> tests = new ArrayList<>();
+        for (Method m : this.getClass().getMethods()){
+            if (m.isAnnotationPresent(Test.class)){
+                tests.add(m);
+            }
+        }
+        if (!tests.stream().sorted(Comparator.comparing(Method::getName).reversed()).findFirst().get().getName().equals("zappedAllKases")){
+            throw new IllegalStateException("other method name exists which comes after zappedAllKases.");
+        }
+
+//        setInput(new Foo());
+//        setExpectation(x->true);
+
+        // .filter(k->k.getStep() instanceof PEdge)
+        long requiredToCover = kases.stream().filter(k->!ignoredkases.contains(Pair.with(k.getStep(),k.getId()))).count();
+
+        Set<Kase> requiredToCoverSet = kases.stream().filter(k->!ignoredkases.contains(Pair.with(k.getStep(),k.getId()))).collect(toSet());
+
+        // .filter(k->k.getStep() instanceof PEdge)
+        long covered = allKases.stream().filter(k->k.isCovered()).count();
+
+        Set<Kase> coveredSet = allKases.stream().filter(k->k.isCovered()).collect(toSet());
+
+        Set<Kase> notCoveredSet = allKases.stream().filter(k->!k.isCovered()).collect(toSet());
+
+        Set<Kase> diffSet = new HashSet<>(notCoveredSet);
+        diffSet.removeAll(coveredSet);
+
+        if (covered==0 || !coveredSet.equals(requiredToCoverSet)){
+            Set<RGraph> steps = kases.stream().filter(k->!(k.getStep() instanceof PEdge))
+                    .map(k->(RGraph)k.getStep())
+                    .collect(Collectors.toSet());
+            for (RGraph<?,?> s : steps){
+
+                diffSet.stream()
+                        .filter(k->s.getParallizable().stream().flatMap(stp->(Stream<Kase>)((AbstractStep)stp).getKases().stream()).collect(toSet()).contains(k) && !ignoredkases.contains(Pair.with(k.getStep(),k.getId())))
+                        .filter(k->!k.isCovered())
+                        .forEach(k->System.out.println(s.getStepClazz().getSimpleName()+" "+Pair.with(k.getStep().getStepClazz().getSimpleName(),k.getId())));
+
+//                s.getParallizable().stream()
+//                        .flatMap(stp->(Stream<Kase>)((AbstractStep)stp).getKases().stream())
+//                        .filter(k->!ignoredkases.contains(Pair.with(k.getStep(),k.getId())))
+//                        .filter(k->!k.isCovered())
+//                        .forEach(k->System.out.println(s.getStepClazz().getSimpleName()+" "+Pair.with(k.getStep().getStepClazz().getSimpleName(),k.getId())));
+            }
+            throw new IllegalStateException("not all kases covered.");
+        }
+        if (Petra.getVariables().size()!=0 &&
+                Petra.getVariables().stream().filter(v->!v.getId().contains("RESULT")).allMatch(v->{
+                    if ((v instanceof RO) && (v instanceof RW)){
+                        return ((RO<?>) v).isRead() && ((RW<?>) v).isWritten();
+                    } else if (v instanceof RO){
+                        return ((RO<?>) v).isRead();
+                    } else {
+                        return false;
+                    }
+                })){
+            // ok
+        } else {
+            Petra.getVariables().stream().filter(v->!v.getId().contains("RESULT")).filter(v->{
+                if ((v instanceof RO) && (v instanceof RW)){
+                    return !(((RO<?>) v).isRead() && ((RW<?>) v).isWritten());
+                } else if (v instanceof RO){
+                    return !((RO<?>) v).isRead();
+                } else {
+                    return false;
+                }
+            }).forEach(v->System.out.println(((v instanceof RW)?"RW":"RO")+" "+v.getId()));
+            throw new IllegalStateException("not all variables covered.");
+        }
     }
 
 }

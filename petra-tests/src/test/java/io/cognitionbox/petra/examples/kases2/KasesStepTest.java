@@ -22,17 +22,11 @@ import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.examples.kases2.objects.Foo;
 import io.cognitionbox.petra.examples.kases2.steps.FooSum2;
 import io.cognitionbox.petra.lang.*;
-import io.cognitionbox.petra.util.Petra;
-import org.javatuples.Pair;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.lang.reflect.Method;
-import java.util.*;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 @RunWith(Parameterized.class)
@@ -45,60 +39,6 @@ public class KasesStepTest extends StepTest<Foo> {
         return ()->new FooSum2();
     }
 
-    @Test
-    public void zappedAllKases(){
-
-        List<Method> tests = new ArrayList<>();
-        for (Method m : this.getClass().getDeclaredMethods()){
-            if (m.isAnnotationPresent(Test.class)){
-                tests.add(m);
-            }
-        }
-        if (!tests.stream().sorted(Comparator.comparing(Method::getName).reversed()).findFirst().get().getName().equals("zappedAllKases")){
-            throw new IllegalStateException("other method name exists which comes after zappedAllKases.");
-        }
-
-//        setInput(new Foo());
-//        setExpectation(x->true);
-        long requiredToCover = kases.stream().filter(k->k.getStep() instanceof PEdge).filter(k->!ignoredkases.contains(Pair.with(k.getStep(),k.getId()))).count();
-        long covered = kases.stream().filter(k->k.getStep() instanceof PEdge).filter(k->k.isCovered()).count();
-        if (kases.size()==0 || covered!=requiredToCover){
-            Set<RGraph> steps = kases.stream().filter(k->!(k.getStep() instanceof PEdge))
-                    .map(k->(RGraph)k.getStep())
-                    .collect(Collectors.toSet());
-            for (RGraph<?,?> s : steps){
-                s.getParallizable().stream()
-                        .flatMap(stp->(Stream<Kase>)((AbstractStep)stp).getKases().stream())
-                        .filter(k->!ignoredkases.contains(Pair.with(k.getStep(),k.getId())))
-                        .filter(k->!k.isCovered())
-                        .forEach(k->System.out.println(s.getStepClazz().getSimpleName()+" "+Pair.with(k.getStep().getStepClazz().getSimpleName(),k.getId())));
-            }
-            throw new IllegalStateException("not all kases covered.");
-        }
-        if (Petra.getVariables().size()!=0 &&
-                Petra.getVariables().stream().filter(v->!v.getId().contains("RESULT")).allMatch(v->{
-         if ((v instanceof RO) && (v instanceof RW)){
-             return ((RO<?>) v).isRead() && ((RW<?>) v).isWritten();
-         } else if (v instanceof RO){
-             return ((RO<?>) v).isRead();
-         } else {
-             return false;
-         }
-        })){
-            // ok
-        } else {
-            Petra.getVariables().stream().filter(v->!v.getId().contains("RESULT")).filter(v->{
-                if ((v instanceof RO) && (v instanceof RW)){
-                    return !(((RO<?>) v).isRead() && ((RW<?>) v).isWritten());
-                } else if (v instanceof RO){
-                    return !((RO<?>) v).isRead();
-                } else {
-                    return false;
-                }
-            }).forEach(v->System.out.println(((v instanceof RW)?"RW":"RO")+" "+v.getId()));
-            throw new IllegalStateException("not all variables covered.");
-        }
-    }
 
     @Test
     public void test1() {

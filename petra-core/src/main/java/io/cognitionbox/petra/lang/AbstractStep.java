@@ -108,6 +108,36 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
         return Optional.of(kases.get(0).p().getTypeClass());
     }
 
+//    // think this needs to set the active kases, ie there can be multiple active kases,
+//    // this will allow more specific kases to be added when extending
+//    boolean setActiveKase(X value) {
+//        activeKases.clear();
+//        for (IKase k : kases){
+//            if (k.evalP(value)){
+//                activeKases.addKase(k);
+//            }
+//        }
+//        return true;
+//    }
+//
+//    public MultiKase<X> getActiveKase() {
+//        return activeKases;
+//    }
+
+    private MultiKase<X> activeKases = new MultiKase<>();
+    private Kase<X> activeKase = null;
+
+//    boolean setActiveKase(X value) {
+//        for (int i=kases.size()-1;i>=0;i--){
+//            Kase k = kases.get(i);
+//            if (k.evalP(value)){
+//                activeKase = k;
+//                break;
+//            }
+//        }
+//        return true;
+//    }
+
     boolean setActiveKase(X value) {
         activeKase = null;
         for (Kase k : kases){
@@ -126,8 +156,6 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
         return activeKase;
     }
 
-    private Kase<X> activeKase;
-
     final AtomicInteger kaseId = new AtomicInteger();
 
     private List<Kase<X>> kases = new ArrayList<>();
@@ -139,6 +167,10 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
     public void kase(IPredicate<X> pre, IPredicate<X> post) {
         kases.add(new Kase<X>(this,type,pre,post));
     }
+
+//    public void defaultKase(IPredicate<X> pre, IPredicate<X> post) {
+//        kases.add(new Kase<X>(this,type,pre,post,true));
+//    }
 
     public Set<Pair<AbstractStep,Integer>> getIgnoredKases() {
         return ignoredKases;

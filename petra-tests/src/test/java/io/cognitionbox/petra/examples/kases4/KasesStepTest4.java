@@ -16,53 +16,46 @@
  * You should have received a copy of the GNU General Public License
  * along with Petra.  If not, see <https://www.gnu.org/licenses/>.
  */
-package io.cognitionbox.petra.examples.kases3;
+package io.cognitionbox.petra.examples.kases4;
 
 import io.cognitionbox.petra.config.ExecMode;
-import io.cognitionbox.petra.examples.kases3.objects.Something;
-import io.cognitionbox.petra.examples.kases3.steps.SomethingProcessor;
-import io.cognitionbox.petra.lang.*;
-import io.cognitionbox.petra.util.Petra;
-import org.javatuples.Pair;
-import org.junit.Ignore;
+import io.cognitionbox.petra.examples.kases4.objects.SystemState;
+import io.cognitionbox.petra.examples.kases4.steps.SystemGraph;
+import io.cognitionbox.petra.lang.AbstractStep;
+import io.cognitionbox.petra.lang.StepTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
 
 @RunWith(Parameterized.class)
-public class SomethingProcessorTest extends StepTest<Something> {
-    public SomethingProcessorTest(ExecMode execMode) {
+public class KasesStepTest4 extends StepTest<SystemState> {
+    public KasesStepTest4(ExecMode execMode) {
         super(execMode);
     }
 
-    protected Supplier<AbstractStep<Something>> stepSupplier(){
-        return ()->new SomethingProcessor();
+    protected Supplier<AbstractStep<SystemState>> stepSupplier(){
+        return ()->new SystemGraph();
     }
+
 
     @Test
     public void test1() {
-        setInput(new Something(1));
+        setInput(new SystemState(SystemState.State.A));
         setExpectation(x->true);
     }
 
     @Test
     public void test2() {
-        setInput(new Something(6));
+        setInput(new SystemState(SystemState.State.B));
         setExpectation(x->true);
     }
 
-//    @Test
-//    public void test3() {
-//        setInput(new Something(11));
-//        setExpectation(x->true);
-//    }
+    @Test
+    public void test3() {
+        setInput(new SystemState(SystemState.State.C));
+        setExpectation(x->true);
+    }
 }

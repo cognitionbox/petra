@@ -20,13 +20,14 @@ package io.cognitionbox.petra.examples.tradingsystem.steps;
 
 import io.cognitionbox.petra.examples.tradingsystem.objects.State;
 import io.cognitionbox.petra.examples.tradingsystem.objects.Trader;
+import io.cognitionbox.petra.lang.PGraph;
 
 import static io.cognitionbox.petra.util.Petra.*;
 
-public class TradingSystem extends io.cognitionbox.petra.lang.PGraph<State> {
+public class TradingSystem extends PGraph<State> {
     {
         type(State.class); // required to match State instances at runtime
-        iterations(5);
+        iterations(6);
         setSleepPeriod(1000); // sets the time period between iterations, its not actually a sleep now, the time is actually measured
         invariant(state->(((( forAll(Trader.class,state.traders(),trader->!trader.hasFeed() && trader.hasEqZeroDecisions()) ||
                 forAll(Trader.class,state.traders(),trader->trader.hasFeed() && trader.hasEqZeroDecisions())) ||

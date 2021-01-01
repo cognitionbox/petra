@@ -62,7 +62,7 @@ public class PGraph<X> extends RGraph<X, Object> {
 
         if (this.iterations!=null){
             // use in while loop to prevent termination.
-            while (infinite || currentIteration<=this.iterations) {
+            while (infinite || currentIteration<this.iterations) {
                 if (iterationTimer!=null && !iterationTimer.periodHasPassed(LocalDateTime.now())){
                     continue;
                 }
