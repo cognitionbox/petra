@@ -18,6 +18,8 @@ package io.cognitionbox.petra.lang;
 import java.io.Serializable;
 
 public interface V<T> extends Serializable {
+  String getVariableNumberStepName();
   T get();
   String getId();
+  String getStepName();
 }

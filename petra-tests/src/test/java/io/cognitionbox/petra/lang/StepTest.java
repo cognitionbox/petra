@@ -18,12 +18,14 @@ package io.cognitionbox.petra.lang;
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.core.engine.petri.impl.Token;
+import io.cognitionbox.petra.core.impl.AbstractRO;
 import io.cognitionbox.petra.core.impl.Identifyable;
 import io.cognitionbox.petra.core.impl.PGraphDotDiagramRendererImpl2;
 import io.cognitionbox.petra.exceptions.EdgeException;
 import io.cognitionbox.petra.exceptions.IterationsTimeoutException;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import io.cognitionbox.petra.util.Petra;
+import io.cognitionbox.petra.util.function.IPredicate;
 import org.javatuples.Pair;
 import org.junit.*;
 import org.junit.rules.TestName;
@@ -34,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -87,6 +90,7 @@ public abstract class StepTest<X> extends BaseExecutionModesTest {
 
     @Before
     public void before(){
+        AbstractRO.atomicIntegerMap.clear();
         step = stepSupplier().get();
         Set<AbstractStep> steps = new HashSet<>();
         collectSteps((PGraph<?>)step,steps);
@@ -290,29 +294,32 @@ public abstract class StepTest<X> extends BaseExecutionModesTest {
             }
             throw new IllegalStateException("not all kases covered.");
         }
-        if (Petra.getVariables().size()!=0 &&
-                Petra.getVariables().stream().filter(v->!v.getId().contains("RESULT")).allMatch(v->{
-                    if ((v instanceof RO) && (v instanceof RW)){
-                        return ((RO<?>) v).isRead() && ((RW<?>) v).isWritten();
-                    } else if (v instanceof RO){
-                        return ((RO<?>) v).isRead();
-                    } else {
-                        return false;
-                    }
-                })){
+        IPredicate<V> coveredPred = v->{
+            if ((v instanceof RO) && (v instanceof RW)){
+                return (((RO<?>) v).isRead() && ((RW<?>) v).isWritten());
+            } else if (v instanceof RO){
+                return ((RO<?>) v).isRead();
+            } else {
+                return false;
+            }
+        };
+        List<V> coveredList = Petra.getVariables().stream().filter(coveredPred).filter(v->!v.getId().contains("RESULT")).collect(Collectors.toList());
+        List<V> notCoveredList = Petra.getVariables().stream().filter(coveredPred.negate()).filter(v->!v.getId().contains("RESULT")).collect(Collectors.toList());
+
+        Set<String> diffList = notCoveredList.stream().map(v->v.getVariableNumberStepName()).collect(toSet());
+        diffList.removeAll(coveredList.stream().map(v->v.getVariableNumberStepName()).collect(toSet()));
+
+        if (diffList.isEmpty()){
             // ok
         } else {
-            Petra.getVariables().stream().filter(v->!v.getId().contains("RESULT")).filter(v->{
-                if ((v instanceof RO) && (v instanceof RW)){
-                    return !(((RO<?>) v).isRead() && ((RW<?>) v).isWritten());
-                } else if (v instanceof RO){
-                    return !((RO<?>) v).isRead();
-                } else {
-                    return false;
-                }
-            }).forEach(v->System.out.println(((v instanceof RW)?"RW":"RO")+" "+v.getId()));
+            diffList.stream().forEach(v->System.out.println(v));
             throw new IllegalStateException("not all variables covered.");
         }
+    }
+
+    public static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+        Set<Object> seen = ConcurrentHashMap.newKeySet();
+        return t -> seen.add(keyExtractor.apply(t));
     }
 
 }

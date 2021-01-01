@@ -107,13 +107,13 @@ public class PetraHazelcastComponentsFactory implements IPetraComponentsFactory 
     }
 
     @Override
-    public <T> RW<T> createRW(T value, String name) {
-        return new HazelcastAtomicReferenceWrapperRW(value, name);
+    public <T> RW<T> createRW(T value, String stepName, String id) {
+        return new HazelcastAtomicReferenceWrapperRW(value, stepName, id);
     }
 
     @Override
-    public <T> RO<T> createRO(T value, String name) {
-        return new HazelcastAtomicReferenceWrapperRO(value, name);
+    public <T> RO<T> createRO(T value, String stepName, String id) {
+        return new HazelcastAtomicReferenceWrapperRO(value, stepName, id);
     }
 
 }

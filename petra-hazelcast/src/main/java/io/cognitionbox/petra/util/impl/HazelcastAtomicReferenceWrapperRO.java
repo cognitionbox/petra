@@ -47,8 +47,8 @@ public class HazelcastAtomicReferenceWrapperRO<T> extends AbstractRO<T> {
               .getHazelcastClient().getAtomicReference(this.id);
     }
 
-    public HazelcastAtomicReferenceWrapperRO(T value, String id) {
-        super(id);
+    public HazelcastAtomicReferenceWrapperRO(T value, String stepName, String id) {
+        super(stepName,id);
         atomicReference = ((IPetraHazelcastConfig) RGraphComputer.getConfig())
               .getHazelcastClient().getAtomicReference(this.id);
         atomicReference.set(value);

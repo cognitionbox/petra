@@ -74,10 +74,16 @@ public class SomethingProcessorWithVarCovTest extends StepTest<Something2> {
         setExpectation(x->true);
     }
 
-
-    @Ignore
     @Test
-    public void zappedAllKases(){
-        // tmp to ignore it for the moment until fix to variable coverage is made
+    public void test5() {
+        setInput(new Something2(4));
+        setExpectation(x->true);
     }
+
+    @Test
+    public void test6() {
+        setInput(new Something2(2));
+        setExpectation(x->true);
+    }
+
 }

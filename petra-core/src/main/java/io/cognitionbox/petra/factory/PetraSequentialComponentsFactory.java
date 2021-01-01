@@ -203,12 +203,12 @@ public class PetraSequentialComponentsFactory implements IPetraComponentsFactory
   }
 
   @Override
-  public <T> RW<T> createRW(T value, String name) {
-    return new AtomicReferenceRW(value,name);
+  public <T> RW<T> createRW(T value, String stepName, String id) {
+    return new AtomicReferenceRW(value,stepName,id);
   }
 
     @Override
-    public <T> RO<T> createRO(T value, String name) {
-        return new AtomicReferenceRO(value,name);
+    public <T> RO<T> createRO(T value, String stepName, String id) {
+        return new AtomicReferenceRO(value,stepName,id);
     }
 }

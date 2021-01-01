@@ -16,26 +16,52 @@
 package io.cognitionbox.petra.core.impl;
 
 import io.cognitionbox.petra.lang.RO;
+import io.cognitionbox.petra.lang.RW;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AbstractRO<T> implements RO<T> {
+
+    public final static Map<String, AtomicInteger> atomicIntegerMap = new ConcurrentHashMap<>();
+
+    private final int variableNumber;
+
+    public String getVariableNumberStepName(){
+        return getStepName()+"_"+((this instanceof RW)?"RW":"RO")+"_#"+variableNumber;
+    }
 
     @Override
     public String getId() {
         return id;
     }
 
+    protected final String stepName;
+
+    @Override
+    public String getStepName() {
+        return stepName;
+    }
+
     protected final String id;
 
     protected final AtomicBoolean isRead = new AtomicBoolean(false);
 
-    protected AbstractRO(String id) {
+    protected AbstractRO(String stepName, String id) {
+
+        AtomicInteger value = atomicIntegerMap.get(stepName);
+        if (value==null){
+            atomicIntegerMap.put(stepName,new AtomicInteger(0));
+        }
+        this.variableNumber = atomicIntegerMap.get(stepName).incrementAndGet();
+        this.stepName = stepName;
         this.id = id;
     }
 
-    protected AbstractRO() {
-        this("");
+    protected AbstractRO(String stepName) {
+        this(stepName,"");
     }
 
     public boolean isRead(){

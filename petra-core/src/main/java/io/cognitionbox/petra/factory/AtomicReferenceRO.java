@@ -15,13 +15,13 @@ public class AtomicReferenceRO<T> extends AbstractRO<T> {
                     '}';
         }
 
-        public AtomicReferenceRO(T value, String id){
-            super(id);
+        public AtomicReferenceRO(T value, String stepName, String id){
+            super(stepName,id);
             atomicReference = new AtomicReference(value);
         }
 
-        public AtomicReferenceRO(T value){
-            this(value,"");
+        public AtomicReferenceRO(T value, String stepName){
+            this(value,stepName,"");
         }
 
         @Override

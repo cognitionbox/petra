@@ -48,9 +48,9 @@ public interface IPetraComponentsFactory extends Serializable {
 
   Place createPlace(String name);
 
-  <T> RW<T> createRW(T value, String name);
+  <T> RW<T> createRW(T value, String stepName, String id);
 
-  <T> RO<T> createRO(T value, String name);
+  <T> RO<T> createRO(T value, String stepName, String id);
 
   <T> Stream<T> createStreamFromList(List<T> list);
 

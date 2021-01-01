@@ -32,8 +32,8 @@ public class HazelcastAtomicReferenceWrapperRW<T> extends HazelcastAtomicReferen
         return isWritten.get();
     }
 
-    public HazelcastAtomicReferenceWrapperRW(T value, String name) {
-        super(value, name);
+    public HazelcastAtomicReferenceWrapperRW(T value, String stepName, String name) {
+        super(value, stepName, name);
     }
 
     @Override
