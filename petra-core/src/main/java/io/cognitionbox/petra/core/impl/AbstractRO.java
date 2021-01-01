@@ -55,7 +55,7 @@ public abstract class AbstractRO<T> implements RO<T> {
         if (value==null){
             atomicIntegerMap.put(stepName,new AtomicInteger(0));
         }
-        this.variableNumber = atomicIntegerMap.get(stepName).incrementAndGet();
+        this.variableNumber = atomicIntegerMap.get(stepName).getAndIncrement();
         this.stepName = stepName;
         this.id = id;
     }
