@@ -16,53 +16,51 @@
  * You should have received a copy of the GNU General Public License
  * along with Petra.  If not, see <https://www.gnu.org/licenses/>.
  */
-package io.cognitionbox.petra.examples.kases3;
+package io.cognitionbox.petra.examples.hawkeye.steps.hawkeye3;
 
 import io.cognitionbox.petra.config.ExecMode;
-import io.cognitionbox.petra.examples.kases3.objects.Something;
-import io.cognitionbox.petra.examples.kases3.steps.SomethingProcessor;
-import io.cognitionbox.petra.lang.*;
-import io.cognitionbox.petra.util.Petra;
-import org.javatuples.Pair;
-import org.junit.Ignore;
+import io.cognitionbox.petra.examples.hawkeye.objects.X;
+import io.cognitionbox.petra.examples.hawkeye.steps.hawkeye3.HawkeyeGraph3;
+import io.cognitionbox.petra.lang.AbstractStep;
+import io.cognitionbox.petra.lang.StepTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RunWith(Parameterized.class)
-public class SomethingProcessorTest extends StepTest<Something> {
-    public SomethingProcessorTest(ExecMode execMode) {
+public class HawkeyeTest3 extends StepTest<X> {
+    public HawkeyeTest3(ExecMode execMode) {
         super(execMode);
     }
 
-    protected Supplier<AbstractStep<Something>> stepSupplier(){
-        return ()->new SomethingProcessor();
+    protected Supplier<AbstractStep<X>> stepSupplier(){
+        return ()->new HawkeyeGraph3();
     }
 
     @Test
     public void test1() {
-        setInput(new Something(1));
-        setExpectation(x->true);
+        setInput(new X(1));
+        setExpectation(i->true);
     }
 
     @Test
     public void test2() {
-        setInput(new Something(6));
-        setExpectation(x->true);
+        setInput(new X(4));
+        setExpectation(i->true);
     }
 
-//    @Test
-//    public void test3() {
-//        setInput(new Something(11));
-//        setExpectation(i->true);
-//    }
+    @Test
+    public void test3() {
+        setInput(new X(2));
+        setExpectation(i->true);
+    }
+
+    @Test
+    public void test4() {
+        setInput(new X(8));
+        setExpectation(i->true);
+    }
+
 }

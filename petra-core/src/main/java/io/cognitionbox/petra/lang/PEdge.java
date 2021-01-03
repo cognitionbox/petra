@@ -100,7 +100,13 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
                         throwRandomException(throwsRandomly);
                     }
                     Thread.currentThread().setName(getStepClazz().getCanonicalName());
-                    function.accept(input);
+                    if (this instanceof PCollectionEdge){
+                        ((PCollectionEdge<X,?>)this).collection().apply(input).forEach(y->{
+                            ((PCollectionEdge)this).biConsumer.accept(input,y);
+                        });
+                    } else if (this instanceof PEdge){
+                        this.function.accept(input);
+                    }
                     return input;
                 } catch (Throwable e){
                     throwableRef.set(e);
@@ -133,7 +139,14 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
 
     public PEdge copy() {
         // we dont copy the id as we need a unique id based on the hashcode of the new instance
-        PEdge PEdge = new PEdge(getPartitionKey());
+        PEdge PEdge;
+        if (this instanceof PCollectionEdge){
+            PEdge = new PCollectionEdge(getPartitionKey());
+            ((PCollectionEdge) PEdge).collection(((PCollectionEdge) this).collection());
+            ((PCollectionEdge) PEdge).func(((PCollectionEdge) this).getBiConsumer());
+        } else {
+            PEdge = new PEdge(getPartitionKey());
+        }
         PEdge.type(type);
         PEdge.setKases(getKases());
         PEdge.setClazz(getStepClazz());

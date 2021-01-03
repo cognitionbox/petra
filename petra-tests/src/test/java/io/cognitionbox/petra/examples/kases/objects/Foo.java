@@ -1,12 +1,11 @@
 package io.cognitionbox.petra.examples.kases.objects;
 
-import io.cognitionbox.petra.lang.PIterableCollection;
 import io.cognitionbox.petra.util.impl.PList;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-public class Foo implements PIterableCollection<BigDecimal> {
+public class Foo {
 
     private ABC abc = new ABCImpl();
 
@@ -43,15 +42,7 @@ public class Foo implements PIterableCollection<BigDecimal> {
     }
 
     BigDecimal r = null;
-    @Override
-    public BigDecimal iterationValue() {
-        return r;
-    }
 
-    @Override
-    public void setIterationValue(BigDecimal value) {
-        this.r = value;
-    }
     //    private Set<R> RSet = new PSet<>();
 //    private Map<String,R> RMap = new PMap<>();
 //

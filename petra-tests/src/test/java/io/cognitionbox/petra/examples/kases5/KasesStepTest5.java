@@ -16,53 +16,51 @@
  * You should have received a copy of the GNU General Public License
  * along with Petra.  If not, see <https://www.gnu.org/licenses/>.
  */
-package io.cognitionbox.petra.examples.kases3;
+package io.cognitionbox.petra.examples.kases5;
 
 import io.cognitionbox.petra.config.ExecMode;
-import io.cognitionbox.petra.examples.kases3.objects.Something;
-import io.cognitionbox.petra.examples.kases3.steps.SomethingProcessor;
-import io.cognitionbox.petra.lang.*;
-import io.cognitionbox.petra.util.Petra;
-import org.javatuples.Pair;
-import org.junit.Ignore;
+import io.cognitionbox.petra.examples.kases.objects.Foo;
+import io.cognitionbox.petra.examples.kases.steps.FooSum;
+import io.cognitionbox.petra.examples.kases5.objects.SystemState;
+import io.cognitionbox.petra.examples.kases5.steps.SystemGraph;
+import io.cognitionbox.petra.lang.AbstractStep;
+import io.cognitionbox.petra.lang.PComputer;
+import io.cognitionbox.petra.lang.StepTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
 
 @RunWith(Parameterized.class)
-public class SomethingProcessorTest extends StepTest<Something> {
-    public SomethingProcessorTest(ExecMode execMode) {
+public class KasesStepTest5 extends StepTest<Foo> {
+    public KasesStepTest5(ExecMode execMode) {
         super(execMode);
     }
 
-    protected Supplier<AbstractStep<Something>> stepSupplier(){
-        return ()->new SomethingProcessor();
+    protected Supplier<AbstractStep<Foo>> stepSupplier(){
+        return ()->new FooSum();
     }
 
+
     @Test
-    public void test1() {
-        setInput(new Something(1));
+    public void test() {
+        Foo foo = new Foo();
+        foo.setRList(Arrays.asList(new BigDecimal(1),new BigDecimal(2),new BigDecimal(3)));
+
+        setInput(foo);
         setExpectation(x->true);
     }
 
     @Test
     public void test2() {
-        setInput(new Something(6));
+        Foo foo = new Foo();
+        foo.setRList(Arrays.asList(new BigDecimal(1)));
+
+        setInput(foo);
         setExpectation(x->true);
     }
-
-//    @Test
-//    public void test3() {
-//        setInput(new Something(11));
-//        setExpectation(i->true);
-//    }
 }

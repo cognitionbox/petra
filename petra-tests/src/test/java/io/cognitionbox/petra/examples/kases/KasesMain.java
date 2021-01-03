@@ -68,22 +68,22 @@ public class KasesMain extends BaseExecutionModesTest {
        System.out.println(output);
     }
 
-    @Test
-    public void test2() {
-        PComputer.getConfig()
-                .enableStatesLogging()
-                .setMode(ExecMode.PAR)
-                .setConstructionGuaranteeChecks(false)
-                .setStrictModeExtraConstructionGuarantee(false);
-
-        PComputer<Foo> lc = new PComputer();
-
-        Foo foo = new Foo();
-        foo.setRList(Arrays.asList());
-
-        Foo output = lc.eval(new FooSum(), foo);
-        System.out.println(output);
-    }
+//    @Test
+//    public void test2() {
+//        PComputer.getConfig()
+//                .enableStatesLogging()
+//                .setMode(ExecMode.PAR)
+//                .setConstructionGuaranteeChecks(false)
+//                .setStrictModeExtraConstructionGuarantee(false);
+//
+//        PComputer<Foo> lc = new PComputer();
+//
+//        Foo foo = new Foo();
+//        foo.setRList(Arrays.asList());
+//
+//        Foo output = lc.eval(new FooSum(), foo);
+//        System.out.println(output);
+//    }
 
     @Ignore
     @Test

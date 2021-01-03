@@ -7,10 +7,10 @@ import java.math.BigDecimal;
 
 import static io.cognitionbox.petra.lang.math.BigDecimalUtils.*;
 
-public class BigMult<T extends IBigDecimalOp> extends PEdge<T> {
+public class BigMult<T extends Nullary> extends PEdge<T> {
     public BigMult(IFunction<T,BigDecimal> value)
     {
-        type((Class<T>) IBigDecimalOp.class);
+        type((Class<T>) Nullary.class);
         kase(x -> isPos(x.result()) && isNeg(value.apply(x)), x -> isPos(x.result()));
         kase(x -> isPos(x.result()) && isPos(value.apply(x)), x -> isPos(x.result()));
         kase(x -> isPos(x.result()) && isNeg(value.apply(x)), x -> isNeg(x.result()));

@@ -33,6 +33,7 @@ import io.cognitionbox.petra.lang.annotations.Extract;
 import io.cognitionbox.petra.util.Petra;
 import io.cognitionbox.petra.util.function.*;
 import io.cognitionbox.petra.util.impl.PList;
+import org.javatuples.Pair;
 import org.javatuples.Triplet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,6 +96,22 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IPGraph<X>
         this.finite = true;
     }
 
+    private Integer iterations = 1;
+
+    @Deprecated
+    final public int iterations() {
+        return iterations;
+    }
+
+    @Deprecated
+    final public void iterations(int iterations) {
+        this.iterations = iterations;
+    }
+
+    private boolean setLoopActiveKase(X value){
+        return setActiveKase(value);
+    }
+
     X executeMatchingLoopUntilPostCondition() {
         currentIteration = 0;
         X out = null;
@@ -102,12 +119,11 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IPGraph<X>
         boolean doesNotTerminate = getStepClazz().isAnnotationPresent(DoesNotTerminate.class);
         // use in while loop to prevent termination.
         while (this.getStepClazz().isAnnotationPresent(DoesNotTerminate.class) ||
-                ((finite?currentIteration<=0:true) && setActiveKase(getInput().getValue() ))) {
+                ((currentIteration<this.iterations)) ) {
             if (iterationTimer!=null && !iterationTimer.periodHasPassed(LocalDateTime.now())){
                 continue;
             }
-            iterationId.getAndIncrement();
-            currentIteration++;
+            this.setLoopActiveKase(getInput().getValue());
             try {
                 Lg();
                 iteration();
@@ -129,6 +145,8 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IPGraph<X>
                         !getActiveKase().q(getInput().getValue())) {
                     return (X) new GraphException(this,(X) this.getInput().getValue(), null, Arrays.asList(new IllegalStateException("cycle not correct.")));
                 }
+                iterationId.getAndIncrement();
+                currentIteration++;
             } catch (Exception e){
                 e.printStackTrace();
             }
@@ -246,6 +264,43 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IPGraph<X>
 //        }
 //    }
 
+    // this will be used instead of the PCollectionGraph
+    public <P> void stepForall(IFunction<X,Collection<P>> transformer, IBiConsumer<X,P> step){//}, Kase<X>... kases){
+//        for (Kase k : kases){
+//            kase(k.p(),k.q());
+//        }
+
+        // need to be overriden
+
+        IPredicate<X> pre1 = x->transformer.apply(x).size()==1;
+        IPredicate<X> post1 = x->false;
+        kase(pre1,post1);
+
+        IPredicate<X> pre2 = x->transformer.apply(x).size()>1;
+        IPredicate<X> post2 = x->false;
+        kase(pre2,post2);
+
+        // should only affect X and not Collection<P> elements.
+        // need to defer this computation to the point when the other similar comps happen
+        transformer.apply(getInput().getValue()).forEach(p->step.accept(getInput().getValue(),p));
+    }
+
+    // this will be used instead of the PCollectionGraph, it operates on X but requires kases for specified collection
+    public <P> void stepForall(IFunction<X,Collection<P>> transformer, IStep<Pair<X,Collection<P>>> step, IPredicate<X> postCondition, ExecMode execMode){
+
+        // needs to execute only when more than zero elements in the collection
+        step(x->Pair.with(x,transformer.apply(x)),step,execMode);
+
+        // ensures more the kases for 1 and >1 are the same.
+
+        IPredicate<X> pre1 = x->transformer.apply(x).size()==1;
+        IPredicate<X> post1 = postCondition; // x->false
+        kase(pre1,post1);
+
+        IPredicate<X> pre2 = x->transformer.apply(x).size()>1;
+        IPredicate<X> post2 = postCondition; // x->false
+        kase(pre2,post2);
+    }
     public <P> void stepForall(IFunction<X,Collection<P>> transformer, IStep<P> step){
         stepForall(transformer,step,ExecMode.PAR);
     }
@@ -300,11 +355,14 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IPGraph<X>
                     }
                     deconstruct(sr.getOutputValue());
                     //putState(f.get().getOutputValue());
+
+                    break;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+        Collections.rotate(seqTransformerSteps,1);
     }
     private void prepareParSteps(){
         for (StateTransformerStep<X,?> f : parTransformerSteps){
@@ -369,8 +427,10 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IPGraph<X>
                 } catch (Throwable e){
 
                 }
+                break;
             }
         }
+        Collections.rotate(seqIterableTransformerSteps,1);
     }
     private void prepareParStepForalls(){
         for (StateIterableTransformerStep<X,?> f : parIterableTransformerSteps){
@@ -757,12 +817,10 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IPGraph<X>
         if (this instanceof PGraph){
             copy = new PGraph(getPartitionKey());
             ((PGraph) copy).iterations(((PGraph) this).iterations());
-        } else if (this instanceof PCollectionGraph){
-            copy = new PCollectionGraph(getPartitionKey());
-            ((PCollectionGraph) copy).collection(((PCollectionGraph) this).collection());
         } else {
             copy = new RGraph(getPartitionKey());
         }
+        copy.type(type);
         copy.setClazz(getStepClazz());
         copy.setKases(getKases());
         copy.setInvariant(getInvariant());

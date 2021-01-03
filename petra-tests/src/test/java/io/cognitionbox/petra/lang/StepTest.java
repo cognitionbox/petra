@@ -79,7 +79,7 @@ public abstract class StepTest<X> extends BaseExecutionModesTest {
 
     private volatile AbstractStep step = null;
     public volatile Set<Kase> kases = Collections.newSetFromMap(new ConcurrentHashMap<>());
-    public volatile Set<Pair<AbstractStep,Integer>> ignoredkases = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    public volatile Set<Pair<Class<? extends IStep>,Integer>> ignoredkases = Collections.newSetFromMap(new ConcurrentHashMap<>());
     public static volatile List<Kase> allKases = new ArrayList<>();
 
     @BeforeClass
@@ -96,7 +96,7 @@ public abstract class StepTest<X> extends BaseExecutionModesTest {
         collectSteps((PGraph<?>)step,steps);
         kases = steps.stream().flatMap(s->(Stream<Kase>)s.getKases().stream()).collect(toSet());
         allKases.addAll(kases);
-        ignoredkases = steps.stream().flatMap(s->(Stream<Pair<AbstractStep,Integer>>)s.getIgnoredKases().stream()).collect(toSet());
+        ignoredkases = steps.stream().flatMap(s->(Stream<Pair<Class<? extends IStep>,Integer>>)s.getIgnoredKases().stream()).collect(toSet());
         stepFixture = new StepFixture(step,getExecMode());
     }
 
@@ -258,12 +258,12 @@ public abstract class StepTest<X> extends BaseExecutionModesTest {
         }
 
 //        setInput(new Foo());
-//        setExpectation(x->true);
+//        setExpectation(i->true);
 
         // .filter(k->k.getStep() instanceof PEdge)
-        long requiredToCover = kases.stream().filter(k->!ignoredkases.contains(Pair.with(k.getStep(),k.getId()))).count();
+        long requiredToCover = kases.stream().filter(k->!ignoredkases.contains(Pair.with(k.getStep().getStepClazz(),k.getId()))).count();
 
-        Set<Kase> requiredToCoverSet = kases.stream().filter(k->!ignoredkases.contains(Pair.with(k.getStep(),k.getId()))).collect(toSet());
+        Set<Kase> requiredToCoverSet = kases.stream().filter(k->!ignoredkases.contains(Pair.with(k.getStep().getStepClazz(),k.getId()))).collect(toSet());
 
         // .filter(k->k.getStep() instanceof PEdge)
         long covered = allKases.stream().filter(k->k.isCovered()).count();
@@ -279,12 +279,15 @@ public abstract class StepTest<X> extends BaseExecutionModesTest {
             Set<RGraph> steps = kases.stream().filter(k->!(k.getStep() instanceof PEdge))
                     .map(k->(RGraph)k.getStep())
                     .collect(Collectors.toSet());
+
+            Set<Kase> finalSet = new HashSet<>();
             for (RGraph<?,?> s : steps){
 
-                diffSet.stream()
-                        .filter(k->s.getParallizable().stream().flatMap(stp->(Stream<Kase>)((AbstractStep)stp).getKases().stream()).collect(toSet()).contains(k) && !ignoredkases.contains(Pair.with(k.getStep(),k.getId())))
+                finalSet.addAll(diffSet.stream()
+                        .filter(k->s.getParallizable().stream().flatMap(stp->(Stream<Kase>)((AbstractStep)stp).getKases().stream()).collect(toSet()).contains(k) && !ignoredkases.contains(Pair.with(k.getStep().getStepClazz(),k.getId())))
                         .filter(k->!k.isCovered())
-                        .forEach(k->System.out.println(s.getStepClazz().getSimpleName()+" "+Pair.with(k.getStep().getStepClazz().getSimpleName(),k.getId())));
+                        .peek(k->System.out.println(s.getStepClazz().getSimpleName()+" "+Pair.with(k.getStep().getStepClazz().getSimpleName(),k.getId())))
+                        .collect(toSet()));
 
 //                s.getParallizable().stream()
 //                        .flatMap(stp->(Stream<Kase>)((AbstractStep)stp).getKases().stream())
@@ -292,7 +295,10 @@ public abstract class StepTest<X> extends BaseExecutionModesTest {
 //                        .filter(k->!k.isCovered())
 //                        .forEach(k->System.out.println(s.getStepClazz().getSimpleName()+" "+Pair.with(k.getStep().getStepClazz().getSimpleName(),k.getId())));
             }
-            throw new IllegalStateException("not all kases covered.");
+
+            if (!finalSet.isEmpty()){
+                throw new IllegalStateException("not all kases covered.");
+            }
         }
         IPredicate<V> coveredPred = v->{
             if ((v instanceof RO) && (v instanceof RW)){

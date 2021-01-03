@@ -125,6 +125,8 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
 //    }
 
     private MultiKase<X> activeKases = new MultiKase<>();
+
+    private Kase<X> lastActiveKase = null;
     private Kase<X> activeKase = null;
 
 //    boolean setActiveKase(X value) {
@@ -142,8 +144,11 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
         activeKase = null;
         for (Kase k : kases){
             if (k.evalP(value)){
-                activeKase = k;
-                break;
+                //if (k!=lastActiveKase){
+                    activeKase = k;
+                    lastActiveKase = k;
+                    break;
+                //}
             }
         }
         if (activeKase==null){
@@ -172,13 +177,13 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
 //        kases.add(new Kase<X>(this,type,pre,post,true));
 //    }
 
-    public Set<Pair<AbstractStep,Integer>> getIgnoredKases() {
+    public Set<Pair<Class<? extends IStep>,Integer>> getIgnoredKases() {
         return ignoredKases;
     }
 
-    private Set<Pair<AbstractStep,Integer>> ignoredKases = new HashSet<>();
+    private Set<Pair<Class<? extends IStep>,Integer>> ignoredKases = new HashSet<>();
     public void ignoreKase(int kase){
-        this.ignoredKases.add(Pair.with(this,kase));
+        this.ignoredKases.add(Pair.with(this.getStepClazz(),kase));
     }
 
     void setKases(List<Kase<X>> kases){

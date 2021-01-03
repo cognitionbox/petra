@@ -7,14 +7,14 @@ package io.cognitionbox.petra.examples.kases2.steps;//package io.cognitionbox.pe
 //public class Add extends PEdge<Bi> {
 //    {
 //        type(Bi.class);
-//        kase(x -> isPos(x.a()) && isNeg(x.b()), x -> x.c().isPos());
-//        kase(x -> isPos(x.a()) && x.b().isPos(), x -> x.c().isPos());
-//        kase(x -> isPos(x.a()) && isNeg(x.b()), x -> x.c().isNeg());
-//        kase(x -> x.a().isNeg() && x.b().isPos(), x -> x.c().isNeg());
-//        kase(x -> x.a().isZero(), x -> x.c().isZero());
-//        kase(x -> x.b().isZero(), x -> x.c().isZero());
-//        func(x ->{
-//            x.c((R)x.a().multiply(x.b()));
+//        kase(i -> isPos(i.a()) && isNeg(i.b()), i -> i.c().isPos());
+//        kase(i -> isPos(i.a()) && i.b().isPos(), i -> i.c().isPos());
+//        kase(i -> isPos(i.a()) && isNeg(i.b()), i -> i.c().isNeg());
+//        kase(i -> i.a().isNeg() && i.b().isPos(), i -> i.c().isNeg());
+//        kase(i -> i.a().isZero(), i -> i.c().isZero());
+//        kase(i -> i.b().isZero(), i -> i.c().isZero());
+//        func(i ->{
+//            i.c((R)i.a().multiply(i.b()));
 //        });
 //    }
 //}
