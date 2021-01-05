@@ -12,10 +12,9 @@ import static io.cognitionbox.petra.util.Petra.seq;
 public class HawkeyeGraph3 extends PGraph<X> {
     {
         type(X.class);
-        iterations(1);
         kase(x -> x.isOne() || x.isTwo(), x -> x.isTwo() || x.isFour());
         kase(x -> x.isFour() || x.isEight(), x -> x.isEight() || x.isSixteen());
-        step(x->x,new B(),seq());
         step(x->x,new A(),seq());
+        step(x->x,new B(),seq());
     }
 }

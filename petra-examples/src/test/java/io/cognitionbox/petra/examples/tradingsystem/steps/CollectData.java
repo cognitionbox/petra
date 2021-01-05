@@ -11,14 +11,10 @@ public class CollectData extends PGraph<State> {
     {
         type(State.class);
         iterations(2);
-        kase(state->forAll(Trader.class,state.traders(), trader->!trader.hasGtZeroDecisions()),
-                state->forAll(Trader.class,state.traders(), trader->!trader.hasGtZeroDecisions()));
         kase(state->forAll(Trader.class,state.traders(), trader->trader.hasGtZeroDecisions()),
-                state->forAll(Trader.class,state.traders(), trader->!trader.hasGtZeroDecisions()));
-        kase(state->forAll(Trader.class,state.traders(), trader->!trader.hasGtZeroDecisions()),
-                state->state.hasDecisions() &&
-                        forAll(Trader.class,state.traders(), trader->trader.hasEqZeroDecisions()) &&
-                        state.getExposureStore().hasExposures());
+                state->state.hasDecisions() && forAll(Trader.class,state.traders(), trader->!trader.hasGtZeroDecisions()));
+        kase(state->state.hasDecisions() && forAll(Trader.class,state.traders(), trader->!trader.hasGtZeroDecisions()),
+                state->state.getExposureStore().hasExposures());
         step(state->state,new CollectionDecisions(),seq());
         step(state->state,new CollectExposure(),seq());
     }

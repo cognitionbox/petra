@@ -27,7 +27,7 @@ import static io.cognitionbox.petra.util.Petra.*;
 public class TradingSystem extends PGraph<State> {
     {
         type(State.class); // required to match State instances at runtime
-        iterations(7);
+        iterations(5);
         setSleepPeriod(1000); // sets the time period between iterations, its not actually a sleep now, the time is actually measured
         invariant(state->(((( forAll(Trader.class,state.traders(),trader->!trader.hasFeed() && trader.hasEqZeroDecisions()) ||
                 forAll(Trader.class,state.traders(),trader->trader.hasFeed() && trader.hasEqZeroDecisions())) ||
@@ -36,9 +36,13 @@ public class TradingSystem extends PGraph<State> {
                 (state.getDecisionStore().hasAvgLimitPrice() && state.getExposureStore().hasAvgExposure()))); // safety invariant holds at beginning and after each iteration
 
         kase(state->forAll(Trader.class,state.traders(),trader->!trader.hasFeed() && trader.hasEqZeroDecisions()),
-                state->forAll(Trader.class,state.traders(),trader->trader.hasFeed() && trader.hasGtZeroDecisions())); // pre-condition
-        kase(state->state.exposureEq160() && state.getExposureStore().hasAvgExposure() && state.getDecisionStore().hasAvgLimitPrice(),
-                state->state.exposureEq200() && state.getExposureStore().hasAvgExposure() && state.getDecisionStore().hasAvgLimitPrice()); // pre-condition
+                state->forAll(Trader.class,state.traders(),trader->trader.hasFeed() && trader.hasEqZeroDecisions())); // pre-condition
+        kase(state->state.getExposureStore().getExposure()==0,
+                state->true); // pre-condition
+        kase(state->state.getExposureStore().getExposure()>0,
+                state->true); // pre-condition
+        kase(state->state.getExposureStore().getExposure()==160 && state.getExposureStore().hasAvgExposure() && state.getDecisionStore().hasAvgLimitPrice(),
+                state->state.getExposureStore().getExposure()==200 && state.getExposureStore().hasAvgExposure() && state.getDecisionStore().hasAvgLimitPrice()); // pre-condition
         stepForall(state->state.getTraders(),new SubscribeToFeed(),seq()); // has to be a sequential step as more than 1 steps in graph operate on same or smaller than type Traders, although it is scheduled sequentially stepForall collection is executed in parallel
         stepForall(state->state.getTraders(),new Trade(),seq()); // has to be a sequential step as more than 1 steps in graph operate on same or smaller than type Traders, although it is scheduled sequentially stepForall collection is executed in parallel
         step(state->state,new CollectData(),seq()); // has to be a sequential step as more than 1 steps in graph operate on same or smaller than type State, see steps above and below

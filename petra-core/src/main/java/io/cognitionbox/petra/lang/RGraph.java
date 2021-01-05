@@ -42,6 +42,7 @@ import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.AnnotatedType;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
@@ -98,12 +99,10 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IPGraph<X>
 
     private Integer iterations = 1;
 
-    @Deprecated
     final public int iterations() {
         return iterations;
     }
 
-    @Deprecated
     final public void iterations(int iterations) {
         this.iterations = iterations;
     }
@@ -221,6 +220,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IPGraph<X>
     private List<StateIterableTransformerStep> parIterableTransformerSteps = new ArrayList<>();
     private List<StateTransformerStep> seqTransformerSteps = new ArrayList<>();
     private List<StateIterableTransformerStep> seqIterableTransformerSteps = new ArrayList<>();
+    private List<TransformerStep> allSeqSteps = new ArrayList<>();
 
     public List<StateTransformerStep> getSeqTransformerSteps() {
         return seqTransformerSteps;
@@ -310,6 +310,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IPGraph<X>
         //parIterableTransformerSteps.add((StateIterableTransformerStep) currentStep);
         if (execMode.isSEQ()){
             seqIterableTransformerSteps.add(currentStep);
+            allSeqSteps.add(currentStep);
         } else if (execMode.isPAR()){
             parIterableTransformerSteps.add(currentStep);
         }
@@ -335,35 +336,13 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IPGraph<X>
         //parTransformerSteps.add((StateTransformerStep) currentStep);
         if (execMode.isSEQ()){
             seqTransformerSteps.add(currentStep);
+            allSeqSteps.add(currentStep);
         } else if (execMode.isPAR()){
             parTransformerSteps.add(currentStep);
         }
         addParallizable(step);
     }
-    private void executeSeqSteps(){
-        for (StateTransformerStep<X,?> f : seqTransformerSteps){
-            try {
-                Object value = f.getTransformer().apply(getInput().getValue());
-                f.getStep().setActiveKase(value);
-                if (f.getStep().getActiveKase().evalP(value)){
-                    AbstractStep copy = f.getStep().copy();
-                    copy.setInput(new Token(value));
-                    StepCallable stepCallable = new StepCallable(this,copy);
-                    StepResult sr = stepCallable.call();
-                    if (sr.getOutputValue().getValue() instanceof Throwable){
-                        this.place.addValue(sr.getOutputValue().getValue());
-                    }
-                    deconstruct(sr.getOutputValue());
-                    //putState(f.get().getOutputValue());
 
-                    break;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        Collections.rotate(seqTransformerSteps,1);
-    }
     private void prepareParSteps(){
         for (StateTransformerStep<X,?> f : parTransformerSteps){
             try {
@@ -379,59 +358,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IPGraph<X>
             }
         }
     }
-    private void executeSeqStepForalls(){
-        for (StateIterableTransformerStep<X,?> s : seqIterableTransformerSteps){
-            boolean ok = true;
-            Iterable<?> iterable = s.getTransformer().apply(getInput().getValue());
-            for(Object o : iterable){
-                s.getStep().setActiveKase(o);
-                if (!s.getStep().getActiveKase().evalP(o)){
-                    ok = false;
-                    break;
-                }
-            }
-            iterable = s.getTransformer().apply(getInput().getValue());
-            // if all match run steps against the elements
-            List<StepCallable> callables = new ArrayList<>();
-            if (ok){
-                for(Object o : iterable){
-                    try {
-                        AbstractStep copy = s.getStep().copy();
-                        copy.setInput(new Token(o));
-                        collectCallable(new StepCallable(this,copy), callables);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                try {
-                    if (RGraphComputer.getConfig().getMode().isSEQ()){
-                        for (StepCallable callable : callables){
-                            StepResult sr = callable.call();
-                            if (sr.getOutputValue().getValue() instanceof Throwable){
-                                this.place.addValue(sr.getOutputValue().getValue());
-                            }
-                            deconstruct(sr.getOutputValue());
-                            //putState(f.get().getOutputValue());
-                        }
-                    } else {
-                        List<Future<StepResult>> futures = RGraphComputer.getWorkerExecutor().invokeAll(callables);
-                        for (Future<StepResult> f : futures){
-                            StepResult sr = f.get();
-                            if (sr.getOutputValue().getValue() instanceof Throwable){
-                                this.place.addValue(sr.getOutputValue().getValue());
-                            }
-                            deconstruct(sr.getOutputValue());
-                            //putState(f.get().getOutputValue());
-                        }
-                    }
-                } catch (Throwable e){
 
-                }
-                break;
-            }
-        }
-        Collections.rotate(seqIterableTransformerSteps,1);
-    }
     private void prepareParStepForalls(){
         for (StateIterableTransformerStep<X,?> f : parIterableTransformerSteps){
             boolean ok = true;
@@ -576,8 +503,66 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IPGraph<X>
 //            }
 //        }
         forkAndJoinCallables(callables);
-        executeSeqSteps();
-        executeSeqStepForalls();
+//        executeSeqSteps();
+//        executeSeqStepForalls();
+        prepareAndExecuteAllsSeqSteps();
+    }
+
+    private void prepareAndExecuteAllsSeqSteps(){
+        for (TransformerStep s : allSeqSteps){
+            this.setLoopActiveKase(getInput().getValue());
+            if (s instanceof StateTransformerStep){
+                StateTransformerStep f = (StateTransformerStep) s;
+                try {
+                    Object value = f.getTransformer().apply(getInput().getValue());
+                    f.getStep().setActiveKase(value);
+                    if (f.getStep().getActiveKase().evalP(value)){
+                        AbstractStep copy = f.getStep().copy();
+                        copy.setInput(new Token(value));
+                        StepCallable stepCallable = new StepCallable(this,copy);
+                        StepResult sr = stepCallable.call();
+                        if (sr.getOutputValue().getValue() instanceof Throwable){
+                            this.place.addValue(sr.getOutputValue().getValue());
+                        }
+                        deconstruct(sr.getOutputValue());
+                    }
+                    //break;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else if (s instanceof StateIterableTransformerStep<?,?>){
+                StateIterableTransformerStep<X,?> f = (StateIterableTransformerStep<X,?>) s;
+                boolean ok = true;
+                Iterable<?> iterable = f.getTransformer().apply(getInput().getValue());
+                for(Object o : iterable){
+                    f.getStep().setActiveKase(o);
+                    if (!f.getStep().getActiveKase().evalP(o)){
+                        ok = false;
+                        break;
+                    }
+                }
+                iterable = f.getTransformer().apply(getInput().getValue());
+                // if all match run steps against the elements
+                if (ok) {
+                    for (Object o : iterable) {
+                        try {
+                            AbstractStep copy = f.getStep().copy();
+                            copy.setInput(new Token(o));
+                            StepResult sr = new StepCallable(this, copy).call();
+                            if (sr.getOutputValue().getValue() instanceof Throwable){
+                                this.place.addValue(sr.getOutputValue().getValue());
+                            }
+                            deconstruct(sr.getOutputValue());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                //break;
+            }
+            this.getActiveKase().q(getInput().getValue());
+        }
+        //Collections.rotate(allSeqSteps,-1);
     }
 
     <D> void addParallizable(IStep<? extends D> computation) {
@@ -834,6 +819,8 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IPGraph<X>
 
         copy.parTransformerSteps.addAll(parTransformerSteps);
         copy.parIterableTransformerSteps.addAll(parIterableTransformerSteps);
+
+        copy.allSeqSteps.addAll(allSeqSteps);
 
         // copy joins one by one as with the steps above
         for (int i = 0; i < joins.size(); i++) {
