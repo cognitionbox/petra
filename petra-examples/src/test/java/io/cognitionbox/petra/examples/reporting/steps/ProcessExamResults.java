@@ -8,7 +8,6 @@ import static io.cognitionbox.petra.util.Petra.seq;
 public class ProcessExamResults extends PGraph<Pupil> {
     {
         type(Pupil.class);
-        iterations(2);
         kase(p->p.takenExams(),p->p.hasAverage());
         stepForall(p->p.getExams(),new MarkExam(),seq());
         step(p->p,new AverageScores(),seq());

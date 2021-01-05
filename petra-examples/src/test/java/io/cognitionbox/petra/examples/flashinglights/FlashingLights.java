@@ -11,7 +11,7 @@ public class FlashingLights extends PGraph<Lights> {
         //infinite();
         setSleepPeriod(1000);
         type(Lights.class);
-        iterations(3);
+        iterations(x->3);
         kase(lights -> lights.colour.get()== Lights.Colour.RED, lights -> lights.colour.get()== Lights.Colour.GREEN);
         kase(lights -> lights.colour.get()== Lights.Colour.GREEN, lights -> lights.colour.get()== Lights.Colour.BLUE);
         kase(lights -> lights.colour.get()== Lights.Colour.BLUE, lights -> lights.colour.get()== Lights.Colour.RED);

@@ -15,6 +15,7 @@
  */
 package io.cognitionbox.petra.lang;
 
+import io.cognitionbox.petra.core.IPGraph;
 import io.cognitionbox.petra.core.impl.*;
 import io.cognitionbox.petra.google.Optional;
 import io.cognitionbox.petra.util.function.ICallable;
@@ -28,6 +29,16 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AbstractStep<X> extends Identifyable implements ICallable<X>, IStep<X> {
+
+    private IPGraph<?> parent;
+
+    public IPGraph<?> getParent() {
+        return parent;
+    }
+
+    void setParent(IPGraph<?> parent) {
+        this.parent = parent;
+    }
 
     public IToken<X> getInput() {
         return inputToken;

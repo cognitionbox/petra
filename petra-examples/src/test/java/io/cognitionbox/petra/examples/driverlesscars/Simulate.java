@@ -9,7 +9,7 @@ import io.cognitionbox.petra.lang.PGraph;
 public class Simulate extends PGraph<Simlulation> {
     {
         type(Simlulation.class);
-        iterations(10);
+        iterations(x->10);
         setSleepPeriod(1000);
         //        gi(s->(s.getNoOfCarsInJunction()<=1 &&
 //                ((s.signalAisRED() && s.signalBisGREEN()) ^

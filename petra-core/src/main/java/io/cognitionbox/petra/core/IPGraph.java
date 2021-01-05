@@ -20,4 +20,5 @@ import java.util.List;
 public interface IPGraph<P> extends IStep<P> {
     List<IStep> getParallizable();
     int getNoOfSteps();
+    int loopIteration();
 }

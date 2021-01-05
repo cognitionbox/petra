@@ -10,7 +10,6 @@ import static io.cognitionbox.petra.util.Petra.seq;
 public class CollectData extends PGraph<State> {
     {
         type(State.class);
-        iterations(2);
         kase(state->forAll(Trader.class,state.traders(), trader->trader.hasGtZeroDecisions()),
                 state->state.hasDecisions() && forAll(Trader.class,state.traders(), trader->!trader.hasGtZeroDecisions()));
         kase(state->state.hasDecisions() && forAll(Trader.class,state.traders(), trader->!trader.hasGtZeroDecisions()),
