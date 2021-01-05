@@ -91,10 +91,10 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IPGraph<X>
 
     PollingTimer iterationTimer;
 
-    private boolean finite = false;
+    private boolean infinite = false;
 
-    public void finite() {
-        this.finite = true;
+    public void infinite() {
+        this.infinite = true;
     }
 
     private Integer iterations = 1;
@@ -118,7 +118,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IPGraph<X>
         boolean doesNotTerminate = getStepClazz().isAnnotationPresent(DoesNotTerminate.class);
         // use in while loop to prevent termination.
         while (this.getStepClazz().isAnnotationPresent(DoesNotTerminate.class) ||
-                ((currentIteration<this.iterations)) ) {
+                ((currentIteration<this.iterations) || infinite) ) {
             if (iterationTimer!=null && !iterationTimer.periodHasPassed(LocalDateTime.now())){
                 continue;
             }
