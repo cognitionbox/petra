@@ -143,15 +143,14 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IPGraph<X>
                     return (X) new GraphException(this,(X) this.getInput().getValue(), null, Arrays.asList(new IllegalStateException("cycle not correct.")));
                 }
                 iterationId.getAndIncrement();
+                // post con check for non terminating processes
+                if (!getActiveKase().q(getInput().getValue()) && currentIteration==iterations-1) {
+                    return (X) new GraphException(this,(X) this.getInput().getValue(), null, Arrays.asList(new PostConditionFailure()));
+                }
                 currentIteration++;
             } catch (Exception e){
                 e.printStackTrace();
             }
-        }
-
-        // post con check for non terminating processes
-        if (!getActiveKase().q(getInput().getValue())) {
-            return (X) new GraphException(this,(X) this.getInput().getValue(), null, Arrays.asList(new PostConditionFailure()));
         }
 
 //        if (out!=null){

@@ -16,25 +16,38 @@
  * You should have received a copy of the GNU General Public License
  * along with Petra.  If not, see <https://www.gnu.org/licenses/>.
  */
-package io.cognitionbox.petra.examples.simple2.g_loop_iteration;
+package io.cognitionbox.petra.examples.hawkeye.steps.hawkeye5;
 
 import io.cognitionbox.petra.config.ExecMode;
-import io.cognitionbox.petra.lang.PComputer;
-import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
+import io.cognitionbox.petra.lang.AbstractStep;
+import io.cognitionbox.petra.lang.StepTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
+import java.util.function.Supplier;
 
 @RunWith(Parameterized.class)
-public class LoopIterationTest extends BaseExecutionModesTest {
+public class LoopIterationTest extends StepTest<Foo> {
     public LoopIterationTest(ExecMode execMode) {
         super(execMode);
     }
 
+    @Override
+    protected Supplier<AbstractStep<Foo>> stepSupplier() {
+        return ()->new SomeLoop();
+    }
+
     @Test
     public void test(){
-        Foo foo = new PComputer<Foo>().eval(new SomeLoop(),new Foo(Arrays.asList("a","b","lastone")));
+        setInput(new Foo(Arrays.asList("a","b","lastone")));
+        setExpectation(x->true);
+    }
+
+    @Test
+    public void test1(){
+        setInput(new Foo(Arrays.asList("a")));
+        setExpectation(x->true);
     }
 }

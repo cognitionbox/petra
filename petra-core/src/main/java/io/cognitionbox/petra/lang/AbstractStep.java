@@ -190,9 +190,18 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
         kases.add(new Kase<X>(this,type,pre,post));
     }
 
-//    public void defaultKase(IPredicate<X> pre, IPredicate<X> post) {
-//        kases.add(new Kase<X>(this,type,pre,post,true));
-//    }
+    public void kase(IPredicate<X> pre, IPredicate<X> post, Cover cover, Ignore... ignores) {
+        kases.add(new Kase<X>(this,type,pre,post,cover,ignores));
+    }
+
+    public void kase(IPredicate<X> pre, IPredicate<X> post, Ignore... ignores) {
+        kases.add(new Kase<X>(this,type,pre,post,new Cover(),ignores));
+    }
+
+
+    public void defaultKase(IPredicate<X> pre, IPredicate<X> post) {
+        kases.add(new Kase<X>(this,type,pre,post,true,new Cover(),new Ignore[]{}));
+    }
 
     public Set<Pair<Class<? extends IStep>,Integer>> getIgnoredKases() {
         return ignoredKases;

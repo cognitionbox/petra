@@ -28,7 +28,7 @@ public class TradingSystem extends PGraph<State> {
     {
         type(State.class); // required to match State instances at runtime
         iterations(x->5);
-        setSleepPeriod(1000); // sets the time period between iterations, its not actually a sleep now, the time is actually measured
+        //setSleepPeriod(1000); // sets the time period between iterations, its not actually a sleep now, the time is actually measured
         invariant(state->(((( forAll(Trader.class,state.traders(),trader->!trader.hasFeed() && trader.hasEqZeroDecisions()) ||
                 forAll(Trader.class,state.traders(),trader->trader.hasFeed() && trader.hasEqZeroDecisions())) ||
                 (forAll(Trader.class,state.traders(),trader->trader.hasGtZeroDecisions()))) ||

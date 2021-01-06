@@ -3,6 +3,8 @@ package io.cognitionbox.petra.lang;
 import io.cognitionbox.petra.util.Petra;
 import io.cognitionbox.petra.util.function.IPredicate;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -18,6 +20,17 @@ public class Kase<E> implements IKase<E> {
     }
     private final Guard p, q;
 
+    Cover getCover() {
+        return cover;
+    }
+
+    List<Ignore> getIgnores() {
+        return ignores;
+    }
+
+    private final Cover cover;
+    private final List<Ignore> ignores;
+
     public int getId() {
         return id;
     }
@@ -30,20 +43,26 @@ public class Kase<E> implements IKase<E> {
 
     //private IBiPredicate<E,E> qBi;
     private AbstractStep step;
-    public Kase(AbstractStep step, Class<E> eventClazz, IPredicate<E> pre, IPredicate<E> post) {
+    public Kase(AbstractStep step, Class<E> eventClazz, IPredicate<E> pre, IPredicate<E> post, Cover cover, Ignore[] ignores) {
         this.step = step;
         this.p = new Guard(eventClazz, pre);
         this.q = new Guard(eventClazz, post);
         this.id = step.kaseId.getAndIncrement();
+        this.cover = cover;
+        this.ignores = Arrays.asList(ignores);
     }
 
-//    public boolean isDefaultKase() {
-//        return defaultKase.get();
-//    }
+    public Kase(AbstractStep step, Class<E> eventClazz, IPredicate<E> pre, IPredicate<E> post) {
+        this(step,eventClazz,pre,post,new Cover(),new Ignore[]{});
+    }
+
+    public boolean isDefault() {
+        return defaultKase.get();
+    }
 
     private final AtomicBoolean defaultKase = new AtomicBoolean(false);
-    public Kase(AbstractStep step, Class<E> eventClazz, IPredicate<E> pre, IPredicate<E> post, boolean defaultKase) {
-        this(step,eventClazz,pre,post);
+    public Kase(AbstractStep step, Class<E> eventClazz, IPredicate<E> pre, IPredicate<E> post, boolean defaultKase, Cover cover, Ignore[] ignores) {
+        this(step,eventClazz,pre,post,cover,ignores);
         this.defaultKase.set(defaultKase);
     }
 

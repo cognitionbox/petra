@@ -20,6 +20,18 @@ public final class BigDecimalUtils {
         return value.compareTo(BigDecimal.ZERO)==0;
     }
 
+    static public boolean isAbsGreaterThan(BigDecimal a, BigDecimal b){
+        return a.abs().compareTo(b.abs())==1;
+    }
+
+    static public boolean lessThan1(BigDecimal value){
+        return value.compareTo(BigDecimal.ONE)==-1;
+    }
+
+    static public boolean greaterThan1(BigDecimal value){
+        return value.compareTo(BigDecimal.ONE)==1;
+    }
+
     private static class Interval {
         private enum Type {
             OPEN,

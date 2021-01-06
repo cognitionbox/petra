@@ -42,6 +42,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.fail;
@@ -78,9 +79,11 @@ public abstract class StepTest<X> extends BaseExecutionModesTest {
     }
 
     private volatile AbstractStep step = null;
-    public volatile Set<Kase> kases = Collections.newSetFromMap(new ConcurrentHashMap<>());
-    public volatile Set<Pair<Class<? extends IStep>,Integer>> ignoredkases = Collections.newSetFromMap(new ConcurrentHashMap<>());
-    public static volatile List<Kase> allKases = new ArrayList<>();
+    public volatile Set<Kase<?>> kases = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    public volatile Set<Ignore> ignores = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    public volatile Map<Pair<Class<? extends IStep>,Integer>,Kase> kasesMap = new ConcurrentHashMap<>();
+    public volatile Set<Pair<Class<? extends IStep>,Integer>> constantIgnoredkases = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    public static volatile List<Kase<?>> allKases = new ArrayList<>();
 
     @BeforeClass
     public static void beforeClass() {
@@ -94,9 +97,12 @@ public abstract class StepTest<X> extends BaseExecutionModesTest {
         step = stepSupplier().get();
         Set<AbstractStep> steps = new HashSet<>();
         collectSteps((PGraph<?>)step,steps);
-        kases = steps.stream().flatMap(s->(Stream<Kase>)s.getKases().stream()).collect(toSet());
+        kases = steps.stream().flatMap(s->(Stream<Kase<?>>)s.getKases().stream()).collect(toSet());
+        kases.stream().forEach(k->{
+            kasesMap.put(Pair.with(k.getStep().getStepClazz(),k.getId()),k);
+        });
         allKases.addAll(kases);
-        ignoredkases = steps.stream().flatMap(s->(Stream<Pair<Class<? extends IStep>,Integer>>)s.getIgnoredKases().stream()).collect(toSet());
+        constantIgnoredkases = steps.stream().flatMap(s->(Stream<Pair<Class<? extends IStep>,Integer>>)s.getIgnoredKases().stream()).collect(toSet());
         stepFixture = new StepFixture(step,getExecMode());
     }
 
@@ -244,6 +250,17 @@ public abstract class StepTest<X> extends BaseExecutionModesTest {
         System.out.println(renderer.getDotOutput());
     }
 
+    private void collectIgnores(Ignore ignore, Set<Ignore> ignores){
+        for (Integer id : ignore.getKaseIds()){
+            Pair<Class<? extends IStep>,Integer> pair = Pair.with(ignore.getStepClazz(),id);
+            Kase<?> kase = kasesMap.get(pair);
+            for (Ignore i : kase.getIgnores()){
+                ignores.add(i);
+                collectIgnores(i,ignores);
+            }
+        }
+    }
+
     @Test
     public void zappedAllKases(){
 
@@ -259,6 +276,21 @@ public abstract class StepTest<X> extends BaseExecutionModesTest {
 
 //        setInput(new Foo());
 //        setExpectation(i->true);
+        ignores = allKases.stream().filter(k->k.isCovered()).flatMap(k->k.getIgnores().stream()).collect(toSet());
+        //
+
+        Set<Ignore> allIgnores = new HashSet<>();
+        for (Ignore i : ignores){
+            collectIgnores(i,allIgnores);
+        }
+        Set<Pair<Class<? extends IStep>,Integer>> ignoredkases = new HashSet<>();
+        for (Ignore i : ignores){
+            for (Integer id : i.getKaseIds()){
+                Pair<Class<? extends IStep>,Integer> pair = Pair.with(i.getStepClazz(),id);
+                ignoredkases.add(pair);
+            }
+        }
+        ignoredkases.addAll(constantIgnoredkases);
 
         // .filter(k->k.getStep() instanceof PEdge)
         long requiredToCover = kases.stream().filter(k->!ignoredkases.contains(Pair.with(k.getStep().getStepClazz(),k.getId()))).count();
@@ -284,8 +316,14 @@ public abstract class StepTest<X> extends BaseExecutionModesTest {
             for (RGraph<?,?> s : steps){
 
                 finalSet.addAll(diffSet.stream()
+                        .filter(k->s.getKases().contains(k) && !ignoredkases.contains(Pair.with(k.getStep().getStepClazz(),k.getId())))
+                        .filter(k->!k.isCovered() && !k.isDefault())
+                        .peek(k->System.out.println(s.getStepClazz().getSimpleName()+" "+Pair.with(k.getStep().getStepClazz().getSimpleName(),k.getId())))
+                        .collect(toSet()));
+
+                finalSet.addAll(diffSet.stream()
                         .filter(k->s.getParallizable().stream().flatMap(stp->(Stream<Kase>)((AbstractStep)stp).getKases().stream()).collect(toSet()).contains(k) && !ignoredkases.contains(Pair.with(k.getStep().getStepClazz(),k.getId())))
-                        .filter(k->!k.isCovered())
+                        .filter(k->!k.isCovered() && !k.isDefault())
                         .peek(k->System.out.println(s.getStepClazz().getSimpleName()+" "+Pair.with(k.getStep().getStepClazz().getSimpleName(),k.getId())))
                         .collect(toSet()));
 

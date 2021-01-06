@@ -12,8 +12,10 @@ import static io.cognitionbox.petra.examples.kases.math.R.isZero;
 public class ListSumEdge extends PCollectionEdge<Foo, BigDecimal> {
     {
         type(Foo.class);
+        kase(x ->x.getRList().size()==0, x -> x.getSum()==BigDecimal.ZERO);
+        kase(x ->x.getRList().size()==1, x -> x.getSum()!=BigDecimal.ZERO);
+        kase(x ->x.getRList().size()>1, x -> x.getSum()!=BigDecimal.ZERO);
         collection(x->x.getRList());
-        kase(x -> !x.getRList().isEmpty(), x -> x.getSum()!=null);
         func((x,y)->{
            x.setSum(y.add(x.getSum()));
         });

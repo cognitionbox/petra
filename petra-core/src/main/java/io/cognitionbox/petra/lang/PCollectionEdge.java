@@ -46,6 +46,9 @@ public class PCollectionEdge<X,Y> extends PEdge<X> {
 
     final public void collection(IFunction<X,Collection<Y>> collection) {
         this.collection = collection;
+        super.defaultKase(x->collection.apply(x).size()==0, x->false);
+        super.defaultKase(x->collection.apply(x).size()==1, x->false);
+        super.defaultKase(x->collection.apply(x).size()>1, x->false);
     }
 
     IBiConsumer<X,Y> biConsumer;
@@ -53,12 +56,6 @@ public class PCollectionEdge<X,Y> extends PEdge<X> {
     public PEdge<X> func(IBiConsumer<X,Y> biConsumer) {
         this.biConsumer = biConsumer;
         return this;
-    }
-
-    @Override
-    public void kase(IPredicate<X> pre, IPredicate<X> post) {
-        super.kase(x->collection.apply(x).size()==1 && pre.test(x), post);
-        super.kase(x->collection.apply(x).size()>1 && pre.test(x), post);
     }
 
     public IBiConsumer getBiConsumer() {

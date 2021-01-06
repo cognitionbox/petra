@@ -63,4 +63,13 @@ public class KasesStepTest5 extends StepTest<Foo> {
         setInput(foo);
         setExpectation(x->true);
     }
+
+    @Test
+    public void test3() {
+        Foo foo = new Foo();
+        foo.setRList(Arrays.asList());
+
+        setInput(foo);
+        setExpectation(x->true);
+    }
 }

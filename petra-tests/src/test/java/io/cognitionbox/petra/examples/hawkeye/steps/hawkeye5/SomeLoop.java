@@ -1,4 +1,4 @@
-package io.cognitionbox.petra.examples.simple2.g_loop_iteration;
+package io.cognitionbox.petra.examples.hawkeye.steps.hawkeye5;
 
 import io.cognitionbox.petra.lang.PGraph;
 

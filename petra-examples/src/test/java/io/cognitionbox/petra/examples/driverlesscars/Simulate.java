@@ -10,7 +10,7 @@ public class Simulate extends PGraph<Simlulation> {
     {
         type(Simlulation.class);
         iterations(x->10);
-        setSleepPeriod(1000);
+        //setSleepPeriod(1000);
         //        gi(s->(s.getNoOfCarsInJunction()<=1 &&
 //                ((s.signalAisRED() && s.signalBisGREEN()) ^
 //                        (s.signalAisGREEN() && s.signalBisRED())) ) );

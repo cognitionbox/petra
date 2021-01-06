@@ -9,7 +9,7 @@ import static io.cognitionbox.petra.util.Petra.seq;
 public class FlashingLights extends PGraph<Lights> {
     {
         //infinite();
-        setSleepPeriod(1000);
+        //setSleepPeriod(1000);
         type(Lights.class);
         iterations(x->3);
         kase(lights -> lights.colour.get()== Lights.Colour.RED, lights -> lights.colour.get()== Lights.Colour.GREEN);

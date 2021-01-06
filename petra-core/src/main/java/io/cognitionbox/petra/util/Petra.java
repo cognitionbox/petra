@@ -86,6 +86,14 @@ public class Petra {
         }
     }
 
+    public static <T> Cover cover(Integer... kaseIds) {
+        return new Cover(kaseIds);
+    }
+
+    public static <T> Ignore ignore(Class<? extends IStep> stepClazz, Integer... kaseIds) {
+        return new Ignore(stepClazz,kaseIds);
+    }
+
     public static ExecMode seq(){
         return ExecMode.SEQ;
     }
