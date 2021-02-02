@@ -94,14 +94,19 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 
     private PollingTimer iterationTimer;
 
+    private boolean infinite = false;
+
+    public void infinite() {
+        this.infinite = true;
+    }
+
     X executeMatchingLoopUntilPostCondition() {
         currentIteration = 0;
         X out = null;
 
         boolean doesNotTerminate = getStepClazz().isAnnotationPresent(DoesNotTerminate.class);
         // use in while loop to prevent termination.
-        while (this.getStepClazz().isAnnotationPresent(DoesNotTerminate.class) ||
-                (!this.q().test(getInput().getValue())) ) {
+        while (true) { // !this.q().test(getInput().getValue())
             iterationId.getAndIncrement();
             currentIteration++;
             if (iterationTimer!=null && !iterationTimer.periodHasPassed(LocalDateTime.now())){
@@ -120,9 +125,13 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
                 }
 
                 // post con check for non terminating processes
-                if (this.getStepClazz().isAnnotationPresent(DoesNotTerminate.class) &&
+                if ((!this.infinite || this.getStepClazz().isAnnotationPresent(DoesNotTerminate.class)) &&
                         !this.q().test(getInput().getValue())) {
                     return (X) new GraphException(this,(X) this.getInput().getValue(), null, Arrays.asList(new IllegalStateException("cycle not correct.")));
+                }
+
+                if (!this.infinite){
+                    return getInput().getValue();
                 }
             } catch (Exception e){
                 e.printStackTrace();
@@ -134,7 +143,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 //        // loop terminated before post condition reached
 //        throw new PostConditionFailure();
 
-        return getInput().getValue();
+
     }
 
     void iteration(){
@@ -235,10 +244,16 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 //        }
 //    }
 
-    public <P> void stepForall(IFunction<X,Iterable<P>> transformer, IStep<P> step){
-        stepForall(transformer,step,ExecMode.PAR);
+    public <P> void stepForall(ExecMode execMode, IFunction<X,Iterable<P>> transformer, Class<? extends IStep<P>> step){
+        stepForall(execMode, transformer,Petra.createStep(step));
     }
-    public <P> void stepForall(IFunction<X,Iterable<P>> transformer, IStep<P> step, ExecMode execMode){
+    public <P> void stepForall(IFunction<X,Iterable<P>> transformer, Class<? extends IStep<P>> step){
+        stepForall(ExecMode.PAR, transformer,Petra.createStep(step));
+    }
+    public <P> void stepForall(IFunction<X,Iterable<P>> transformer, IStep<P> step){
+        stepForall(ExecMode.PAR,transformer,step);
+    }
+    public <P> void stepForall(ExecMode execMode, IFunction<X,Iterable<P>> transformer, IStep<P> step){
         StateIterableTransformerStep currentStep = new StateIterableTransformerStep(transformer, (AbstractStep) step);
         stateIterableTransformerSteps.add((StateIterableTransformerStep) currentStep);
         //parIterableTransformerSteps.add((StateIterableTransformerStep) currentStep);
@@ -249,10 +264,16 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         }
         addParallizable(step);
     }
-    public <P> void step(IFunction<X,P> transformer, IStep<P> step){
-        step(transformer,step,ExecMode.PAR);
+    public <P> void step(ExecMode execMode, IFunction<X,P> transformer, Class<? extends IStep<P>> step){
+        step(execMode, transformer,Petra.createStep(step));
     }
-    public <P> void step(IFunction<X,P> transformer, IStep<P> step, ExecMode execMode){
+    public <P> void step(IFunction<X,P> transformer, Class<? extends IStep<P>> step){
+        step(ExecMode.PAR, transformer,Petra.createStep(step));
+    }
+    public <P> void step(IFunction<X,P> transformer, IStep<P> step){
+        step(ExecMode.PAR, transformer,step);
+    }
+    public <P> void step(ExecMode execMode, IFunction<X,P> transformer, IStep<P> step){
         StateTransformerStep currentStep = new StateTransformerStep(transformer, (AbstractStep) step);
         stateTransformerSteps.add((StateTransformerStep) currentStep);
         //parTransformerSteps.add((StateTransformerStep) currentStep);
@@ -281,7 +302,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                LOG.error(f.getStep().getStepClazz().getName(),e);
             }
         }
     }
@@ -295,7 +316,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
                     collectCallable(new StepCallable(this,copy), callables);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                LOG.error(f.getStep().getStepClazz().getName(),e);
             }
         }
     }
@@ -310,7 +331,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
                 }
             }
             iterable = s.getTransformer().apply(getInput().getValue());
-            // if all match run steps against the elements
+            // if all match run stepForall against the elements
             List<StepCallable> callables = new ArrayList<>();
             if (ok){
                 for(Object o : iterable){
@@ -348,7 +369,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
                         }
                     }
                 } catch (Throwable e){
-
+                    LOG.error(s.getStep().getStepClazz().getName(),e);
                 }
             }
         }
@@ -364,7 +385,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
                 }
             }
             iterable = f.getTransformer().apply(getInput().getValue());
-            // if all match run steps against the elements
+            // if all match run stepForall against the elements
             if (ok){
                 for(Object o : iterable){
                     try {
@@ -372,7 +393,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
                         copy.setInput(new Token(o));
                         collectCallable(new StepCallable(this,copy), callables);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LOG.error(f.getStep().getStepClazz().getName(),e);
                     }
                 }
             }
@@ -488,8 +509,8 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         callables.clear();
         prepareParSteps();
         prepareParStepForalls();
-//        for (int index = 0; index < steps.size(); index = index + 1) {
-//            IStep c = steps.get(index);
+//        for (int index = 0; index < stepForall.size(); index = index + 1) {
+//            IStep c = stepForall.get(index);
 //            for (Object token : place.filterTokensByValue(c.p())) {
 //                AbstractStep copy = null;
 //                if (c instanceof AbstractStep) {
@@ -742,7 +763,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         copy.setP(p());
         copy.setInvariant(getInvariant());
 
-        // copy steps
+        // copy stepForall
         copy.stateTransformerSteps.addAll(stateTransformerSteps);
         copy.stateIterableTransformerSteps.addAll(stateIterableTransformerSteps);
 
@@ -752,7 +773,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         copy.parTransformerSteps.addAll(parTransformerSteps);
         copy.parIterableTransformerSteps.addAll(parIterableTransformerSteps);
 
-        // copy joins one by one as with the steps above
+        // copy joins one by one as with the stepForall above
         for (int i = 0; i < joins.size(); i++) {
             int iFinal = i;
             copy.addJoin(i, (list, toWrite) -> {

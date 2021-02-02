@@ -22,6 +22,7 @@ import io.cognitionbox.petra.google.Optional;
 import io.cognitionbox.petra.exceptions.TypeEvalException;
 import io.cognitionbox.petra.util.function.IPredicate;
 
+import java.io.Serializable;
 import java.lang.reflect.Modifier;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -185,7 +186,7 @@ public class Guard<E> implements IPredicate<E> {
                 Object xToUse = x;
                 if (RGraphComputer.getConfig().isDefensiveCopyAllInputs()) {
                     try {
-                        xToUse = copyer.copy(x);
+                        xToUse = copyer.copy((Serializable) x);
                     } catch (Exception e) {
                         return false;
                     }

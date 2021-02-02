@@ -102,7 +102,7 @@ public class PGraphDotDiagramRendererImpl2 implements ILogicBoxDotDiagramRendere
                             s.q().getTypeClass().getSimpleName().equals("ExtractableThrowableList")))
                     .collect(Collectors.toList());
 
-    //collectObjectClasses(steps);
+    //collectObjectClasses(stepForall);
 
     append("start [shape=circle, style=filled, fillcolor=green];\n",logic);
     append("start->"+logic.p().getTypeClass().getSimpleName()+";\n",logic);
@@ -118,7 +118,7 @@ public class PGraphDotDiagramRendererImpl2 implements ILogicBoxDotDiagramRendere
       }
     }
 
-    // render all steps and states individually
+    // render all stepForall and states individually
     for (AbstractStep step : steps){
       String stepDesc = ((Identifyable)step).getPartitionKey();
       if (step.p()!=null){

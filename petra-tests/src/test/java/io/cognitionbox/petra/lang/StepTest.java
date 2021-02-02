@@ -21,7 +21,6 @@ import io.cognitionbox.petra.exceptions.EdgeException;
 import io.cognitionbox.petra.exceptions.IterationsTimeoutException;
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.core.engine.petri.impl.Token;
-import org.javatuples.Pair;
 import org.junit.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +29,6 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import static io.cognitionbox.petra.util.Petra.rt;
 import static junit.framework.TestCase.assertTrue;

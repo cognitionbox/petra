@@ -54,7 +54,7 @@ public class ObjectTrans {
                 if (value instanceof Serializable){
                     // later add support for petra's parallel / distributable atomic reference
                     // we capture/replace the value rather than the reference
-                    storedValues.put(f,copyer.copy(value));
+                    storedValues.put(f,copyer.copy((Serializable) value));
                 }
             } catch (Throwable e) {
                 e.printStackTrace();
