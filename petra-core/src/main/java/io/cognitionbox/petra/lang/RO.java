@@ -17,7 +17,6 @@ package io.cognitionbox.petra.lang;
 
 import java.io.Serializable;
 
-public interface Ref<T> extends RO<T> {
+public interface RO<T> extends Serializable {
   T get();
-  void set(T value);
 }

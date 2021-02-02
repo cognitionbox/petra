@@ -17,6 +17,7 @@ package io.cognitionbox.petra.util;
 
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.core.IStep;
+import io.cognitionbox.petra.core.impl.ObjectCopyerViaSerialization;
 import io.cognitionbox.petra.core.impl.OperationType;
 import io.cognitionbox.petra.factory.IPetraComponentsFactory;
 import io.cognitionbox.petra.lang.Void;
@@ -25,6 +26,8 @@ import io.cognitionbox.petra.util.function.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.Map.Entry;
@@ -184,6 +187,18 @@ public class Petra {
 
     public static <T> Ref<T> ref() {
         return ref(null);
+    }
+
+    private static ObjectCopyerViaSerialization copyer = new ObjectCopyerViaSerialization();
+    public static <T extends Serializable> T copy(T object) {
+        try {
+            return copyer.copy(object);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

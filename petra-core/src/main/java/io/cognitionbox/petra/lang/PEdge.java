@@ -17,6 +17,7 @@ package io.cognitionbox.petra.lang;
 
 import io.cognitionbox.petra.core.impl.*;
 import io.cognitionbox.petra.exceptions.EdgeException;
+import io.cognitionbox.petra.exceptions.conditions.PostConditionFailure;
 import io.cognitionbox.petra.util.function.IBiPredicate;
 import io.cognitionbox.petra.util.function.IConsumer;
 import io.cognitionbox.petra.util.function.IPredicate;
@@ -24,10 +25,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -98,7 +98,52 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
                     if (RGraphComputer.getConfig().isTestMode() && (throwsRandomly != null && throwsRandomly.size() > 0)) {
                         throwRandomException(throwsRandomly);
                     }
-                    function.accept(input);
+                    Collection<Object> results = null;
+                    if (this instanceof PCollectionEdge){
+                        if (PComputer.getConfig().getMode().isPAR() &&
+                                ((PCollectionEdge<X,?,?>)this).getExecMode().isPAR()){
+                            // defensively copy input to protect from race conditions
+                            results = ((PCollectionEdge<X,?,?>)this).collection().apply(input)
+                                    .parallelStream()
+                                    .map(y->{
+                                        try {
+                                            if (((PCollectionEdge)this).getBefore().test(copyer.copy(((PCollectionEdge<X,?,?>)this).shared().apply(input)),y)){
+                                                ((PCollectionEdge)this).biConsumer.accept(copyer.copy(((PCollectionEdge<X,?,?>)this).shared().apply(input)),y);
+                                                if (!((PCollectionEdge)this).getAfter().test(copyer.copy(((PCollectionEdge<X,?,?>)this).shared().apply(input)),y)){
+                                                    throw new PostConditionFailure();
+                                                }
+                                            }
+                                            return y;
+                                        } catch (Throwable e) {
+                                            LOG.error(this.getStepClazz().getName(),e);
+                                            return e;
+                                        }
+                                    }).collect(Collectors.toList());
+                        } else if (PComputer.getConfig().getMode().isSEQ() ||
+                                ((PCollectionEdge<X,?,?>)this).getExecMode().isSEQ()){
+                            results = ((PCollectionEdge<X,?,?>)this).collection().apply(input)
+                                    .stream()
+                                    .map(y->{
+                                        try {
+                                            if (((PCollectionEdge)this).getBefore().test(((PCollectionEdge<X,?,?>)this).shared().apply(input),y)){
+                                                ((PCollectionEdge)this).biConsumer.accept(((PCollectionEdge<X,?,?>)this).shared().apply(input),y);
+                                                if (!((PCollectionEdge)this).getAfter().test(((PCollectionEdge<X,?,?>)this).shared().apply(input),y)){
+                                                    throw new PostConditionFailure();
+                                                }
+                                            }
+                                            return y;
+                                        } catch (Throwable e) {
+                                            LOG.error(this.getStepClazz().getName(),e);
+                                            return e;
+                                        }
+                                    }).collect(Collectors.toList());
+                        }
+                    } else if (this instanceof PEdge){
+                        this.function.accept(input);
+                    }
+                    if ((this instanceof PCollectionEdge) && results.stream().anyMatch(o->o instanceof Throwable)){
+                        throw new PostConditionFailure();
+                    }
                     return input;
                 } catch (Throwable e){
                     throwableRef.set(e);
@@ -131,12 +176,23 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
 
     public PEdge copy() {
         // we dont copy the id as we need a unique id based on the hashcode of the new instance
-        PEdge PEdge = new PEdge(getPartitionKey());
+        PEdge PEdge;
+        if (this instanceof PCollectionEdge){
+            PEdge = new PCollectionEdge(getPartitionKey());
+            ((PCollectionEdge) PEdge).shared( ((PCollectionEdge) this).getExecMode(),((PCollectionEdge) this).shared());
+            ((PCollectionEdge) PEdge).collection(((PCollectionEdge) this).collection());
+            ((PCollectionEdge) PEdge).func(((PCollectionEdge) this).getBiConsumer());
+            ((PCollectionEdge) PEdge).pre(((PCollectionEdge) this).getBefore());
+            ((PCollectionEdge) PEdge).post(((PCollectionEdge) this).getAfter());
+        } else {
+            PEdge = new PEdge(getPartitionKey());
+            PEdge.func(function);
+        }
+        PEdge.setP(p());
+        PEdge.setQ(q());
         PEdge.setEffectType(this.getEffectType()); // so we dont have to re-compute
         PEdge.setClazz(getStepClazz());
-        PEdge.setP(p());
-        PEdge.func(function);
-        PEdge.setQ(q());
+        PEdge.type(type);
         return PEdge;
     }
 

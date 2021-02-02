@@ -48,7 +48,7 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
 
     protected Guard<X> p = null;
 
-    protected GuardXOR<X> q = null;
+    protected Guard<X> q = null;
 
     protected void setP(Guard<X> p) {
         assertNotNull(p);
@@ -56,7 +56,7 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
         this.p = p;
     }
 
-    protected void setQ(GuardXOR<X> q) {
+    protected void setQ(Guard<X> q) {
         assertNotNull(q);
         //assertNull(this.q());
         this.q = q;
@@ -112,7 +112,7 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
     }
 
     @Override
-    public GuardXOR<X> q() {
+    public Guard<X> q() {
         return q;
     }
 
