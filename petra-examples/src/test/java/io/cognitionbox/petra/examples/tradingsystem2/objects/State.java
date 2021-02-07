@@ -23,6 +23,7 @@ import io.cognitionbox.petra.examples.tradingsystem2.objects.Trader;
 import java.util.List;
 
 public class State {
+    // if in live mode, use live feed, if in historical mode, use historical feed
     private Feed feed;
     private List<Trader> traders;
     Feed getFeed(){
