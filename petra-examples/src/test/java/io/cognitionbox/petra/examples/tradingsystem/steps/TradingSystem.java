@@ -27,7 +27,7 @@ import static io.cognitionbox.petra.util.Petra.*;
 public class TradingSystem extends PGraph<State> {
     {
         type(State.class); // required to match State instances at runtime
-        setSleepPeriod(1000); // sets the time period between iterations, its not actually a sleep now, the time is actually measured
+        //setSleepPeriod(1000); // sets the time period between iterations, its not actually a sleep now, the time is actually measured
         invariant(state->(state.exposureGtZero() || state.exposureEqZero()) && (state.exposureLt200() || state.exposureEq200())); // safety invariant holds at beginning and after each iteration
         pre(state->forAll(Trader.class,state.traders(),trader->!trader.hasFeed() && (trader.hasGtZeroDecisions() || trader.hasEqZeroDecisions()))); // pre-condition
         stepForall(seq(),state->state.getTraders(),new SubscribeToFeed()); // has to be a sequential step as more than 1 stepForall in graph operate on same or smaller than type Traders, although it is scheduled sequentially stepForall iterator is executed in parallel

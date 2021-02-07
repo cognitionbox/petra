@@ -31,6 +31,7 @@ import java.io.Serializable;
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Petra {
@@ -199,6 +200,43 @@ public class Petra {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static <C extends Collection<R>,T extends Serializable,R> C mapParallel(Collection<T> collection, IFunction<T,R> mapper, ISupplier<C> supplier){
+        IFunction<T,R> mapperWithCopy = t->{
+            if (t!=null){
+                return mapper.apply(copy(t));
+            } else {
+                return null;
+            }
+        };
+        return collection.parallelStream().map(mapperWithCopy).collect(Collectors.toCollection(supplier));
+    }
+
+    public static <C extends Collection<R>,T,R> C mapSequential(Collection<T> collection, IFunction<T,R> mapper, ISupplier<C> supplier){
+        return collection.stream().map(mapper).collect(Collectors.toCollection(supplier));
+    }
+
+    public static <T extends Serializable> Optional<T> maxParallel(Collection<T> collection, Comparator<T> comparator){
+        Comparator<T> comparatorWithCopy = (t1,t2)->{
+            return comparator.compare(copy(t1),copy(t2));
+        };
+        return collection.parallelStream().max(comparatorWithCopy);
+    }
+
+    public static <T> Optional<T> maxSequential(Collection<T> collection, Comparator<T> comparator){
+        return collection.stream().max(comparator);
+    }
+
+    public static <C extends Collection<T>,T extends Serializable> C filterParallel(Collection<T> collection, IPredicate<T> predicate, ISupplier<C> supplier){
+        IPredicate<T> predicateWithCopy = t->{
+            return t!=null && predicate.test(copy(t));
+        };
+        return collection.parallelStream().filter(predicateWithCopy).collect(Collectors.toCollection(supplier));
+    }
+
+    public static <C extends Collection<T>,T extends Serializable> C filterSequential(Collection<T> collection, IPredicate<T> predicate, ISupplier<C> supplier){
+        return collection.stream().filter(predicate).collect(Collectors.toCollection(supplier));
     }
 
 }

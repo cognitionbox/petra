@@ -24,12 +24,14 @@ import io.cognitionbox.petra.examples.tradingsystem.objects.State;
 import io.cognitionbox.petra.examples.tradingsystem.steps.TradingSystem;
 import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Ignore
 @RunWith(Parameterized.class)
 public class TradingSystemMain extends BaseExecutionModesTest {
     public TradingSystemMain(ExecMode execMode) {

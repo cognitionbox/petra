@@ -158,4 +158,10 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
     public void type(Class<X> type) {
         this.type = type;
     }
+
+    public boolean isElseStep() {
+        return isElseStep;
+    }
+
+    boolean isElseStep = false;
 }
