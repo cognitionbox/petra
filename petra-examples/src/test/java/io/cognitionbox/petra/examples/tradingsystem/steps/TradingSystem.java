@@ -35,6 +35,7 @@ public class TradingSystem extends PGraph<State> {
         step(seq(),state->state,new CollectData()); // has to be a sequential step as more than 1 stepForall in graph operate on same or smaller than type State, see stepForall above and below
         step(par(), state->state.getDecisionStore(),new AnalyzeDecisions()); // can be a parallel step as no other stepForall operate on same or smaller than type DecisionsStore
         step(par(),state->state.getExposureStore(),new AnalyzeExposures()); // can be a parallel step as no other stepForall operate on same or smaller than type ExposureStore
+        elseStep(x->x, Skip.class);
         post(state->state.exposureEq200() && state.getExposureStore().hasAvgExposure() && state.getDecisionStore().hasAvgLimitPrice()); // post-condition, causes the while loop to break once it is met, hence the graph terminates and returns the result
     }
 }
