@@ -279,7 +279,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 
     public <P> void elseStep(IFunction<X,P> transformer, Class<? extends IStep<P>> step){
         AbstractStep<X> abstractStep = (AbstractStep<X>) Petra.createStep(step);
-        abstractStep.setP(new GuardWrite<>(type,x->true));
+        //abstractStep.setP(new GuardWrite<>(type,x->true));
         abstractStep.isElseStep = true;
         step(ExecMode.SEQ,transformer,(IStep<P>) abstractStep);
     }

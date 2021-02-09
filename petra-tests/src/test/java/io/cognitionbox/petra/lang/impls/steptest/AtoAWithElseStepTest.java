@@ -18,6 +18,7 @@ package io.cognitionbox.petra.lang.impls.steptest;
 
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.lang.AbstractStep;
+import io.cognitionbox.petra.lang.RGraphComputer;
 import io.cognitionbox.petra.lang.StepTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,23 +26,22 @@ import org.junit.runners.Parameterized;
 
 import java.util.function.Supplier;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 @RunWith(Parameterized.class)
-public class SimpleStepTest extends StepTest<A> {
+public class AtoAWithElseStepTest extends StepTest<A> {
 
-  public SimpleStepTest(ExecMode execMode) {
+  public AtoAWithElseStepTest(ExecMode execMode) {
     super(execMode);
   }
 
   @Override
   protected Supplier<AbstractStep<A>> stepSupplier() {
-    return ()->new AtoAGraph();
+    return ()->new AtoAWithElse();
   }
 
   @Test
   public void testSimple() {
+    RGraphComputer.getConfig().setConstructionGuaranteeChecks(false);
     setInput(new A(1));
-    setExpectation(x->x.value==222);
+    setExpectation(x->x.value==1);
   }
 }
