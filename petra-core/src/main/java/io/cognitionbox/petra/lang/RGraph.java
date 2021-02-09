@@ -65,6 +65,11 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
     private long currentIteration;
     private Long maxIterations = RGraphComputer.getConfig().getMaxIterations();
     private long sleepPeriod = RGraphComputer.getConfig().getSleepPeriod();
+    private List<TransformerStep> transformerSteps = new ArrayList<>();
+
+    public List<TransformerStep> getAllTransformerSteps() {
+        return transformerSteps;
+    }
 
     public RGraph() {
         init();
@@ -267,6 +272,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         } else if (execMode.isPAR()){
             parIterableTransformerSteps.add(currentStep);
         }
+        transformerSteps.add(currentStep);
         addParallizable(step);
         appendTransformerStep(currentStep,execMode);
     }
@@ -299,6 +305,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         } else if (execMode.isPAR()){
             parTransformerSteps.add(currentStep);
         }
+        transformerSteps.add(currentStep);
         addParallizable(step);
         appendTransformerStep(currentStep,execMode);
     }
@@ -847,6 +854,8 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         copy.lastExecMode = lastExecMode;
 
         copy.isElseStep = isElseStep;
+
+        copy.transformerSteps = transformerSteps;
 
         // copy joins one by one as with the stepForall above
         for (int i = 0; i < joins.size(); i++) {

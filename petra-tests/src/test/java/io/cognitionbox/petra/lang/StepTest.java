@@ -87,7 +87,7 @@ public abstract class StepTest<X> extends BaseExecutionModesTest {
             this.execMode = execMode;
         }
         private void execute(){
-            if (step instanceof PGraph && execMode.isDIS()) {
+            if (step instanceof PGraph) {
                 PComputer computer;
                 computer = new PComputer<>();
                 out = (X) computer.eval((RGraph) step, in);
@@ -129,7 +129,7 @@ public abstract class StepTest<X> extends BaseExecutionModesTest {
         stepFixture.execute();
     }
 
-    abstract Supplier<AbstractStep<X>> stepSupplier();
+    protected abstract Supplier<AbstractStep<X>> stepSupplier();
 
     public static int comp(String s1, String s2) {
         if (s1.contains("red") && !s2.contains("red")){

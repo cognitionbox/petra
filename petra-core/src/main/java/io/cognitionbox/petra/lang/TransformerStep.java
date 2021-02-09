@@ -1,5 +1,7 @@
 package io.cognitionbox.petra.lang;
 
-public interface TransformerStep {
+import io.cognitionbox.petra.core.IStep;
 
+public interface TransformerStep {
+    IStep getStep();
 }
