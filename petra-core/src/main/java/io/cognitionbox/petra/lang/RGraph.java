@@ -195,7 +195,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         //  }
     }
 
-    public void step(Class<? extends IStep<X>> computation) {
+    public void step(Class<? extends IStep<? extends X>> computation) {
         step(x->x,Petra.createStep(computation));
     }
 
@@ -254,16 +254,16 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 //        }
 //    }
 
-    public <P> void stepForall(ExecMode execMode, IFunction<X,Iterable<P>> transformer, Class<? extends IStep<P>> step){
+    public <P> void stepForall(ExecMode execMode, IFunction<X,Iterable<P>> transformer, Class<? extends IStep<? extends P>> step){
         stepForall(execMode, transformer,Petra.createStep(step));
     }
-    public <P> void stepForall(IFunction<X,Iterable<P>> transformer, Class<? extends IStep<P>> step){
+    public <P> void stepForall(IFunction<X,Iterable<P>> transformer, Class<? extends IStep<? extends P>> step){
         stepForall(ExecMode.PAR, transformer,Petra.createStep(step));
     }
-    public <P> void stepForall(IFunction<X,Iterable<P>> transformer, IStep<P> step){
+    public <P> void stepForall(IFunction<X,Iterable<P>> transformer, IStep<? extends P> step){
         stepForall(ExecMode.PAR,transformer,step);
     }
-    public <P> void stepForall(ExecMode execMode, IFunction<X,Iterable<P>> transformer, IStep<P> step){
+    public <P> void stepForall(ExecMode execMode, IFunction<X,Iterable<P>> transformer, IStep<? extends P> step){
         StateIterableTransformerStep currentStep = new StateIterableTransformerStep(transformer, (AbstractStep) step);
         stateIterableTransformerSteps.add((StateIterableTransformerStep) currentStep);
         //parIterableTransformerSteps.add((StateIterableTransformerStep) currentStep);
@@ -277,26 +277,26 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         appendTransformerStep(currentStep,execMode);
     }
 
-    public <P> void elseStep(IFunction<X,P> transformer, Class<? extends IStep<P>> step){
+    public <P> void elseStep(IFunction<X,P> transformer, Class<? extends IStep<? extends P>> step){
         AbstractStep<X> abstractStep = (AbstractStep<X>) Petra.createStep(step);
         //abstractStep.setP(new GuardWrite<>(type,x->true));
         abstractStep.isElseStep = true;
         step(ExecMode.SEQ,transformer,(IStep<P>) abstractStep);
     }
 
-    public <P> void step(ExecMode execMode, IFunction<X,P> transformer, Class<? extends IStep<P>> step){
+    public <P> void step(ExecMode execMode, IFunction<X,P> transformer, Class<? extends IStep<? extends P>> step){
         step(execMode, transformer,Petra.createStep(step));
     }
-    public <P> void step(IFunction<X,P> transformer, Class<? extends IStep<P>> step){
+    public <P> void step(IFunction<X,P> transformer, Class<? extends IStep<? extends P>> step){
         step(ExecMode.PAR, transformer,Petra.createStep(step));
     }
-    public <P> void step(IFunction<X,P> transformer, IStep<P> step){
+    public <P> void step(IFunction<X,P> transformer, IStep<? extends P> step){
         step(ExecMode.PAR, transformer,step);
     }
 
     private ExecMode lastExecMode = null;
     private List<TransformerStep> currentSteps;
-    public <P> void step(ExecMode execMode, IFunction<X,P> transformer, IStep<P> step){
+    public <P> void step(ExecMode execMode, IFunction<X,P> transformer, IStep<? extends P> step){
         StateTransformerStep currentStep = new StateTransformerStep(transformer, (AbstractStep) step);
         stateTransformerSteps.add((StateTransformerStep) currentStep);
         //parTransformerSteps.add((StateTransformerStep) currentStep);
