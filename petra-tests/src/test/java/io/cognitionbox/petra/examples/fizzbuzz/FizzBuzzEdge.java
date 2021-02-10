@@ -5,7 +5,7 @@ import io.cognitionbox.petra.lang.PEdge;
 public class FizzBuzzEdge extends PEdge<X> {
     {
         type(X.class);
-        pre(x -> false);
+        pre(x -> true);
 
         func(x -> {
             String line;

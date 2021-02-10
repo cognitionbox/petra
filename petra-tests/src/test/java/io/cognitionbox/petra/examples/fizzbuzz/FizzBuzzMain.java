@@ -42,7 +42,7 @@ public class FizzBuzzMain extends StepTest<X> {
     @Test
     public void testSimple() {
         setInput(new X());
-        setExpectation(x->x.i==15);
+        setExpectation(x->x.isFizzBuzz());
     }
 }
 
