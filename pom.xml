@@ -27,6 +27,7 @@
 
     <modules>
         <module>petra-core</module>
+        <module>petra-unit</module>
         <module>petra-examples</module>
         <module>petra-kotlin</module>
         <module>petra-hazelcast</module>

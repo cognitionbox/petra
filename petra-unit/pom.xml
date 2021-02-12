@@ -8,7 +8,7 @@
         <groupId>io.cognitionbox.petra</groupId>
         <version>pre-alpha</version>
     </parent>
-    <artifactId>petra-tests</artifactId>
+    <artifactId>petra-unit</artifactId>
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
         <testSourceDirectory>src/test/java</testSourceDirectory>
@@ -43,12 +43,6 @@
         </dependency>
         <dependency>
             <groupId>io.cognitionbox.petra</groupId>
-            <artifactId>petra-unit</artifactId>
-            <version>pre-alpha</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.cognitionbox.petra</groupId>
             <artifactId>petra-hazelcast</artifactId>
             <version>pre-alpha</version>
         </dependency>
@@ -64,7 +58,6 @@
             <artifactId>hazelcast-client</artifactId>
             <version>3.12.5</version>
         </dependency>
-
         <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -120,14 +113,12 @@
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <version>3.9.1</version>
-            <scope>test</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/junit/junit -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
-            <scope>test</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl -->
         <dependency>
