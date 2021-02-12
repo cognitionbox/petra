@@ -15,10 +15,10 @@
  */
 package io.cognitionbox.petra.lang.impls.collections;
 
-import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import io.cognitionbox.petra.config.ExecMode;
 
 import io.cognitionbox.petra.lang.Ref;
+import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import io.cognitionbox.petra.util.impl.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;

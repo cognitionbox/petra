@@ -28,6 +28,12 @@
             <artifactId>petra-core</artifactId>
             <version>pre-alpha</version>
         </dependency>
+        <dependency>
+            <groupId>io.cognitionbox.petra</groupId>
+            <artifactId>petra-unit</artifactId>
+            <version>pre-alpha</version>
+            <scope>test</scope>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/junit/junit -->
         <dependency>
             <groupId>junit</groupId>

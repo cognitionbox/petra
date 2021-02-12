@@ -33,7 +33,6 @@ package io.cognitionbox.petra.lang.config;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.core.HazelcastInstance;
 import io.cognitionbox.petra.config.*;
-import io.cognitionbox.petra.factory.IPetraComponentsFactory;
 
 public class PetraHazelcastTestConfig extends PetraConfig implements IPetraHazelcastConfig, IPetraTestConfig {
 
