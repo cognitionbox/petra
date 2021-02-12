@@ -20,10 +20,6 @@ package io.cognitionbox.petra.examples.reporting;
 
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.examples.reporting.objects.*;
-import io.cognitionbox.petra.examples.reporting.steps.ProcessSchool;
-import io.cognitionbox.petra.exceptions.GraphException;
-import io.cognitionbox.petra.exceptions.conditions.PostConditionFailure;
-import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;

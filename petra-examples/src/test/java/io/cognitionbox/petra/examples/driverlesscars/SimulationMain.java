@@ -19,7 +19,6 @@
 package io.cognitionbox.petra.examples.driverlesscars;
 
 import io.cognitionbox.petra.config.ExecMode;
-import io.cognitionbox.petra.examples.driverlesscars.objects.car.Car;
 import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import org.junit.Test;

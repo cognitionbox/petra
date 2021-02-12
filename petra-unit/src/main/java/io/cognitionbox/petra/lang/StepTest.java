@@ -21,6 +21,7 @@ import io.cognitionbox.petra.exceptions.EdgeException;
 import io.cognitionbox.petra.exceptions.IterationsTimeoutException;
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.core.engine.petri.impl.Token;
+import junit.framework.TestCase;
 import org.junit.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -152,7 +153,7 @@ public abstract class StepTest<X> extends BaseExecutionModesTest {
     public void after(){
         X out = stepFixture.getOutput();
         if (out==null){
-            fail("output is null");
+            Assert.fail("output is null");
         }
         boolean passes = false;
         if (stepFixture.step instanceof RGraph) {
@@ -185,7 +186,7 @@ public abstract class StepTest<X> extends BaseExecutionModesTest {
             String value = desc+" [shape=rect style=filled, fillcolor=red];\n";
             dotToRender.put(value,value);
         }
-        assertTrue(passes);
+        TestCase.assertTrue(passes);
     }
 
     @AfterClass
