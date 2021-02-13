@@ -15,30 +15,15 @@
  */
 package io.cognitionbox.petra.lang.impls.generics;
 
-
-import io.cognitionbox.petra.config.ExecMode;
-import io.cognitionbox.petra.lang.AbstractStep;
+import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.lang.RGraphComputer;
 import io.cognitionbox.petra.lang.StepTest;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
-@RunWith(Parameterized.class)
 public class XtoXStepTest extends StepTest<X> {
-
-  public XtoXStepTest(ExecMode execMode) {
-    super(execMode);
-  }
-
-  @Override
-  protected Supplier<AbstractStep<X>> stepSupplier() {
-    return ()->new XtoX();
-  }
 
   @Test
   public void testSimple1() {
@@ -48,5 +33,10 @@ public class XtoXStepTest extends StepTest<X> {
     list.add(new C(0));
     setInput(new X(list));
     setExpectation(x->x.aList.stream().allMatch(a->a.value==1));
+  }
+
+  @Override
+  protected Class<? extends IStep<X>> stepClass() {
+    return XtoX.class;
   }
 }
