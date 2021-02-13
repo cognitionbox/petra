@@ -15,27 +15,16 @@
  */
 package io.cognitionbox.petra.lang.impls.else_semantics.incompletewithoutelse;
 
-
-import io.cognitionbox.petra.config.ExecMode;
-import io.cognitionbox.petra.lang.AbstractStep;
+import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.lang.RGraphComputer;
 import io.cognitionbox.petra.lang.StepTest;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 
-import java.util.function.Supplier;
-
-@RunWith(Parameterized.class)
 public class AtoAStepTest extends StepTest<A> {
 
-  public AtoAStepTest(ExecMode execMode) {
-    super(execMode);
-  }
-
   @Override
-  protected Supplier<AbstractStep<A>> stepSupplier() {
-    return ()->new AtoA();
+  protected Class<? extends IStep<A>> stepClass() {
+    return AtoA.class;
   }
 
   @Test

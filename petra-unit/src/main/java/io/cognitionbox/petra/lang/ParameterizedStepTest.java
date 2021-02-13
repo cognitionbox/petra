@@ -15,26 +15,30 @@
  */
 package io.cognitionbox.petra.lang;
 
-import io.cognitionbox.petra.core.IStep;
-import io.cognitionbox.petra.core.impl.*;
-import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
-import io.cognitionbox.petra.exceptions.EdgeException;
-import io.cognitionbox.petra.exceptions.IterationsTimeoutException;
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.core.engine.petri.impl.Token;
-import io.cognitionbox.petra.lang.impls.PetraBaseTest;
-import io.cognitionbox.petra.util.Petra;
+import io.cognitionbox.petra.core.impl.Identifyable;
+import io.cognitionbox.petra.core.impl.PGraphDotDiagramRendererImpl2;
+import io.cognitionbox.petra.exceptions.EdgeException;
+import io.cognitionbox.petra.exceptions.IterationsTimeoutException;
+import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import junit.framework.TestCase;
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public abstract class StepTest<X> extends PetraBaseTest {
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.fail;
+
+public abstract class ParameterizedStepTest<X> extends BaseExecutionModesTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(StepTest.class);
     private static PGraphDotDiagramRendererImpl2 renderer;
@@ -44,9 +48,13 @@ public abstract class StepTest<X> extends PetraBaseTest {
         renderer = new PGraphDotDiagramRendererImpl2();
     }
 
+    public ParameterizedStepTest(ExecMode execMode) {
+        super(execMode);
+    }
+
     @Before
     public void before(){
-        stepFixture = new StepFixture((AbstractStep<X>) Petra.createStep(stepClass()),getExecMode());
+        stepFixture = new StepFixture(stepSupplier().get(),getExecMode());
     }
 
     public static class EdgePGraph extends PGraph<Object> {
@@ -123,7 +131,7 @@ public abstract class StepTest<X> extends PetraBaseTest {
         stepFixture.execute();
     }
 
-    protected abstract Class<? extends IStep<X>> stepClass();
+    protected abstract Supplier<AbstractStep<X>> stepSupplier();
 
     public static int comp(String s1, String s2) {
         if (s1.contains("red") && !s2.contains("red")){

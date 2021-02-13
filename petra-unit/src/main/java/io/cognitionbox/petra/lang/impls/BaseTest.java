@@ -15,11 +15,18 @@
  */
 package io.cognitionbox.petra.lang.impls;
 
+import io.cognitionbox.petra.config.ExecMode;
 import org.junit.Before;
 
 import java.util.Properties;
 
 public class BaseTest {
+
+  protected ExecMode execMode = ExecMode.SEQ;
+
+  protected ExecMode getExecMode(){
+    return execMode;
+  }
 
   private static Properties original = new Properties(System.getProperties());
   public BaseTest() {}
