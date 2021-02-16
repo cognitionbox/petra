@@ -2,8 +2,9 @@ package io.cognitionbox.petra.lang;
 
 public class Skip extends PEdge<Object> {
     {
-        pre(o -> true);
+        type(Object.class);
+        pre(o -> false);
         func(o -> {});
-        post(o -> true);
+        post(o -> false);
     }
 }

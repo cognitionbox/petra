@@ -50,6 +50,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
+import static io.cognitionbox.petra.util.Petra.seq;
+
 public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> {
 
     final static Logger LOG = LoggerFactory.getLogger(RGraph.class);
@@ -305,6 +307,17 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         step(ExecMode.SEQ,transformer,(IStep<P>) abstractStep);
     }
 
+    public <P> void skip(){
+        skip(seq());
+    }
+
+    public <P> void skip(ExecMode execMode){
+        if (execMode.isPAR() || execMode.isDIS()){
+            throw new UnsupportedOperationException("skips can only be sequential or choices.");
+        }
+        step(execMode, x->x,new Skip());
+    }
+
     public <P> void step(ExecMode execMode, IFunction<X,P> transformer, Class<? extends IStep<? extends P>> step){
         step(execMode, transformer,Petra.createStep(step));
     }
@@ -392,6 +405,9 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
                     //putState(f.get().getOutputValue());
                 }
             } else {
+                if (f.getStep() instanceof Skip && this.matches.get()==0){
+                    this.matches.incrementAndGet();
+                }
                 if (!f.getStep().isInitStep && !execMode.isCHOICE()){
                     throw new GraphException(f.getStep(),getInput().getValue(),getInput().getValue(),Arrays.asList(new PreConditionFailure("non init step not matched.")));
                 }
@@ -483,6 +499,9 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
                 LOG.error(s.getStep().getStepClazz().getName(),e);
             }
         } else {
+            if (s.getStep() instanceof Skip && this.matches.get()==0){
+                this.matches.incrementAndGet();
+            }
             if (!s.getStep().isInitStep && !execMode.isCHOICE()){
                 throw new GraphException(s.getStep(),getInput().getValue(),getInput().getValue(),Arrays.asList(new PreConditionFailure("non init step not matched.")));
             }
