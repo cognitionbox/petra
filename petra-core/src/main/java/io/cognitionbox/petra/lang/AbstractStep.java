@@ -164,4 +164,16 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
     }
 
     boolean isElseStep = false;
+
+    boolean isInitStep = false;
+
+    boolean isInited = false;
+
+    public boolean isInitStep() {
+        return isInitStep;
+    }
+
+    public boolean isInited() {
+        return isInited;
+    }
 }
