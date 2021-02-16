@@ -15,9 +15,9 @@
  */
 package io.cognitionbox.petra.exceptions.conditions;
 
-public class PostConditionFailure extends RuntimeException {
-    public PostConditionFailure(){}
-    public PostConditionFailure(String msg){
+public class PreConditionFailure extends RuntimeException {
+    public PreConditionFailure(){}
+    public PreConditionFailure(String msg){
         super(msg);
     }
 }

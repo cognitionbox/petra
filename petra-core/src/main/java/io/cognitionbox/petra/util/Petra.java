@@ -100,7 +100,15 @@ public class Petra {
         return ExecMode.PAR;
     }
 
+    public static ExecMode choice(){
+        return ExecMode.CHOICE;
+    }
+
     public static <T> boolean forAll(Class<T> eventClazz, Collection<? extends T> collection, IPredicate<T> predicate) {
+        return collection.stream().allMatch(predicate);
+    }
+
+    public static <T> boolean forall(Collection<? extends T> collection, IPredicate<T> predicate) {
         return collection.stream().allMatch(predicate);
     }
 

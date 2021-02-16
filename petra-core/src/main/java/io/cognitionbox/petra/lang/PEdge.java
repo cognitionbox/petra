@@ -162,6 +162,9 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
         }
         boolean postConditionOk = throwableRef.get()==null && (res!=null && q().test(res) && evalV(res));
         if (postConditionOk) {
+            if (this.isInitStep && !this.isInited){
+                this.isInited = true;
+            }
             Lg_ALL_STATES("[Eg out]",input);
             return res;
         } else if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
