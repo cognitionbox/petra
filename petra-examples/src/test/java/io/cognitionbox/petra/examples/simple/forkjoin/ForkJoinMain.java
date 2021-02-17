@@ -41,15 +41,15 @@ public class ForkJoinMain extends BaseExecutionModesTest {
      * Petra is a data focused programming paradigm, we are only interested
      * in splitting data and transforming it in parallel where possible, then combining result.
      *
-     * The example below shows to stepForall which get called in parallel repeatably,
+     * The example below shows to steps which get called in parallel repeatably,
      * until a certain condition is met and their results are joined.
      *
      * The aim is to increment X and Y integer values from 0 upto 10 in parallel,
      * then combine X and Y back into a result which can be returned.
      *
-     * We do this using a combination of stepForall and joins.
+     * We do this using a combination of steps and joins.
      * Steps always run first and execute in parallel where possible.
-     * Joins always run in the order they are defined, sequentially after all stepForall finished.
+     * Joins always run in the order they are defined, sequentially after all steps finished.
      *
      */
     @Test

@@ -7,8 +7,9 @@ public class ProcessExamResults extends PGraph<Pupil> {
     {
         type(Pupil.class);
         pre(p->p.takenExams());
-        stepForall(p->p.getExams(),new MarkExam());
-        step(p->p,new AverageScores());
+        steps(p->p.getExams(),MarkExam.class);
+        step(p->p,AverageScores.class);
+        end();
         post(p->p.hasAverage());
     }
 }

@@ -9,6 +9,7 @@ public class AtoA extends PGraph<A> {
       pre(a->a.value==1 ^ a.value==2);
       step(seq(),x->x, AtoA1.class);
       step(seq(),x->x, AtoA2.class);
+        end();
       post(a->a.value==2 ^ a.value==3);
     }
   }

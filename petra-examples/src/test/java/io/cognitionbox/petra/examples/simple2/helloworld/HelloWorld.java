@@ -68,6 +68,7 @@ public class HelloWorld extends BaseExecutionModesTest {
                 type(X.class);
                 pre(x -> x.isBlank());
                 step(new AtoA());
+                end();
                 post(x -> x.isHelloWorld());
             }
         }

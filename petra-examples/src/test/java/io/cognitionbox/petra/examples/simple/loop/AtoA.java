@@ -28,6 +28,7 @@ public class AtoA extends PGraph<A> {
         type(A.class);
         pre(a->a.value>=0 && a.value<=10);
         step(new IncrementA());
+        end();
         post(a->a.value==10);
     }
 }

@@ -60,8 +60,9 @@ public class PGraphSingleHandledThrowableFlowTest extends BaseExecutionModesTest
     {
       type(X.class);
       pre(x->x.value==0);
-      post(x->x.value==3);
       step(new Nesting());
+      end();
+      post(x->x.value==3);
     }
   }
 
@@ -69,8 +70,9 @@ public class PGraphSingleHandledThrowableFlowTest extends BaseExecutionModesTest
     {
       type(X.class);
       pre(x -> x.value == 0);
-      post(x->x.value==1 || x.value==3);
       step(new PlusOne());
+      end();
+      post(x->x.value==1 || x.value==3);
     }
   }
 
@@ -78,8 +80,9 @@ public class PGraphSingleHandledThrowableFlowTest extends BaseExecutionModesTest
     {
       type(X.class);
       pre(x->x.value==0);
-      post(x->x.value==3);
       step(new NestingWithDirectStepHandledThrowable());
+      end();
+      post(x->x.value==3);
     }
   }
 
@@ -87,8 +90,10 @@ public class PGraphSingleHandledThrowableFlowTest extends BaseExecutionModesTest
     {
       type(X.class);
       pre(x -> x.value == 0);
-      post(x -> x.value == 3);
       step(new PlusOne());
+      end();
+      post(x -> x.value == 3);
+
     }
   }
 

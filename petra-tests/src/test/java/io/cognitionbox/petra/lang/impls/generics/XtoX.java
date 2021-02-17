@@ -8,7 +8,8 @@ public class XtoX extends PGraph<X> {
     {
       type(X.class);
       pre(x->x.aList.stream().allMatch(a->a.value==0));
-      stepForall(seq(),x->x.aList, AtoA.class);
+      steps(seq(), x->x.aList, AtoA.class);
+      end();
       post(x->x.aList.stream().allMatch(a->a.value==1));
     }
   }

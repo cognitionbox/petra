@@ -21,6 +21,7 @@ public class Simulate extends PGraph<Simlulation> {
         step(new ChangeSignal2ToGreen());
         step(new MoveCarIntoJunction());
         step(new MoveCarOutOfJunction());
+        end();
         post(c->getCurrentIteration()==10);
     }
 }
