@@ -39,7 +39,7 @@ public class SchoolExample extends BaseExecutionModesTest {
    @Test
    public void test() {
        PComputer.getConfig()
-               .enableStatesLogging()
+              // .enableStatesLogging()
                         .setConstructionGuaranteeChecks(false)
                         .setStrictModeExtraConstructionGuarantee(true);
 

@@ -68,6 +68,7 @@ public class FlagSwitch extends BaseExecutionModesTest {
                 //invariant(x -> x.value==true ^ x.value==false);
                 pre(x -> x.value==false);
                 step(new FlagEdge());
+                end();
                 post(x -> x.value==true);
             }
         }

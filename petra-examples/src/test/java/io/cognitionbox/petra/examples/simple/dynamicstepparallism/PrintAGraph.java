@@ -31,6 +31,7 @@ public class PrintAGraph extends PGraph<X> {
        pre(x->getCurrentIteration()==0);
        step(x->x.getA1(),new PrintA());
        step(x->x.getA2(),new PrintA());
+       end();
        post(x->getCurrentIteration()==1);
     }
 }

@@ -28,6 +28,7 @@ public class AtoAGraph extends PGraph<A> {
        type(A.class);
        pre(x->getCurrentIteration()==0);
        step(new AtoA());
+       end();
        post(x->getCurrentIteration()==1);
     }
 }

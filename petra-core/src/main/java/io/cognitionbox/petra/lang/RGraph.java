@@ -28,7 +28,6 @@ import io.cognitionbox.petra.core.impl.OperationType;
 import io.cognitionbox.petra.core.impl.PEdgeDotLoggerImpl;
 import io.cognitionbox.petra.exceptions.GraphException;
 import io.cognitionbox.petra.exceptions.PetraException;
-import io.cognitionbox.petra.exceptions.conditions.PostConditionFailure;
 import io.cognitionbox.petra.exceptions.conditions.PreConditionFailure;
 import io.cognitionbox.petra.lang.annotations.DoesNotTerminate;
 import io.cognitionbox.petra.lang.annotations.Extract;
@@ -258,35 +257,40 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 //        }
 //    }
 
-    public <P> void initForall(ExecMode execMode, IFunction<X,Iterable<P>> transformer, Class<? extends IStep<? extends P>> step){
-        if (execMode.isCHOICE()){
+    public <P> void inits(ExecMode execMode, IFunction<X, Iterable<P>> transformer, Class<? extends IStep<? extends P>> step) {
+        if (execMode.isCHOICE()) {
             throw new UnsupportedOperationException("cannot have choice in an init step, please perform choice at a deeper level.");
         }
         AbstractStep abstractStep = (AbstractStep) Petra.createStep(step);
         abstractStep.isInitStep = true;
-        stepForall(execMode, transformer,abstractStep);
-    }
-    public <P> void initForall(IFunction<X,Iterable<P>> transformer, Class<? extends IStep<? extends P>> step){
-        AbstractStep abstractStep = (AbstractStep) Petra.createStep(step);
-        abstractStep.isInitStep = true;
-        stepForall(ExecMode.SEQ, transformer,abstractStep);
-    }
-    public <P> void initForall(IFunction<X,Iterable<P>> transformer, IStep<? extends P> step){
-        AbstractStep abstractStep = (AbstractStep) step;
-        abstractStep.isInitStep = true;
-        stepForall(ExecMode.SEQ,transformer,abstractStep);
+        steps(execMode, transformer, abstractStep);
     }
 
-    public <P> void stepForall(ExecMode execMode, IFunction<X,Iterable<P>> transformer, Class<? extends IStep<? extends P>> step){
-        stepForall(execMode, transformer,Petra.createStep(step));
+    public <P> void inits(IFunction<X, Iterable<P>> transformer, Class<? extends IStep<? extends P>> step) {
+        AbstractStep abstractStep = (AbstractStep) Petra.createStep(step);
+        abstractStep.isInitStep = true;
+        steps(ExecMode.SEQ, transformer, abstractStep);
     }
-    public <P> void stepForall(IFunction<X,Iterable<P>> transformer, Class<? extends IStep<? extends P>> step){
-        stepForall(ExecMode.SEQ, transformer,Petra.createStep(step));
+
+    public <P> void inits(IFunction<X, Iterable<P>> transformer, IStep<? extends P> step) {
+        AbstractStep abstractStep = (AbstractStep) step;
+        abstractStep.isInitStep = true;
+        steps(ExecMode.SEQ, transformer, abstractStep);
     }
-    public <P> void stepForall(IFunction<X,Iterable<P>> transformer, IStep<? extends P> step){
-        stepForall(ExecMode.SEQ,transformer,step);
+
+    public <P> void steps(ExecMode execMode, IFunction<X, Iterable<P>> transformer, Class<? extends IStep<? extends P>> step) {
+        steps(execMode, transformer, Petra.createStep(step));
     }
-    public <P> void stepForall(ExecMode execMode, IFunction<X,Iterable<P>> transformer, IStep<? extends P> step){
+
+    public <P> void steps(IFunction<X, Iterable<P>> transformer, Class<? extends IStep<? extends P>> step) {
+        steps(ExecMode.SEQ, transformer, Petra.createStep(step));
+    }
+
+    public <P> void steps(IFunction<X, Iterable<P>> transformer, IStep<? extends P> step) {
+        steps(ExecMode.SEQ, transformer, step);
+    }
+
+    public <P> void steps(ExecMode execMode, IFunction<X, Iterable<P>> transformer, IStep<? extends P> step) {
         StateIterableTransformerStep currentStep = new StateIterableTransformerStep(transformer, (AbstractStep) step);
         stateIterableTransformerSteps.add((StateIterableTransformerStep) currentStep);
         //parIterableTransformerSteps.add((StateIterableTransformerStep) currentStep);
@@ -349,7 +353,11 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 
     private ExecMode lastExecMode = null;
     private List<TransformerStep> currentSteps;
-    public <P> void step(ExecMode execMode, IFunction<X,P> transformer, IStep<? extends P> step){
+
+    public <P> void step(ExecMode execMode, IFunction<X, P> transformer, IStep<? extends P> step) {
+        if (endAsBeenCalled){
+            throw new UnsupportedOperationException("steps can only exist before end");
+        }
         StateTransformerStep currentStep = new StateTransformerStep(transformer, (AbstractStep) step);
         stateTransformerSteps.add((StateTransformerStep) currentStep);
         //parTransformerSteps.add((StateTransformerStep) currentStep);
@@ -377,8 +385,11 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         lastExecMode = execMode;
     }
 
-    public void end(){
-        allSteps.add(Pair.with(lastExecMode,currentSteps));
+    private boolean endAsBeenCalled = false;
+
+    public void end() {
+        allSteps.add(Pair.with(lastExecMode, currentSteps));
+        endAsBeenCalled = true;
     }
 
     private void executeSeqStep(StateTransformerStep f, ExecMode execMode){
@@ -446,7 +457,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
             }
         }
         iterable = s.getTransformer().apply(getInput().getValue());
-        // if all match run stepForall against the elements
+        // if all match run steps against the elements
         List<StepCallable> callables = new ArrayList<>();
         if (ok && (!s.getStep().isInitStep || !s.getStep().isInited)){
             matches.incrementAndGet();
@@ -518,8 +529,8 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
             }
         }
         iterable = f.getTransformer().apply(getInput().getValue());
-        // if all match run stepForall against the elements
-        if (ok && (!f.getStep().isInitStep || !f.getStep().isInited)){
+        // if all match run steps against the elements
+        if (ok && (!f.getStep().isInitStep || !f.getStep().isInited)) {
             matches.incrementAndGet();
             if (f.getStep().isInitStep){
                 matches.decrementAndGet();
@@ -541,12 +552,10 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
     }
 
     private AtomicInteger matches = new AtomicInteger(0);
-    private void executeAllSteps(){
-        if (allSteps.isEmpty()){
-            allSteps.add(Pair.with(lastExecMode,currentSteps));
-        }
-        for (Pair<ExecMode,List<TransformerStep>> step : allSteps){
-            if (step.getValue1()==null || step.getValue0()==null){
+
+    private void executeAllSteps() {
+        for (Pair<ExecMode, List<TransformerStep>> step : allSteps) {
+            if (step.getValue1() == null || step.getValue0() == null) {
                 continue;
             }
             if (step.getValue0().isCHOICE()){
@@ -948,7 +957,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         copy.setP(p());
         copy.setInvariant(getInvariant());
 
-        // copy stepForall
+        // copy steps
         copy.stateTransformerSteps.addAll(stateTransformerSteps);
         copy.stateIterableTransformerSteps.addAll(stateIterableTransformerSteps);
 
@@ -968,9 +977,11 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 
         copy.isInited = isInited;
 
+        copy.endAsBeenCalled = endAsBeenCalled;
+
         copy.transformerSteps = transformerSteps;
 
-        // copy joins one by one as with the stepForall above
+        // copy joins one by one as with the steps above
         for (int i = 0; i < joins.size(); i++) {
             int iFinal = i;
             copy.addJoin(i, (list, toWrite) -> {
@@ -1019,7 +1030,10 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
     }
 
     public void post(IPredicate<X> predicate) {
-        returnType.addChoice(new Guard(type,predicate,OperationType.RETURN));
+        if (!endAsBeenCalled){
+            throw new UnsupportedOperationException("end has not been called");
+        }
+        returnType.addChoice(new Guard(type, predicate, OperationType.RETURN));
         setQ(returnType);
     }
 }

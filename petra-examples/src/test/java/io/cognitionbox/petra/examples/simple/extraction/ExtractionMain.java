@@ -44,7 +44,7 @@ public class ExtractionMain extends BaseExecutionModesTest {
      *
      * In this example there are just two fields A and B with this annotation.
      * The deconstruction of AB into A and B means that A and B become available for
-     * being matched by stepForall in the engine. Hence they can be processed in parallel.
+     * being matched by steps in the engine. Hence they can be processed in parallel.
      * In this example we simply print out the A and B instances.
      */
     @Test

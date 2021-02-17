@@ -101,8 +101,9 @@ public class BackReferencesDetectionTest extends BaseExecutionModesTest {
     {
       type(A.class);
       pre(x->true);
-      post(x->true);
       step(AtoA.class);
+      end();
+      post(x->true);
     }
   }
 
