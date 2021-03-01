@@ -1,25 +1,29 @@
 /**
  * Copyright (C) 2016-2020 Aran Hakki.
- *
+ * <p>
  * This file is part of Petra.
- *
+ * <p>
  * Petra is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * Petra is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with Petra.  If not, see <https://www.gnu.org/licenses/>.
  */
 package io.cognitionbox.petra.examples.reporting;
 
 import io.cognitionbox.petra.config.ExecMode;
-import io.cognitionbox.petra.examples.reporting.objects.*;
+import io.cognitionbox.petra.examples.reporting.objects.Pupil;
+import io.cognitionbox.petra.examples.reporting.objects.School;
+import io.cognitionbox.petra.examples.reporting.objects.SchoolClass;
+import io.cognitionbox.petra.examples.reporting.objects.Teacher;
+import io.cognitionbox.petra.examples.reporting.objects.YearGroup;
 import io.cognitionbox.petra.examples.reporting.steps.ProcessSchool;
 import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
@@ -36,25 +40,26 @@ public class SchoolExample extends BaseExecutionModesTest {
     public SchoolExample(ExecMode execMode) {
         super(execMode);
     }
-   @Test
-   public void test() {
-       PComputer.getConfig()
-              // .enableStatesLogging()
-                        .setConstructionGuaranteeChecks(false)
-                        .setStrictModeExtraConstructionGuarantee(true);
 
-       PComputer<School> lc = new PComputer();
+    @Test
+    public void test() {
+        PComputer.getConfig()
+                // .enableStatesLogging()
+                .setConstructionGuaranteeChecks(false)
+                .setStrictModeExtraConstructionGuarantee(true);
 
-       Teacher teacher1 = new Teacher("Sam","Bloggs",31);
-       SchoolClass classA = new SchoolClass(teacher1, Arrays.asList(
-               new Pupil("Adam","Johnson",11),
-               new Pupil("Aobby","Jimbo",12)));
-       YearGroup year7 = new YearGroup(Arrays.asList(classA));
-       School school = new School(Arrays.asList(year7));
+        PComputer<School> lc = new PComputer();
+
+        Teacher teacher1 = new Teacher("Sam", "Bloggs", 31);
+        SchoolClass classA = new SchoolClass(teacher1, Arrays.asList(
+                new Pupil("Adam", "Johnson", 11),
+                new Pupil("Aobby", "Jimbo", 12)));
+        YearGroup year7 = new YearGroup(Arrays.asList(classA));
+        School school = new School(Arrays.asList(year7));
 
 
-       School output = lc.eval(new ProcessSchool(), school);
+        School output = lc.eval(new ProcessSchool(), school);
 
-       assertThat(output.getAverageScore()).isEqualTo(1);
+        assertThat(output.getAverageScore()).isEqualTo(1);
     }
 }

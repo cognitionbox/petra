@@ -35,7 +35,7 @@ public class Decision implements Serializable {
         return Math.abs(limit - stop) * qty;
     }
 
-    public String toString(){
+    public String toString() {
         return this.dir.name();
     }
 

@@ -32,7 +32,10 @@ package petra.lang.config;
 
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.core.HazelcastInstance;
-import io.cognitionbox.petra.config.*;
+import io.cognitionbox.petra.config.HazelcastServerMode;
+import io.cognitionbox.petra.config.IPetraHazelcastConfig;
+import io.cognitionbox.petra.config.PetraConfig;
+import io.cognitionbox.petra.config.PetraHazelcastConfig;
 
 public class PetraHazelcastTestConfig extends PetraConfig implements IPetraHazelcastConfig, IPetraTestConfig {
 

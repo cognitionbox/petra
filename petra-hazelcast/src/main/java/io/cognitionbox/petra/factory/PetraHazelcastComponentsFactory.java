@@ -1,12 +1,12 @@
 /**
  * Copyright 2016-2020 Aran Hakki
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,19 +16,26 @@
 package io.cognitionbox.petra.factory;
 
 import io.cognitionbox.petra.config.IPetraHazelcastConfig;
-import io.cognitionbox.petra.config.IPetraHazelcastConfig;
 import io.cognitionbox.petra.core.IRingbuffer;
 import io.cognitionbox.petra.core.engine.petri.Place;
 import io.cognitionbox.petra.core.engine.petri.impl.HazelcastPlace;
 import io.cognitionbox.petra.lang.RGraphComputer;
 import io.cognitionbox.petra.lang.Ref;
-import io.cognitionbox.petra.util.impl.*;
+import io.cognitionbox.petra.util.impl.HazelcastAtomicReferenceWrapper;
+import io.cognitionbox.petra.util.impl.HazelcastListWrapper;
+import io.cognitionbox.petra.util.impl.HazelcastMapSetWrapper;
+import io.cognitionbox.petra.util.impl.HazelcastMapWrapper;
+import io.cognitionbox.petra.util.impl.HazelcastRingBufferWrapper;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
-import java.util.concurrent.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -50,7 +57,7 @@ public class PetraHazelcastComponentsFactory implements IPetraComponentsFactory 
     public ExecutorService createExecutorService(String id) {
 //        return ((IPetraHazelcastConfig) RGraphComputer.getConfig())
 //                .getHazelcastClient().getExecutorService(id);
-        return blockingExecutorService(1,Runtime.getRuntime().availableProcessors()*2);
+        return blockingExecutorService(1, Runtime.getRuntime().availableProcessors() * 2);
     }
 
     @Override

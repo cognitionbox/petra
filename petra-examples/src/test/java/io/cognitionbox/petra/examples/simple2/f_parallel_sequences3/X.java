@@ -9,7 +9,11 @@ import java.util.List;
 @Extract
 class X implements Serializable {
     private List<Y> ys;
-    @Extract public List<Y> ys() { return ys; }
+
+    @Extract
+    public List<Y> ys() {
+        return ys;
+    }
 
     public X(State state) {
         ys = new ArrayList<>();

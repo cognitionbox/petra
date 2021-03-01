@@ -1,18 +1,18 @@
 /**
  * Copyright (C) 2016-2020 Aran Hakki.
- *
+ * <p>
  * This file is part of Petra.
- *
+ * <p>
  * Petra is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * Petra is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with Petra.  If not, see <https://www.gnu.org/licenses/>.
  */
@@ -50,13 +50,13 @@ public class TradingSystemMain extends BaseExecutionModesTest {
      * and an instrument field so that the tick its consumed by the correct trader.
      *
      */
-   @Test
-   public void test() {
-       PComputer.getConfig()
-               .enableStatesLogging()
-                        .setMode(ExecMode.PAR)
-                        .setConstructionGuaranteeChecks(false)
-                        .setStrictModeExtraConstructionGuarantee(false);
+    @Test
+    public void test() {
+        PComputer.getConfig()
+                .enableStatesLogging()
+                .setMode(ExecMode.PAR)
+                .setConstructionGuaranteeChecks(false)
+                .setStrictModeExtraConstructionGuarantee(false);
 
         PComputer<State> lc = new PComputer();
         State state = new State();
@@ -66,7 +66,7 @@ public class TradingSystemMain extends BaseExecutionModesTest {
         state.addTrader(new RandomTrader());
         state.addTrader(new RandomTrader());
 
-       State output = lc.eval(new TradingSystem(), state);
+        State output = lc.eval(new TradingSystem(), state);
 
         assertThat(output.getExposureStore().getExposure()).isEqualTo(200);
         assertThat(output.getExposureStore().hasAvgExposure()).isEqualTo(true);

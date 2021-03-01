@@ -17,8 +17,8 @@ public class DecisionsStore {
         return averageDecisionLimitPrice.get();
     }
 
-    public void analyzeDecisions(){
-        averageDecisionLimitPrice.set(allDecisions.stream().mapToDouble(d->d.getLimit()).average().orElse(0));
+    public void analyzeDecisions() {
+        averageDecisionLimitPrice.set(allDecisions.stream().mapToDouble(d -> d.getLimit()).average().orElse(0));
     }
 
     public boolean hasDecisions() {
@@ -26,6 +26,6 @@ public class DecisionsStore {
     }
 
     public boolean hasAvgLimitPrice() {
-        return getAverageDecisionLimitPrice()!=null;
+        return getAverageDecisionLimitPrice() != null;
     }
 }

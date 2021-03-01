@@ -1,18 +1,18 @@
 /**
  * Copyright (C) 2016-2020 Aran Hakki.
- *
+ * <p>
  * This file is part of Petra.
- *
+ * <p>
  * Petra is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * Petra is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with Petra.  If not, see <https://www.gnu.org/licenses/>.
  */
@@ -35,6 +35,7 @@ public class ParSequences3 extends BaseExecutionModesTest {
     public ParSequences3(ExecMode execMode) {
         super(execMode);
     }
+
     /*
      * Laws:
      *
@@ -50,13 +51,13 @@ public class ParSequences3 extends BaseExecutionModesTest {
      * PRE </=> POST
      */
     @Test
-    public void test(){
+    public void test() {
 
         class SeqEdge extends PEdge<Y> {
             {
                 type(Y.class);
                 pre(y -> y.isA() ^ y.isB());
-                func(y ->{
+                func(y -> {
                     y.state(State.values()[y.state().ordinal() + 1]);
                 });
                 post(y -> y.isB() ^ y.isC());
@@ -66,15 +67,15 @@ public class ParSequences3 extends BaseExecutionModesTest {
         class SeqGraph extends PGraph<X> {
             {
                 type(X.class);
-                pre(x->forAll(Y.class,x.ys(), y->y.isAB()));
+                pre(x -> forAll(Y.class, x.ys(), y -> y.isAB()));
                 begin();
-                steps(x->x.ys(),new SeqEdge());
+                steps(x -> x.ys(), new SeqEdge());
                 end();
-                post(x->forAll(Y.class,x.ys(), y->y.isC()));
+                post(x -> forAll(Y.class, x.ys(), y -> y.isC()));
             }
         }
 
-        X output = new PComputer<X>().eval(new SeqGraph(),new X(State.A));
-        assertThat(output.ys()).allMatch(y->y.state()==State.C);
+        X output = new PComputer<X>().eval(new SeqGraph(), new X(State.A));
+        assertThat(output.ys()).allMatch(y -> y.state() == State.C);
     }
 }

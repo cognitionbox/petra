@@ -7,12 +7,12 @@ public class Exam {
 
     private Double result;
 
-    public Exam mark(Double score){
+    public Exam mark(Double score) {
         this.result = score;
         return this;
     }
 
-    public boolean isMarked(){
-        return result!=null;
+    public boolean isMarked() {
+        return result != null;
     }
 }

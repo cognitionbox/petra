@@ -7,10 +7,10 @@ import static io.cognitionbox.petra.util.Petra.par;
 
 public class AtoAWithElse extends PGraph<A> {
     {
-      type(A.class);
-      pre(a->a.value==1);
-      post(a->a.value==1);
-      step(par(),x->x, AtoAEdgeFalse.class);
-      elseStep(x->x, Skip.class);
+        type(A.class);
+        pre(a -> a.value == 1);
+        post(a -> a.value == 1);
+        step(par(), x -> x, AtoAEdgeFalse.class);
+        elseStep(x -> x, Skip.class);
     }
-  }
+}

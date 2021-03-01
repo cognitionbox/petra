@@ -40,7 +40,7 @@ jobs:
       # run tests!
       - run: mvn integration-test
       - store_artifacts:
-          path:  target/site
+          path: target/site
       - run:
           command: |
             bash <(curl -s https://codecov.io/bash)

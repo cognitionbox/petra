@@ -4,11 +4,11 @@ public enum SignalState {
     RED,
     GREEN;
 
-    public boolean isRED(){
-        return this==SignalState.RED;
+    public boolean isRED() {
+        return this == SignalState.RED;
     }
 
-    public boolean isGREEN(){
-        return this==SignalState.GREEN;
+    public boolean isGREEN() {
+        return this == SignalState.GREEN;
     }
 }

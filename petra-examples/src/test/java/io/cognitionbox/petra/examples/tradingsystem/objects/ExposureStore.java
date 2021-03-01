@@ -14,17 +14,17 @@ public class ExposureStore {
     private PList<Double> exposures = new PList<>();
     private Ref<Double> averageExposure = ref();
 
-    public void addExposure(Double exp){
+    public void addExposure(Double exp) {
         exposures.add(exp);
     }
 
-    public Double getExposure(){
-        return exposures.stream().mapToDouble(e->e).max().orElse(0);
+    public Double getExposure() {
+        return exposures.stream().mapToDouble(e -> e).max().orElse(0);
     }
 
-    public void analyzeExposure(){
-        averageExposure.set(exposures.stream().mapToDouble(e->e).average().orElse(0));
-        LOG.info("Exposure: "+getExposure());
+    public void analyzeExposure() {
+        averageExposure.set(exposures.stream().mapToDouble(e -> e).average().orElse(0));
+        LOG.info("Exposure: " + getExposure());
     }
 
     public boolean hasExposures() {
@@ -32,6 +32,6 @@ public class ExposureStore {
     }
 
     public boolean hasAvgExposure() {
-        return averageExposure.get()!=null;
+        return averageExposure.get() != null;
     }
 }

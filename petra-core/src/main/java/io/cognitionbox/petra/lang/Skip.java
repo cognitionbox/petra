@@ -4,7 +4,8 @@ public class Skip extends PEdge<Object> {
     {
         type(Object.class);
         pre(o -> false);
-        func(o -> {});
+        func(o -> {
+        });
         post(o -> false);
     }
 }

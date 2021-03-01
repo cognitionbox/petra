@@ -12,11 +12,13 @@ public interface Trader extends Serializable {
     Decisions runStrategy(Tick tick);
 
     void setFeed(Feed feed);
+
     Feed getFeed();
 
     boolean hasFeed();
 
     boolean hasGtZeroDecisions();
+
     boolean hasEqZeroDecisions();
 
     enum Direction {

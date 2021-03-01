@@ -1,12 +1,12 @@
 /**
  * Copyright 2016-2020 Aran Hakki
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,8 +17,11 @@ package io.cognitionbox.petra.core.impl;
 
 import org.reflections.Reflections;
 
-import java.io.Serializable;
-import java.lang.reflect.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
@@ -31,19 +34,19 @@ import java.util.stream.Collectors;
 
 public class ReflectUtils {
 
-    public static class ObjectNotNullStringNotEmptyAndValidFloatingPoint implements Predicate<Object>{
+    public static class ObjectNotNullStringNotEmptyAndValidFloatingPoint implements Predicate<Object> {
 
         @Override
         public boolean test(Object v) {
-            if (v==null){
+            if (v == null) {
                 return false;
             }
-            if (v instanceof String){
+            if (v instanceof String) {
                 return !((String) v).isEmpty();
-            } else if (v instanceof Float){
+            } else if (v instanceof Float) {
                 Float f = ((Float) v);
                 return Float.isFinite(f.floatValue()) && !Float.isInfinite(f.floatValue()) && !Float.isNaN(f.floatValue());
-            } else if (v instanceof Double){
+            } else if (v instanceof Double) {
                 Double d = ((Double) v);
                 return Double.isFinite(d.floatValue()) && !Double.isInfinite(d.floatValue()) && !Double.isNaN(d.floatValue());
             }
@@ -51,24 +54,24 @@ public class ReflectUtils {
         }
     }
 
-    public static Set<Class<?>> getAllFieldTypeDependanciesIncludingResolvedGenerics(Class<?> clazz){
+    public static Set<Class<?>> getAllFieldTypeDependanciesIncludingResolvedGenerics(Class<?> clazz) {
         Set<Class<?>> clazzes = new HashSet<>();
-        addAllTypeDependanciesIncludingResolvedGenericsImpl(clazz,clazzes);
+        addAllTypeDependanciesIncludingResolvedGenericsImpl(clazz, clazzes);
         return clazzes;
     }
 
-    private static void addAllTypeDependanciesIncludingResolvedGenericsImpl(Class<?> clazz, Set<Class<?>> set){
+    private static void addAllTypeDependanciesIncludingResolvedGenericsImpl(Class<?> clazz, Set<Class<?>> set) {
         if (Number.class.isAssignableFrom(clazz) ||
                 String.class.isAssignableFrom(clazz) ||
-                Boolean.class.isAssignableFrom(clazz)){
+                Boolean.class.isAssignableFrom(clazz)) {
             return;
         }
         set.add(clazz);
-        for (Field f : getAllFieldsAccessibleFromObject(clazz)){
-            if (!f.getType().isPrimitive()){
+        for (Field f : getAllFieldsAccessibleFromObject(clazz)) {
+            if (!f.getType().isPrimitive()) {
                 Type type = f.getGenericType();
-                if (type instanceof ParameterizedType){
-                    for (Type t : ((ParameterizedType)type).getActualTypeArguments()){
+                if (type instanceof ParameterizedType) {
+                    for (Type t : ((ParameterizedType) type).getActualTypeArguments()) {
                         addAllTypeDependanciesIncludingResolvedGenericsImpl((Class<?>) t, set);
                     }
                 }
@@ -77,7 +80,7 @@ public class ReflectUtils {
     }
 
     static public boolean isAllObjectGraphFieldsValid(Object object, Predicate validator) {
-        for (Field f : getAllFieldsAccessibleFromObject(object.getClass())){
+        for (Field f : getAllFieldsAccessibleFromObject(object.getClass())) {
             Object fieldValue = null;
             try {
                 boolean accessible = f.isAccessible();
@@ -87,53 +90,53 @@ public class ReflectUtils {
             } catch (IllegalAccessException e) {
                 throw new IllegalStateException("could not complete validation of object.");
             }
-            if (fieldValue instanceof Iterable){
-                for (Object o : (Iterable)fieldValue){
+            if (fieldValue instanceof Iterable) {
+                for (Object o : (Iterable) fieldValue) {
                     if (!validator.test(o)) {
                         return false;
                     }
                 }
-            } else if (!validator.test(fieldValue)){
+            } else if (!validator.test(fieldValue)) {
                 return false;
             }
-            if (!(fieldValue instanceof Number || fieldValue instanceof String || fieldValue instanceof Boolean)){
-                return isAllObjectGraphFieldsValid(fieldValue,validator);
+            if (!(fieldValue instanceof Number || fieldValue instanceof String || fieldValue instanceof Boolean)) {
+                return isAllObjectGraphFieldsValid(fieldValue, validator);
             }
         }
         return true;
     }
 
-    static public <T> void actionAllFieldsAccessibleFromObjectInstance(Object value, BiConsumer<Field,Object> fieldConsumer) {
-            if (value==null){
-                return;
-            }
-            if (Boolean.class.isAssignableFrom(value.getClass()) || String.class.isAssignableFrom(value.getClass()) || Integer.class.isAssignableFrom(value.getClass())){
-                return;
-            }
-            Set<Field> fields = getAllFieldsAccessibleFromObject(value.getClass());
-            for (Field f : fields){
-                if (!(Boolean.class.isAssignableFrom(value.getClass()) || String.class.isAssignableFrom(value.getClass()) || Integer.class.isAssignableFrom(value.getClass()))){
-                    if (!Modifier.isStatic(f.getModifiers())){
-                        try {
-                            boolean isAccessable = f.isAccessible();
-                            f.setAccessible(true);
-                            Object v = f.get(value);
-                            actionAllFieldsAccessibleFromObjectInstance(v,fieldConsumer);
-                            f.setAccessible(isAccessable);
-                            fieldConsumer.accept(f,value);
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        }
+    static public <T> void actionAllFieldsAccessibleFromObjectInstance(Object value, BiConsumer<Field, Object> fieldConsumer) {
+        if (value == null) {
+            return;
+        }
+        if (Boolean.class.isAssignableFrom(value.getClass()) || String.class.isAssignableFrom(value.getClass()) || Integer.class.isAssignableFrom(value.getClass())) {
+            return;
+        }
+        Set<Field> fields = getAllFieldsAccessibleFromObject(value.getClass());
+        for (Field f : fields) {
+            if (!(Boolean.class.isAssignableFrom(value.getClass()) || String.class.isAssignableFrom(value.getClass()) || Integer.class.isAssignableFrom(value.getClass()))) {
+                if (!Modifier.isStatic(f.getModifiers())) {
+                    try {
+                        boolean isAccessable = f.isAccessible();
+                        f.setAccessible(true);
+                        Object v = f.get(value);
+                        actionAllFieldsAccessibleFromObjectInstance(v, fieldConsumer);
+                        f.setAccessible(isAccessable);
+                        fieldConsumer.accept(f, value);
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
                     }
                 }
             }
+        }
     }
 
     static public <T> void actionAllFieldsAccessibleFromObjectGraph(Class<?> t, Consumer<Field> fieldConsumer) {
-        if (!(Boolean.class.isAssignableFrom(t) || String.class.isAssignableFrom(t) || Integer.class.isAssignableFrom(t))){
+        if (!(Boolean.class.isAssignableFrom(t) || String.class.isAssignableFrom(t) || Integer.class.isAssignableFrom(t))) {
             Set<Field> fields = getAllFieldsAccessibleFromObject(t);
-            for (Field f : fields){
-                actionAllFieldsAccessibleFromObjectGraph(f.getType(),fieldConsumer);
+            for (Field f : fields) {
+                actionAllFieldsAccessibleFromObjectGraph(f.getType(), fieldConsumer);
                 fieldConsumer.accept(f);
             }
         }
@@ -141,15 +144,15 @@ public class ReflectUtils {
 
     static public <T> Set<Field> getAllFieldsAccessibleFromObjectGraph(Class<?> t) {
         Set<Field> allFields = new HashSet<>();
-        addAllFieldsAccessibleFromObjectGraph(t,allFields);
+        addAllFieldsAccessibleFromObjectGraph(t, allFields);
         return allFields;
     }
 
     private static <T> void addAllFieldsAccessibleFromObjectGraph(Class<?> t, Set<Field> allFields) {
-        if (!(Boolean.class.isAssignableFrom(t) || String.class.isAssignableFrom(t) || Integer.class.isAssignableFrom(t))){
+        if (!(Boolean.class.isAssignableFrom(t) || String.class.isAssignableFrom(t) || Integer.class.isAssignableFrom(t))) {
             Set<Field> fields = getAllFieldsAccessibleFromObject(t);
-            for (Field f : fields){
-                addAllFieldsAccessibleFromObjectGraph(f.getType(),allFields);
+            for (Field f : fields) {
+                addAllFieldsAccessibleFromObjectGraph(f.getType(), allFields);
             }
             allFields.addAll(fields);
         }
@@ -157,19 +160,19 @@ public class ReflectUtils {
 
     static public <T> Set<Field> getAllNonStaticFieldsAccessibleFromObject(Class<?> t) {
         return getAllFieldsAccessibleFromObject(t).stream()
-                .filter(f->!Modifier.isStatic(f.getModifiers())).collect(Collectors.toSet());
+                .filter(f -> !Modifier.isStatic(f.getModifiers())).collect(Collectors.toSet());
     }
 
     static public <T> Set<Field> getAllFieldsAccessibleFromObject(Class<?> t) {
         Set<Field> fields = new HashSet<>();
-        if (t.isPrimitive() || t.isArray()){
+        if (t.isPrimitive() || t.isArray()) {
             return fields;
         }
         Class clazz = t;
-        String packageNameA = clazz.getName().replaceAll(clazz.getSimpleName(),"");
-        packageNameA = packageNameA.substring(0,packageNameA.length()-1);
-        while (clazz!=null && clazz != Object.class) {
-            for (Field f : clazz.getDeclaredFields()){
+        String packageNameA = clazz.getName().replaceAll(clazz.getSimpleName(), "");
+        packageNameA = packageNameA.substring(0, packageNameA.length() - 1);
+        while (clazz != null && clazz != Object.class) {
+            for (Field f : clazz.getDeclaredFields()) {
                 fields.add(f);
             }
             fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
@@ -180,19 +183,19 @@ public class ReflectUtils {
 
     static public <T> Set<Method> getAllMethodsAccessibleFromObject(Class<?> t) {
         Set<Method> methods = new CopyOnWriteArraySet<>();
-        if (t.isPrimitive() || t.isArray()){
+        if (t.isPrimitive() || t.isArray()) {
             return methods;
         }
         Class clazz = t;
-        String packageNameA = clazz.getName().replaceAll(clazz.getSimpleName(),"");
-        packageNameA = packageNameA.substring(0,packageNameA.length()-1);
-        while (clazz!=null && clazz != Object.class) {
-            for (Method f : clazz.getDeclaredMethods()){
-                String packageNameB = f.getDeclaringClass().getName().replaceAll(f.getDeclaringClass().getSimpleName(),"");
-                packageNameB = packageNameB.substring(0,packageNameB.length()-1);
-                if (Modifier.isPublic(f.getModifiers())){
+        String packageNameA = clazz.getName().replaceAll(clazz.getSimpleName(), "");
+        packageNameA = packageNameA.substring(0, packageNameA.length() - 1);
+        while (clazz != null && clazz != Object.class) {
+            for (Method f : clazz.getDeclaredMethods()) {
+                String packageNameB = f.getDeclaringClass().getName().replaceAll(f.getDeclaringClass().getSimpleName(), "");
+                packageNameB = packageNameB.substring(0, packageNameB.length() - 1);
+                if (Modifier.isPublic(f.getModifiers())) {
                     methods.add(f);
-                } else if (packageNameA.equals(packageNameB) && !Modifier.isPrivate(f.getModifiers())){
+                } else if (packageNameA.equals(packageNameB) && !Modifier.isPrivate(f.getModifiers())) {
                     methods.add(f);
                 }
             }
@@ -201,10 +204,10 @@ public class ReflectUtils {
 
         // removes more generic methods that clash signatures as java api doesnt have way of
         // filtering out abstract methods on declared methods etc.
-        for (Method m1 : methods){
-            for (Method m2 : methods){
-                if (!m1.equals(m2) && isSameMethodSignature(m1,m2)){
-                    if (m1.getReturnType().isAssignableFrom(m2.getReturnType())){
+        for (Method m1 : methods) {
+            for (Method m2 : methods) {
+                if (!m1.equals(m2) && isSameMethodSignature(m1, m2)) {
+                    if (m1.getReturnType().isAssignableFrom(m2.getReturnType())) {
                         methods.remove(m1);
                         methods.add(m2);
                     } else {
@@ -217,37 +220,37 @@ public class ReflectUtils {
         return methods;
     }
 
-    private static boolean isSameMethodSignature(Method m1, Method m2){
+    private static boolean isSameMethodSignature(Method m1, Method m2) {
         return m1.getName().equals(m2.getName()) &&
-                m1.getParameterCount()==(m2.getParameterCount()) &&
-                Arrays.deepEquals(m1.getParameterTypes(),m2.getParameterTypes()) &&
-                (m1.getReturnType().isAssignableFrom(m2.getReturnType()) || m2.getReturnType().isAssignableFrom(m1.getReturnType())) ;
+                m1.getParameterCount() == (m2.getParameterCount()) &&
+                Arrays.deepEquals(m1.getParameterTypes(), m2.getParameterTypes()) &&
+                (m1.getReturnType().isAssignableFrom(m2.getReturnType()) || m2.getReturnType().isAssignableFrom(m1.getReturnType()));
     }
 
-    public static <T> Set<Class<? extends T>> getAllSubTypes(Class<T> tClass){
+    public static <T> Set<Class<? extends T>> getAllSubTypes(Class<T> tClass) {
         Reflections reflections = new Reflections(tClass.getPackage().getName());
         Set<Class<? extends T>> subTypes = reflections.getSubTypesOf(tClass);
         subTypes.add(tClass);
         return subTypes;
     }
 
-    public static Optional<Class<?>> getCommonSubType(Class<?> x, Class<?> y){
+    public static Optional<Class<?>> getCommonSubType(Class<?> x, Class<?> y) {
         Set<Class<?>> xTypes = getAllSubTypes((Class<Object>) x);
-        Set<Class<?>> yTypes = getAllSubTypes((Class<Object>)y);
+        Set<Class<?>> yTypes = getAllSubTypes((Class<Object>) y);
         xTypes.retainAll(yTypes);
-        return xTypes.stream().sorted((a,b)->{
-            if (a.isAssignableFrom(b) && b.isAssignableFrom(a)){
+        return xTypes.stream().sorted((a, b) -> {
+            if (a.isAssignableFrom(b) && b.isAssignableFrom(a)) {
                 return 0;
-            } else if (a.isAssignableFrom(b)){
+            } else if (a.isAssignableFrom(b)) {
                 return -1;
-            } else if (b.isAssignableFrom(a)){
+            } else if (b.isAssignableFrom(a)) {
                 return 1;
             }
             return 0;
         }).findFirst();
     }
 
-    public static boolean hasCommonSubType(Class<?> a, Class<?> b){
-        return getCommonSubType(a,b).isPresent();
+    public static boolean hasCommonSubType(Class<?> a, Class<?> b) {
+        return getCommonSubType(a, b).isPresent();
     }
 }

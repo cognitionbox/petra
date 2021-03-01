@@ -1,18 +1,18 @@
 /**
  * Copyright (C) 2016-2020 Aran Hakki.
- *
+ * <p>
  * This file is part of Petra.
- *
+ * <p>
  * Petra is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * Petra is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with Petra.  If not, see <https://www.gnu.org/licenses/>.
  */
@@ -48,12 +48,12 @@ public class AutoRetryMain extends BaseExecutionModesTest {
      * which will be safely swallowed in Petra.
      */
     @Test
-    public void test(){
+    public void test() {
 
-        ((PetraTestConfig)RGraphComputer.getConfig()).disableExceptionsPassthrough();
+        ((PetraTestConfig) RGraphComputer.getConfig()).disableExceptionsPassthrough();
 
         AB result = new PComputer<AB>()
-                .eval(new ABtoAB(),new AB(new A(),new B()));
+                .eval(new ABtoAB(), new AB(new A(), new B()));
 
         assertThat(result.getA().value).isEqualTo(10);
         assertThat(result.getB().value).isEqualTo(10);

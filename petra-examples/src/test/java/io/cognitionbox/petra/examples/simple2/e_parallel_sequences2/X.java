@@ -1,7 +1,5 @@
 package io.cognitionbox.petra.examples.simple2.e_parallel_sequences2;
 
-import io.cognitionbox.petra.lang.annotations.Extract;
-
 import java.io.Serializable;
 
 class X implements Serializable {

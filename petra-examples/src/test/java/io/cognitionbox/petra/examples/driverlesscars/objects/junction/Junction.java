@@ -16,16 +16,20 @@ public class Junction implements ReadJunction, Serializable {
     }
 
     @Override
-    public int getNoOfCarsInJunction() {return carsCrossingJunction.size();}
+    public int getNoOfCarsInJunction() {
+        return carsCrossingJunction.size();
+    }
 
     public boolean carInJunction(Car car) {
         return this.carsCrossingJunction.contains(car);
     }
 
-    public void moveIntoJunction(Car car) {carsCrossingJunction.add(car);
+    public void moveIntoJunction(Car car) {
+        carsCrossingJunction.add(car);
     }
 
-    public void moveOutOfJunction(Car car) {carsCrossingJunction.remove(car);
+    public void moveOutOfJunction(Car car) {
+        carsCrossingJunction.remove(car);
     }
 
     @Override

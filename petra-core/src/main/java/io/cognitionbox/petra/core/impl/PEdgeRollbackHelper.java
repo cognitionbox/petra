@@ -1,12 +1,12 @@
 /**
  * Copyright 2016-2020 Aran Hakki
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,18 +29,19 @@ public class PEdgeRollbackHelper implements Serializable {
         this.millisBeforeRetry = millisBeforeRetry;
     }
 
-    private void waitBeforeRetry(){
+    private void waitBeforeRetry() {
         try {
             Thread.sleep(this.millisBeforeRetry);
-        } catch (Exception e){}
+        } catch (Exception e) {
+        }
     }
 
-    public void capture(Object input, AbstractStep<?> abstractStep){
-        if (abstractStep instanceof IRollback){
-            while(true){
+    public void capture(Object input, AbstractStep<?> abstractStep) {
+        if (abstractStep instanceof IRollback) {
+            while (true) {
                 try {
                     IStep step = abstractStep.getStepClazz().newInstance();
-                    synchronized (this){
+                    synchronized (this) {
                         ((IRollback) step).capture(input);
                         break;
                     }
@@ -52,15 +53,15 @@ public class PEdgeRollbackHelper implements Serializable {
         }
     }
 
-    public void rollback(Object input, AbstractStep<?> abstractStep){
-        if (abstractStep instanceof IRollback){
-            while(true){
+    public void rollback(Object input, AbstractStep<?> abstractStep) {
+        if (abstractStep instanceof IRollback) {
+            while (true) {
                 try {
                     IStep step = abstractStep.getStepClazz().newInstance();
-                    synchronized (this){
+                    synchronized (this) {
                         ((IRollback) step).rollback(input);
                     }
-                    if (abstractStep.p().test(input)){
+                    if (abstractStep.p().test(input)) {
                         break;
                     }
                 } catch (Exception ex) {

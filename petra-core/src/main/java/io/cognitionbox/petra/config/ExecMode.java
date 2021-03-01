@@ -1,12 +1,12 @@
 /**
  * Copyright 2016-2020 Aran Hakki
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,19 +18,19 @@ package io.cognitionbox.petra.config;
 public enum ExecMode {
     DIS, PAR, SEQ, CHOICE;
 
-    public boolean isSEQ(){
+    public boolean isSEQ() {
         return this.equals(ExecMode.SEQ);
     }
 
-    public boolean isPAR(){
+    public boolean isPAR() {
         return this.equals(ExecMode.PAR);
     }
 
-    public boolean isDIS(){
+    public boolean isDIS() {
         return this.equals(ExecMode.DIS);
     }
 
-    public boolean isCHOICE(){
+    public boolean isCHOICE() {
         return this.equals(ExecMode.CHOICE);
     }
 }

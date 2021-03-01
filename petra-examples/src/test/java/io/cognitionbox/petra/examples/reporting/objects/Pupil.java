@@ -10,6 +10,7 @@ public class Pupil extends Person {
     public Pupil(String firstName, String sirName, Integer age) {
         super(firstName, sirName, age);
     }
+
     private List<Exam> exams = new ArrayList<>();
     private Double average;
 
@@ -21,14 +22,16 @@ public class Pupil extends Person {
         this.average = average;
     }
 
-    public boolean hasAverage(){
-        return this.average!=null;
+    public boolean hasAverage() {
+        return this.average != null;
     }
 
-    public void sitExam(Exam exam){
+    public void sitExam(Exam exam) {
         exams.add(exam);
     }
-    @Extract public List<Exam> getExams() {
+
+    @Extract
+    public List<Exam> getExams() {
         return exams;
     }
 

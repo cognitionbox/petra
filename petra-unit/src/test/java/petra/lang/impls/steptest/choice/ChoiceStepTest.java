@@ -11,7 +11,7 @@ public class ChoiceStepTest extends StepTest<Foo> {
     }
 
     @Test
-    public void test1(){
+    public void test1() {
         setInput(new Foo());
         setExpectation(foo -> true);
     }

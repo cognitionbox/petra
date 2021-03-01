@@ -4,12 +4,12 @@ import io.cognitionbox.petra.lang.PEdge;
 
 public class CtoC extends PEdge<C> {
     {
-      type(C.class);
-      pre(a->a.value==0); // disjoint pre-conditions
-      func(a->{
-        a.value++;
-      });
-      post(a->a.value==1); // disjoint post-conditions
+        type(C.class);
+        pre(a -> a.value == 0); // disjoint pre-conditions
+        func(a -> {
+            a.value++;
+        });
+        post(a -> a.value == 1); // disjoint post-conditions
     }
 
     // All conditions must be in disjunctive normal form AND
@@ -26,4 +26,4 @@ public class CtoC extends PEdge<C> {
     // something like setting JaCoCo or Sonar cube to only check for
     // positive condition coverage.
 
-  }
+}

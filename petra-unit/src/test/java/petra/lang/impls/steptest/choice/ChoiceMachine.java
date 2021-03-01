@@ -7,15 +7,15 @@ import static io.cognitionbox.petra.util.Petra.choice;
 public class ChoiceMachine extends PGraph<Foo> {
     {
         type(Foo.class);
-        pre(foo -> foo.choices==null);
+        pre(foo -> foo.choices == null);
         begin();
         init(foo -> foo, MakeChoice.class);
-        step(choice(),ActOnA.class);
-        step(choice(),ActOnB.class);
-        step(choice(),ActOnC.class);
+        step(choice(), ActOnA.class);
+        step(choice(), ActOnB.class);
+        step(choice(), ActOnC.class);
         end();
-        post(foo -> (foo.choices== Choices.A && foo.result==1) ^
-                (foo.choices== Choices.B && foo.result==2) ^
-                (foo.choices== Choices.C && foo.result==3));
+        post(foo -> (foo.choices == Choices.A && foo.result == 1) ^
+                (foo.choices == Choices.B && foo.result == 2) ^
+                (foo.choices == Choices.C && foo.result == 3));
     }
 }

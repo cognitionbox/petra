@@ -1,25 +1,30 @@
 /**
  * Copyright (C) 2016-2020 Aran Hakki.
- *
+ * <p>
  * This file is part of Petra.
- *
+ * <p>
  * Petra is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * Petra is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with Petra.  If not, see <https://www.gnu.org/licenses/>.
  */
 package io.cognitionbox.petra.examples.reporting;
 
 import io.cognitionbox.petra.config.ExecMode;
-import io.cognitionbox.petra.examples.reporting.objects.*;
+import io.cognitionbox.petra.examples.reporting.objects.Exam;
+import io.cognitionbox.petra.examples.reporting.objects.Pupil;
+import io.cognitionbox.petra.examples.reporting.objects.School;
+import io.cognitionbox.petra.examples.reporting.objects.SchoolClass;
+import io.cognitionbox.petra.examples.reporting.objects.Teacher;
+import io.cognitionbox.petra.examples.reporting.objects.YearGroup;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,33 +40,34 @@ public class SchoolExample2 extends BaseExecutionModesTest {
     public SchoolExample2(ExecMode execMode) {
         super(execMode);
     }
-   @Test
-   public void test() {
 
-       Teacher teacher1 = new Teacher("Sam","Bloggs",31);
-       SchoolClass classA = new SchoolClass(teacher1, Arrays.asList(
-               new Pupil("Adam","Johnson",11),
-               new Pupil("Aobby","Jimbo",12)));
-       YearGroup year7 = new YearGroup(Arrays.asList(classA));
-       School school = new School(Arrays.asList(year7));
+    @Test
+    public void test() {
+
+        Teacher teacher1 = new Teacher("Sam", "Bloggs", 31);
+        SchoolClass classA = new SchoolClass(teacher1, Arrays.asList(
+                new Pupil("Adam", "Johnson", 11),
+                new Pupil("Aobby", "Jimbo", 12)));
+        YearGroup year7 = new YearGroup(Arrays.asList(classA));
+        School school = new School(Arrays.asList(year7));
 
 
-       School output = processSchool(school);
+        School output = processSchool(school);
 
-       assertThat(output.getAverageScore()).isEqualTo(1);
+        assertThat(output.getAverageScore()).isEqualTo(1);
 
     }
 
-    public School processSchool(School school){
-        if (school.hasPupils() && (!school.allPupilsHaveAverage() ^ school.allPupilsHaveAverage())){
-            while (!school.allPupilsHaveAverage()){
-                for (Pupil p : school.getAllPupils()){
+    public School processSchool(School school) {
+        if (school.hasPupils() && (!school.allPupilsHaveAverage() ^ school.allPupilsHaveAverage())) {
+            while (!school.allPupilsHaveAverage()) {
+                for (Pupil p : school.getAllPupils()) {
                     processExamResults(p);
                 }
-                for (Pupil p : school.getAllPupils()){
+                for (Pupil p : school.getAllPupils()) {
                     sitExams(p);
                 }
-                if (!(school.hasPupils() && (!school.allPupilsHaveAverage() ^ school.allPupilsHaveAverage()))){
+                if (!(school.hasPupils() && (!school.allPupilsHaveAverage() ^ school.allPupilsHaveAverage()))) {
                     throw new IllegalStateException("invariant breach.");
                 }
             }
@@ -70,11 +76,11 @@ public class SchoolExample2 extends BaseExecutionModesTest {
     }
 
     private void sitExams(Pupil p) {
-        if (!p.takenExams()){
+        if (!p.takenExams()) {
             p.sitExam(new Exam());
             p.sitExam(new Exam());
             p.sitExam(new Exam());
-            if (p.takenExams()){
+            if (p.takenExams()) {
                 return;
             } else {
                 throw new IllegalStateException("post-condition failure.");
@@ -83,13 +89,13 @@ public class SchoolExample2 extends BaseExecutionModesTest {
     }
 
     private void processExamResults(Pupil p) {
-        if (p.takenExams()){
-            while (!p.hasAverage()){
-                for (Exam exam : p.getExams()){
+        if (p.takenExams()) {
+            while (!p.hasAverage()) {
+                for (Exam exam : p.getExams()) {
                     markExam(exam);
                 }
                 averageScores(p);
-                if (!p.takenExams()){
+                if (!p.takenExams()) {
                     throw new IllegalStateException("invariant breach.");
                 }
             }
@@ -97,9 +103,9 @@ public class SchoolExample2 extends BaseExecutionModesTest {
     }
 
     private void averageScores(Pupil p) {
-        if (!p.hasAverage() && forAll(Exam.class, p.getExams(), e -> e.isMarked())){
+        if (!p.hasAverage() && forAll(Exam.class, p.getExams(), e -> e.isMarked())) {
             p.setAverage(p.getExams().stream().mapToDouble(e -> e.getResult()).average().getAsDouble());
-            if (p.hasAverage()){
+            if (p.hasAverage()) {
                 return;
             } else {
                 throw new IllegalStateException("post-condition failure.");
@@ -108,9 +114,9 @@ public class SchoolExample2 extends BaseExecutionModesTest {
     }
 
     private void markExam(Exam exam) {
-        if (!exam.isMarked()){
+        if (!exam.isMarked()) {
             exam.mark(1d);
-            if (exam.isMarked()){
+            if (exam.isMarked()) {
                 return;
             } else {
                 throw new IllegalStateException("post-condition failure.");

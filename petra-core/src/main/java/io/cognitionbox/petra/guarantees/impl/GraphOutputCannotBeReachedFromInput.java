@@ -20,12 +20,18 @@ import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.core.impl.OperationType;
 import io.cognitionbox.petra.core.impl.ReachabilityHelper;
 import io.cognitionbox.petra.guarantees.GraphCheck;
-import io.cognitionbox.petra.lang.*;
+import io.cognitionbox.petra.lang.Guard;
+import io.cognitionbox.petra.lang.GuardXOR;
+import io.cognitionbox.petra.lang.RGraphComputer;
 import io.cognitionbox.petra.lang.annotations.Extract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -115,7 +121,7 @@ public class GraphOutputCannotBeReachedFromInput implements GraphCheck {
             state.removeAll(statesToRemove);
             state.addAll(statesToAdd);
 
-            LOG.info("state: "+state);
+            LOG.info("state: " + state);
 //            if (lastState != null && state.equals(lastState)) {
 //                throw new IllegalStateException("state not changing.");
 //            }

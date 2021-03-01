@@ -1,18 +1,18 @@
 /**
  * Copyright (C) 2016-2020 Aran Hakki.
- *
+ * <p>
  * This file is part of Petra.
- *
+ * <p>
  * Petra is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * Petra is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with Petra.  If not, see <https://www.gnu.org/licenses/>.
  */
@@ -34,6 +34,7 @@ public class FlagSwitch extends BaseExecutionModesTest {
     public FlagSwitch(ExecMode execMode) {
         super(execMode);
     }
+
     /*
      * Laws:
      *
@@ -49,16 +50,16 @@ public class FlagSwitch extends BaseExecutionModesTest {
      * PRE </=> POST
      */
     @Test
-    public void test(){
+    public void test() {
 
         class FlagEdge extends PEdge<X> {
             {
                 type(X.class);
-                pre(x -> x.value==false);
-                func(x ->{
-                    x.value=true;
+                pre(x -> x.value == false);
+                func(x -> {
+                    x.value = true;
                 });
-                post(x -> x.value==true);
+                post(x -> x.value == true);
             }
         }
 
@@ -66,15 +67,15 @@ public class FlagSwitch extends BaseExecutionModesTest {
             {
                 type(X.class);
                 //invariant(x -> x.value==true ^ x.value==false);
-                pre(x -> x.value==false);
+                pre(x -> x.value == false);
                 begin();
                 step(new FlagEdge());
                 end();
-                post(x -> x.value==true);
+                post(x -> x.value == true);
             }
         }
 
-        X output = new PComputer<X>().eval(new FlagGraph(),new X(false));
+        X output = new PComputer<X>().eval(new FlagGraph(), new X(false));
 
         assertThat(output.value).isEqualTo(true);
 

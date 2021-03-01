@@ -12,7 +12,8 @@ public class YearGroup {
         this.schoolClasses = schoolClasses;
     }
 
-    @Extract public List<SchoolClass> getSchoolClasses() {
+    @Extract
+    public List<SchoolClass> getSchoolClasses() {
         return schoolClasses;
     }
 }

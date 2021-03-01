@@ -9,12 +9,12 @@ public class A implements Serializable {
 
     @Override
     public String toString() {
-      return "A{" +
-              "value=" + value +
-              '}';
+        return "A{" +
+                "value=" + value +
+                '}';
     }
 
     public A(int value) {
-      this.value = value;
+        this.value = value;
     }
-  }
+}

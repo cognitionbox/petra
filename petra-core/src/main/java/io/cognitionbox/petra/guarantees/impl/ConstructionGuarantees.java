@@ -1,12 +1,12 @@
 /**
  * Copyright 2016-2020 Aran Hakki
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,7 +30,8 @@ import io.cognitionbox.petra.lang.RGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ConstructionGuarantees {
 
@@ -39,7 +40,7 @@ public class ConstructionGuarantees {
 
     private List<Check> checks = new ArrayList<>();
 
-    public void addCheck(Check check){
+    public void addCheck(Check check) {
         checks.add(check);
     }
 
@@ -47,7 +48,7 @@ public class ConstructionGuarantees {
         this.config = config;
     }
 
-    public void initAllChecks(){
+    public void initAllChecks() {
         addCheck(new StepMustHaveValidPreAndPostCondition());
 
         initAllChecksExceptForThoseNotCompatibleWithGraphsGeneratedByReachabilityCheck();
@@ -77,7 +78,7 @@ public class ConstructionGuarantees {
         }
     }
 
-    void initAllChecksExceptForThoseNotCompatibleWithGraphsGeneratedByReachabilityCheck(){
+    void initAllChecksExceptForThoseNotCompatibleWithGraphsGeneratedByReachabilityCheck() {
         if (config.isDefensiveCopyAllInputs()) {
             addCheck(new AllFieldsMustBeSerializableUnlessTransient());
         }
@@ -93,12 +94,12 @@ public class ConstructionGuarantees {
     }
 
     public void runAllChecks(List<StepError> stepErrors, IStep step) {
-        for (Check c : checks){
+        for (Check c : checks) {
             if ((c instanceof EdgeCheck && step instanceof PEdge) ||
                     (c instanceof StepCheck && step instanceof IStep) ||
-                    (c instanceof GraphCheck && step instanceof IGraph)){
-                if (!c.test(step)){
-                    stepErrors.add(new StepError(step,c.getClass().getSimpleName()));
+                    (c instanceof GraphCheck && step instanceof IGraph)) {
+                if (!c.test(step)) {
+                    stepErrors.add(new StepError(step, c.getClass().getSimpleName()));
                     if (c instanceof StepMustHaveValidPreAndPostCondition &&
                             stepErrors.isEmpty()) {
                         return;

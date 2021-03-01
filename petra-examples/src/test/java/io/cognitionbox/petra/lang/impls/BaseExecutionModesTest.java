@@ -1,18 +1,18 @@
 /**
  * Copyright (C) 2016-2020 Aran Hakki.
- *
+ * <p>
  * This file is part of Petra.
- *
+ * <p>
  * Petra is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * Petra is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with Petra.  If not, see <https://www.gnu.org/licenses/>.
  */
@@ -34,67 +34,68 @@ import java.util.Properties;
 
 public class BaseExecutionModesTest extends BaseTest {
 
-  private static Properties original = new Properties(System.getProperties());
+    private static Properties original = new Properties(System.getProperties());
 
-  protected ExecMode getExecMode() {
-    return execMode;
-  }
+    protected ExecMode getExecMode() {
+        return execMode;
+    }
 
-  private ExecMode execMode;
+    private ExecMode execMode;
 
-  public BaseExecutionModesTest(ExecMode execMode) {
-    this.execMode = execMode;
-  }
+    public BaseExecutionModesTest(ExecMode execMode) {
+        this.execMode = execMode;
+    }
 
-  @Parameterized.Parameters
-  public static Collection executionModes() {
-    return Arrays.asList(new Object[][] {
-            {ExecMode.SEQ},
-            {ExecMode.PAR}
-    });
-  }
+    @Parameterized.Parameters
+    public static Collection executionModes() {
+        return Arrays.asList(new Object[][]{
+                {ExecMode.SEQ},
+                {ExecMode.PAR}
+        });
+    }
 
-  private long millisToWait = 1000;
+    private long millisToWait = 1000;
 
-  final protected PComputer getGraphComputer() {
-    return PComputer;
-  }
+    final protected PComputer getGraphComputer() {
+        return PComputer;
+    }
 
-  protected PComputer PComputer;
-  //private HazelcastInstance instance;
-  @Before
-  public void setup(){
-    super.setup();
-    PetraTestConfig testConfig = new PetraTestConfig();
-    testConfig
-            .allowExceptionsPassthrough()
-            .setMode(execMode)
-            //.setHazelcastServerMode(HazelcastServerMode.LOCAL).
-            .setIsReachabilityChecksEnabled(false)
-            .setConstructionGuaranteeChecks(true)
-            .setDefensiveCopyAllInputsExceptForEffectedInputs(false)
-            .setStrictModeExtraConstructionGuarantee(false)
-            .setSequentialModeFactory(new PetraSequentialComponentsFactory())
-            .setParallelModeFactory(new PetraParallelComponentsFactory());
-    RGraphComputer.setConfig(testConfig);
-    PComputer = new PComputer();
-  }
+    protected PComputer PComputer;
 
-  @After
-  public void tearDown(){
-    PComputer.shutdown();
-    PComputer = null;
+    //private HazelcastInstance instance;
+    @Before
+    public void setup() {
+        super.setup();
+        PetraTestConfig testConfig = new PetraTestConfig();
+        testConfig
+                .allowExceptionsPassthrough()
+                .setMode(execMode)
+                //.setHazelcastServerMode(HazelcastServerMode.LOCAL).
+                .setIsReachabilityChecksEnabled(false)
+                .setConstructionGuaranteeChecks(true)
+                .setDefensiveCopyAllInputsExceptForEffectedInputs(false)
+                .setStrictModeExtraConstructionGuarantee(false)
+                .setSequentialModeFactory(new PetraSequentialComponentsFactory())
+                .setParallelModeFactory(new PetraParallelComponentsFactory());
+        RGraphComputer.setConfig(testConfig);
+        PComputer = new PComputer();
+    }
+
+    @After
+    public void tearDown() {
+        PComputer.shutdown();
+        PComputer = null;
 //    if (instance!=null){
 //      instance.shutdown();
 //      //instance.getCluster().shutdown();
 //    }
-  }
-
-  private void waitForXmillis(long x){
-    try {
-      Thread.sleep(x);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
     }
-  }
+
+    private void waitForXmillis(long x) {
+        try {
+            Thread.sleep(x);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 }

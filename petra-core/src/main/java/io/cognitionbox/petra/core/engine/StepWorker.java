@@ -1,12 +1,12 @@
 /**
  * Copyright 2016-2020 Aran Hakki
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,8 +15,8 @@
  */
 package io.cognitionbox.petra.core.engine;
 
-import io.cognitionbox.petra.lang.RGraphComputer;
 import io.cognitionbox.petra.core.IRingbuffer;
+import io.cognitionbox.petra.lang.RGraphComputer;
 
 import java.io.Serializable;
 import java.util.concurrent.Callable;
@@ -32,11 +32,11 @@ public class StepWorker implements Callable<Boolean>, Serializable {
         long seq = 0;
         IRingbuffer<Serializable> tasks = RGraphComputer.getTaskQueue();
         int count = 0;
-        while(true){//count<10){
-            if (seq<=tasks.tailSequence()){
+        while (true) {//count<10){
+            if (seq <= tasks.tailSequence()) {
                 Serializable read = tasks.readOne(seq);
-                if (read instanceof StepCallable){
-                    if (read!=null && !((StepCallable) read).isDone()){
+                if (read instanceof StepCallable) {
+                    if (read != null && !((StepCallable) read).isDone()) {
                         try {
                             ((ThreadPoolExecutor) RGraphComputer.getWorkerExecutor())
                                     .setRejectedExecutionHandler(new RejectedExecutionHandler() {
@@ -52,7 +52,7 @@ public class StepWorker implements Callable<Boolean>, Serializable {
                     }
                 }
                 seq++;
-                if (seq>=tasks.capacity()){
+                if (seq >= tasks.capacity()) {
                     seq = 0;
                 }
             } else {

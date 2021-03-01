@@ -52,64 +52,66 @@ import java.io.Serializable;
  * Optional}</a>.
  *
  * @param <T> the type of instance that can be contained. {@code Optional} is naturally covariant on
- *     this type, so it is safe to cast an {@code Optional<T>} to {@code Optional<S>} for any
- *     supertype {@code S} of {@code T}.
+ *            this type, so it is safe to cast an {@code Optional<T>} to {@code Optional<S>} for any
+ *            supertype {@code S} of {@code T}.
  * @author Kurt Alfred Kluever
  * @author Kevin Bourrillion
  * @since 10.0
  */
 public abstract class Optional<T> implements Serializable {
 
-  public static <T extends Object> T checkNotNull(T reference) {
-    if (reference == null) {
-      throw new NullPointerException();
+    public static <T extends Object> T checkNotNull(T reference) {
+        if (reference == null) {
+            throw new NullPointerException();
+        }
+        return reference;
     }
-    return reference;
-  }
-  /**
-   * rt an {@code Optional} instance with no contained reference.
-   *
-   * <p><b>Comparison to {@code java.util.Optional}:</b> this method is equivalent to Java 8's
-   * {@code Optional.empty}.
-   */
-  public static <T> Optional<T> absent() {
-    return Absent.withType();
-  }
 
-  /**
-   * rt an {@code Optional} instance containing the given non-null reference. To have {@code
-   * null} treated as {@link #absent}, use {@link #fromNullable} instead.
-   *
-   * <p><b>Comparison to {@code java.util.Optional}:</b> no differences.
-   *
-   * @throws NullPointerException if {@code reference} is null
-   */
-  public static <T> Optional<T> of(T reference) {
-    return new Present<T>(checkNotNull(reference));
-  }
+    /**
+     * rt an {@code Optional} instance with no contained reference.
+     *
+     * <p><b>Comparison to {@code java.util.Optional}:</b> this method is equivalent to Java 8's
+     * {@code Optional.empty}.
+     */
+    public static <T> Optional<T> absent() {
+        return Absent.withType();
+    }
 
-  public Optional() {}
+    /**
+     * rt an {@code Optional} instance containing the given non-null reference. To have {@code
+     * null} treated as {@link #absent}, use {@link #fromNullable} instead.
+     *
+     * <p><b>Comparison to {@code java.util.Optional}:</b> no differences.
+     *
+     * @throws NullPointerException if {@code reference} is null
+     */
+    public static <T> Optional<T> of(T reference) {
+        return new Present<T>(checkNotNull(reference));
+    }
 
-  /**
-   * rt {@code true} if this holder contains a (non-null) instance.
-   *
-   * <p><b>Comparison to {@code java.util.Optional}:</b> no differences.
-   */
-  public abstract boolean isPresent();
+    public Optional() {
+    }
 
-  /**
-   * rt the contained instance, which must be present. If the instance might be absent, use
-   * {@link #or(Object)} or {@link #orNull} instead.
-   *
-   * <p><b>Comparison to {@code java.util.Optional}:</b> when the value is absent, this method
-   * throws {@link IllegalStateException}, whereas the Java 8 counterpart throws {@link
-   * java.util.NoSuchElementException NoSuchElementException}.
-   *
-   * @throws IllegalStateException if the instance is absent ({@link #isPresent} rt {@code
-   *     false}); depending on this <i>specific</i> exception type (over the more general {@link
-   *     RuntimeException}) is discouraged
-   */
-  public abstract T get();
+    /**
+     * rt {@code true} if this holder contains a (non-null) instance.
+     *
+     * <p><b>Comparison to {@code java.util.Optional}:</b> no differences.
+     */
+    public abstract boolean isPresent();
 
-  private static final long serialVersionUID = 0;
+    /**
+     * rt the contained instance, which must be present. If the instance might be absent, use
+     * {@link #or(Object)} or {@link #orNull} instead.
+     *
+     * <p><b>Comparison to {@code java.util.Optional}:</b> when the value is absent, this method
+     * throws {@link IllegalStateException}, whereas the Java 8 counterpart throws {@link
+     * java.util.NoSuchElementException NoSuchElementException}.
+     *
+     * @throws IllegalStateException if the instance is absent ({@link #isPresent} rt {@code
+     *                               false}); depending on this <i>specific</i> exception type (over the more general {@link
+     *                               RuntimeException}) is discouraged
+     */
+    public abstract T get();
+
+    private static final long serialVersionUID = 0;
 }

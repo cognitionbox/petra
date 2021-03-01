@@ -1,6 +1,6 @@
 package io.cognitionbox.petra.examples.simple.loop;
 
-class A{
+class A {
     Integer value = 0;
 
     private Integer captured = null;

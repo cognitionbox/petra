@@ -13,7 +13,8 @@ public class SchoolClass {
         return teacher;
     }
 
-    @Extract public List<Pupil> getPupils() {
+    @Extract
+    public List<Pupil> getPupils() {
         return pupils;
     }
 

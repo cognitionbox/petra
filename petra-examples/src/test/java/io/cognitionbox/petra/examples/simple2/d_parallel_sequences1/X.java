@@ -8,8 +8,16 @@ import java.io.Serializable;
 class X implements Serializable {
     private Y y1;
     private Y y2;
-    @Extract public Y y1() { return y1; }
-    @Extract public Y y2() { return y2; }
+
+    @Extract
+    public Y y1() {
+        return y1;
+    }
+
+    @Extract
+    public Y y2() {
+        return y2;
+    }
 
     public X(State state) {
         y1 = new Y(state);

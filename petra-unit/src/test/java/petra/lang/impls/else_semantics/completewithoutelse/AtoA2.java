@@ -4,12 +4,12 @@ import io.cognitionbox.petra.lang.PEdge;
 
 public class AtoA2 extends PEdge<A> {
     {
-      type(A.class);
-      pre(a->a.value==2); // disjoint pre-conditions
-      func(a->{
-        a.value= a.value*2;
-      });
-      post(a->a.value==4); // disjoint post-conditions
+        type(A.class);
+        pre(a -> a.value == 2); // disjoint pre-conditions
+        func(a -> {
+            a.value = a.value * 2;
+        });
+        post(a -> a.value == 4); // disjoint post-conditions
     }
 
     // All conditions must be in disjunctive normal form AND
@@ -26,4 +26,4 @@ public class AtoA2 extends PEdge<A> {
     // something like setting JaCoCo or Sonar cube to only check for
     // positive condition coverage.
 
-  }
+}

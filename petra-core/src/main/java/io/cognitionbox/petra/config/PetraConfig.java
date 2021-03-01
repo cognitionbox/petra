@@ -1,12 +1,12 @@
 /**
  * Copyright 2016-2020 Aran Hakki
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,7 +16,28 @@
 package io.cognitionbox.petra.config;
 
 import io.cognitionbox.petra.factory.IPetraComponentsFactory;
-import io.cognitionbox.petra.guarantees.impl.*;
+import io.cognitionbox.petra.guarantees.impl.AllFieldsMustBeSerializableUnlessTransient;
+import io.cognitionbox.petra.guarantees.impl.CheckAllPrePostTypesAreStates;
+import io.cognitionbox.petra.guarantees.impl.CheckAllPrePostTypesHaveNoGenericsUnlessTheyAreRefsWhichCanOnlyHaveNonGenericTypes;
+import io.cognitionbox.petra.guarantees.impl.ClassesWithExtractsOnFieldsMustHaveExtractAnnotation;
+import io.cognitionbox.petra.guarantees.impl.EdgeEffectMustHaveInputTypeEqualToOutputType;
+import io.cognitionbox.petra.guarantees.impl.EdgeMustHaveAfunction;
+import io.cognitionbox.petra.guarantees.impl.EffectTypesMustBeClassesAndNotInterfaces;
+import io.cognitionbox.petra.guarantees.impl.ExtractsAtClassLevelMustBeAppliedOnlyToIterablesOrClassesWhichHaveExtractOnFields;
+import io.cognitionbox.petra.guarantees.impl.GraphMustHaveAtLeastOneStep;
+import io.cognitionbox.petra.guarantees.impl.GraphMustHaveAtLeastOneStepOrJoin;
+import io.cognitionbox.petra.guarantees.impl.GraphOutputCannotBeReachedFromInput;
+import io.cognitionbox.petra.guarantees.impl.NoStepsInSameStepHaveSamePreconditionType;
+import io.cognitionbox.petra.guarantees.impl.OnlyEdgesWithSideEffectsMustImplementIRollback;
+import io.cognitionbox.petra.guarantees.impl.OnlyStepWithSideAffectTrueMustImplementSideEffect;
+import io.cognitionbox.petra.guarantees.impl.PrePostTypesMustBeBoundToUniquePredicates;
+import io.cognitionbox.petra.guarantees.impl.StaticFieldsOnlyAllowedIfFinalAndPrimitive;
+import io.cognitionbox.petra.guarantees.impl.StepMustHaveValidPreAndPostCondition;
+import io.cognitionbox.petra.guarantees.impl.StepWithImmutablePreOrPostConditionTypesCannotBeSideEffects;
+import io.cognitionbox.petra.guarantees.impl.StepsCanCannotDeclareConstructors;
+import io.cognitionbox.petra.guarantees.impl.StepsCanOnlyEverImplementOneInterfaceWhichIsIRollback;
+import io.cognitionbox.petra.guarantees.impl.StepsCannotHaveFields;
+import io.cognitionbox.petra.guarantees.impl.StepsMustHavePublicClasses;
 
 public class PetraConfig implements IPetraConfig {
     final public PrePostTypesMustBeBoundToUniquePredicates

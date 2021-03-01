@@ -39,27 +39,29 @@ public class Simlulation implements ReadJunction, WriteJunction, Serializable {
         return junction.getNoOfCarsInJunction();
     }
 
-    @Extract  public Signal getSignalA() {
+    @Extract
+    public Signal getSignalA() {
         return signalA;
     }
 
-    @Extract public Signal getSignalB() {
+    @Extract
+    public Signal getSignalB() {
         return signalB;
     }
 
-    public boolean signalAisRED(){
+    public boolean signalAisRED() {
         return getSignalA().getSignal().isRED();
     }
 
-    public boolean signalBisRED(){
+    public boolean signalBisRED() {
         return getSignalB().getSignal().isRED();
     }
 
-    public boolean signalAisGREEN(){
+    public boolean signalAisGREEN() {
         return getSignalA().getSignal().isGREEN();
     }
 
-    public boolean signalBisGREEN(){
+    public boolean signalBisGREEN() {
         return getSignalB().getSignal().isGREEN();
     }
 
@@ -75,19 +77,20 @@ public class Simlulation implements ReadJunction, WriteJunction, Serializable {
     private Signal signalA = new Signal(SignalState.GREEN);
     private Signal signalB = new Signal(SignalState.RED);
 
-    @Extract public List<Car> getCars() {
+    @Extract
+    public List<Car> getCars() {
         return this.cars;
     }
 
     private List<Car> cars = new ArrayList<>();
 
-    void loadCars(int noOfCars){
-        for (int i=0;i<noOfCars;i++){
-           if (i%2==0){
-               cars.add(new Car(signalB));
-           } else {
-               cars.add(new Car(signalA));
-           }
+    void loadCars(int noOfCars) {
+        for (int i = 0; i < noOfCars; i++) {
+            if (i % 2 == 0) {
+                cars.add(new Car(signalB));
+            } else {
+                cars.add(new Car(signalA));
+            }
         }
     }
 }

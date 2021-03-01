@@ -8,10 +8,10 @@ import io.cognitionbox.petra.util.impl.PList;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiConsumer;
 
 import static io.cognitionbox.petra.util.Petra.ref;
 
@@ -41,20 +41,22 @@ public class ObjectTrans {
     }
 
     private ObjectCopyerViaSerialization copyer = new ObjectCopyerViaSerialization();
-    private Map<Field,Object> storedValues = new ConcurrentHashMap<>();
-    public ObjectTrans() {}
+    private Map<Field, Object> storedValues = new ConcurrentHashMap<>();
 
-    public void capture(Object object){
+    public ObjectTrans() {
+    }
+
+    public void capture(Object object) {
         Set<Field> fields = ReflectUtils.getAllNonStaticFieldsAccessibleFromObject(object.getClass());
-        fields.parallelStream().forEach(f->{
+        fields.parallelStream().forEach(f -> {
             boolean access = f.isAccessible();
             f.setAccessible(true);
             try {
                 Object value = f.get(object);
-                if (value instanceof Serializable){
+                if (value instanceof Serializable) {
                     // later add support for petra's parallel / distributable atomic reference
                     // we capture/replace the value rather than the reference
-                    storedValues.put(f,copyer.copy((Serializable) value));
+                    storedValues.put(f, copyer.copy((Serializable) value));
                 }
             } catch (Throwable e) {
                 e.printStackTrace();
@@ -64,7 +66,7 @@ public class ObjectTrans {
         });
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
 
         PComputer.getConfig()
                 .enableStatesLogging()
@@ -91,19 +93,19 @@ public class ObjectTrans {
 //        System.out.println(a2);
     }
 
-    public void restore(Object object){
+    public void restore(Object object) {
         Set<Field> fields = ReflectUtils.getAllNonStaticFieldsAccessibleFromObject(object.getClass());
-        fields.parallelStream().forEach(f->{
+        fields.parallelStream().forEach(f -> {
             // later add support for petra's parallel / distributable atomic reference
             // we capture/replace the value rather than the reference
             boolean access = f.isAccessible();
             f.setAccessible(true);
             try {
-                if (storedValues.containsKey(f)){
+                if (storedValues.containsKey(f)) {
                     Object restored = storedValues.get(f);
                     // later add support for petra's parallel / distributable atomic reference
                     // we capture/replace the value rather than the reference
-                    f.set(object,restored);
+                    f.set(object, restored);
                 }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();

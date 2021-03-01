@@ -6,12 +6,12 @@ import static io.cognitionbox.petra.util.Petra.choice;
 
 public class AtoA extends PGraph<A> {
     {
-      type(A.class);
-      pre(a->a.value==0);
-      begin();
-      step(choice(),BtoB.class);
-      step(choice(),CtoC.class);
-      end();
-      post(a->a.value==1);
+        type(A.class);
+        pre(a -> a.value == 0);
+        begin();
+        step(choice(), BtoB.class);
+        step(choice(), CtoC.class);
+        end();
+        post(a -> a.value == 1);
     }
-  }
+}

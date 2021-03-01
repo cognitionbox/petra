@@ -3,7 +3,7 @@ package io.cognitionbox.petra.examples.simple.common;
 import java.io.Serializable;
 
 public class B implements Serializable {
-    public  Integer value = 0;
+    public Integer value = 0;
 
     private Integer captured = null;
 

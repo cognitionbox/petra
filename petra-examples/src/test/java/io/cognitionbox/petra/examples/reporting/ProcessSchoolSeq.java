@@ -1,6 +1,11 @@
 package io.cognitionbox.petra.examples.reporting;
 
-import io.cognitionbox.petra.examples.reporting.objects.*;
+import io.cognitionbox.petra.examples.reporting.objects.Exam;
+import io.cognitionbox.petra.examples.reporting.objects.Pupil;
+import io.cognitionbox.petra.examples.reporting.objects.School;
+import io.cognitionbox.petra.examples.reporting.objects.SchoolClass;
+import io.cognitionbox.petra.examples.reporting.objects.Teacher;
+import io.cognitionbox.petra.examples.reporting.objects.YearGroup;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -13,10 +18,10 @@ public class ProcessSchoolSeq {
     @Test
     public void test() {
 
-        Teacher teacher1 = new Teacher("Sam","Bloggs",31);
+        Teacher teacher1 = new Teacher("Sam", "Bloggs", 31);
         SchoolClass classA = new SchoolClass(teacher1, Arrays.asList(
-                new Pupil("Adam","Johnson",11),
-                new Pupil("Aobby","Jimbo",12)));
+                new Pupil("Adam", "Johnson", 11),
+                new Pupil("Aobby", "Jimbo", 12)));
         YearGroup year7 = new YearGroup(Arrays.asList(classA));
         School school = new School(Arrays.asList(year7));
 

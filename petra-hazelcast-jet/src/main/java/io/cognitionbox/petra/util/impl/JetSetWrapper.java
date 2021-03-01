@@ -1,12 +1,12 @@
 /**
  * Copyright 2016-2020 Aran Hakki
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,7 +17,6 @@ package io.cognitionbox.petra.util.impl;
 
 import com.hazelcast.core.IMap;
 import com.hazelcast.jet.JetInstance;
-import io.cognitionbox.petra.config.PetraConfig;
 import io.cognitionbox.petra.core.impl.Identifyable;
 import io.cognitionbox.petra.util.Petra;
 import io.cognitionbox.petra.util.function.ISupplier;
@@ -44,7 +43,8 @@ public final class JetSetWrapper<T> extends Identifyable implements Set<T>, Seri
 
     private ISupplier<JetInstance> jetClientSupplier;
     private transient IMap<T, Boolean> jetMap = jetClientSupplier.get().getMap(getUniqueId());
-    public JetSetWrapper(String name, ISupplier<JetInstance> hazelcastClientSupplier){
+
+    public JetSetWrapper(String name, ISupplier<JetInstance> hazelcastClientSupplier) {
         super(name);
         this.jetClientSupplier = jetClientSupplier;
     }

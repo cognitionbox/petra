@@ -6,9 +6,11 @@ public class StateTransformerStep<X, P> implements TransformerStep {
     public IFunction<X, P> getTransformer() {
         return transformer;
     }
+
     public AbstractStep getStep() {
         return step;
     }
+
     private IFunction<X, P> transformer;
     private AbstractStep step;
 

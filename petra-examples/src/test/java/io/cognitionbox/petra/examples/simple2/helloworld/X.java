@@ -16,19 +16,19 @@ class X implements Serializable {
 
     String value;
 
-    public boolean isString(){
+    public boolean isString() {
         return this.value.equals("");
     }
 
-    public boolean isBlankOrHelloWorld(){
+    public boolean isBlankOrHelloWorld() {
         return isBlank() ^ isHelloWorld();
     }
 
-    public boolean isBlank(){
-       return this.value.equals("");
+    public boolean isBlank() {
+        return this.value.equals("");
     }
 
-    public boolean isHelloWorld(){
+    public boolean isHelloWorld() {
         return this.value.equals("hello world.");
     }
 }

@@ -22,8 +22,19 @@ public class Y {
 
     private State state;
 
-    public boolean isA(){ return state== State.A; }
-    public boolean isB(){ return state== State.B; }
-    public boolean isC(){ return state== State.C; }
-    public boolean isAB(){ return isA() ^ isB();}
+    public boolean isA() {
+        return state == State.A;
+    }
+
+    public boolean isB() {
+        return state == State.B;
+    }
+
+    public boolean isC() {
+        return state == State.C;
+    }
+
+    public boolean isAB() {
+        return isA() ^ isB();
+    }
 }

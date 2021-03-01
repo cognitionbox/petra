@@ -1,12 +1,12 @@
 /**
  * Copyright 2016-2020 Aran Hakki
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,17 +20,34 @@ import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.core.impl.ObjectCopyerViaSerialization;
 import io.cognitionbox.petra.core.impl.OperationType;
 import io.cognitionbox.petra.factory.IPetraComponentsFactory;
+import io.cognitionbox.petra.lang.Guard;
+import io.cognitionbox.petra.lang.GuardReturn;
+import io.cognitionbox.petra.lang.GuardWrite;
+import io.cognitionbox.petra.lang.GuardXOR;
+import io.cognitionbox.petra.lang.PEdge;
+import io.cognitionbox.petra.lang.RGraphComputer;
+import io.cognitionbox.petra.lang.Ref;
 import io.cognitionbox.petra.lang.Void;
-import io.cognitionbox.petra.lang.*;
-import io.cognitionbox.petra.util.function.*;
+import io.cognitionbox.petra.util.function.IConsumer;
+import io.cognitionbox.petra.util.function.IFunction;
+import io.cognitionbox.petra.util.function.IPredicate;
+import io.cognitionbox.petra.util.function.ISupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.security.SecureRandom;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -73,7 +90,7 @@ public class Petra {
         try {
             return clazz.newInstance();
         } catch (Exception e) {
-            throw new UnsupportedOperationException("cannot create step.",e);
+            throw new UnsupportedOperationException("cannot create step.", e);
         }
     }
 
@@ -92,15 +109,15 @@ public class Petra {
         }
     }
 
-    public static ExecMode seq(){
+    public static ExecMode seq() {
         return ExecMode.SEQ;
     }
 
-    public static ExecMode par(){
+    public static ExecMode par() {
         return ExecMode.PAR;
     }
 
-    public static ExecMode choice(){
+    public static ExecMode choice() {
         return ExecMode.CHOICE;
     }
 
@@ -129,8 +146,8 @@ public class Petra {
     }
 
     public static <X> PEdge<X> anonymous(Guard<X> p,
-                                               IConsumer<X> function,
-                                               Guard<X>... qs) {
+                                         IConsumer<X> function,
+                                         Guard<X>... qs) {
         GuardXOR<X> pTypeXOR = new GuardXOR<>(OperationType.RETURN);
         for (Guard q : qs) {
             pTypeXOR.addChoice(q);
@@ -199,6 +216,7 @@ public class Petra {
     }
 
     private static ObjectCopyerViaSerialization copyer = new ObjectCopyerViaSerialization();
+
     public static <T extends Serializable> T copy(T object) {
         try {
             return copyer.copy(object);
@@ -210,9 +228,9 @@ public class Petra {
         return null;
     }
 
-    public static <C extends Collection<R>,T extends Serializable,R> C mapParallel(Collection<T> collection, IFunction<T,R> mapper, ISupplier<C> supplier){
-        IFunction<T,R> mapperWithCopy = t->{
-            if (t!=null){
+    public static <C extends Collection<R>, T extends Serializable, R> C mapParallel(Collection<T> collection, IFunction<T, R> mapper, ISupplier<C> supplier) {
+        IFunction<T, R> mapperWithCopy = t -> {
+            if (t != null) {
                 return mapper.apply(copy(t));
             } else {
                 return null;
@@ -221,29 +239,29 @@ public class Petra {
         return collection.parallelStream().map(mapperWithCopy).collect(Collectors.toCollection(supplier));
     }
 
-    public static <C extends Collection<R>,T,R> C mapSequential(Collection<T> collection, IFunction<T,R> mapper, ISupplier<C> supplier){
+    public static <C extends Collection<R>, T, R> C mapSequential(Collection<T> collection, IFunction<T, R> mapper, ISupplier<C> supplier) {
         return collection.stream().map(mapper).collect(Collectors.toCollection(supplier));
     }
 
-    public static <T extends Serializable> Optional<T> maxParallel(Collection<T> collection, Comparator<T> comparator){
-        Comparator<T> comparatorWithCopy = (t1,t2)->{
-            return comparator.compare(copy(t1),copy(t2));
+    public static <T extends Serializable> Optional<T> maxParallel(Collection<T> collection, Comparator<T> comparator) {
+        Comparator<T> comparatorWithCopy = (t1, t2) -> {
+            return comparator.compare(copy(t1), copy(t2));
         };
         return collection.parallelStream().max(comparatorWithCopy);
     }
 
-    public static <T> Optional<T> maxSequential(Collection<T> collection, Comparator<T> comparator){
+    public static <T> Optional<T> maxSequential(Collection<T> collection, Comparator<T> comparator) {
         return collection.stream().max(comparator);
     }
 
-    public static <C extends Collection<T>,T extends Serializable> C filterParallel(Collection<T> collection, IPredicate<T> predicate, ISupplier<C> supplier){
-        IPredicate<T> predicateWithCopy = t->{
-            return t!=null && predicate.test(copy(t));
+    public static <C extends Collection<T>, T extends Serializable> C filterParallel(Collection<T> collection, IPredicate<T> predicate, ISupplier<C> supplier) {
+        IPredicate<T> predicateWithCopy = t -> {
+            return t != null && predicate.test(copy(t));
         };
         return collection.parallelStream().filter(predicateWithCopy).collect(Collectors.toCollection(supplier));
     }
 
-    public static <C extends Collection<T>,T extends Serializable> C filterSequential(Collection<T> collection, IPredicate<T> predicate, ISupplier<C> supplier){
+    public static <C extends Collection<T>, T extends Serializable> C filterSequential(Collection<T> collection, IPredicate<T> predicate, ISupplier<C> supplier) {
         return collection.stream().filter(predicate).collect(Collectors.toCollection(supplier));
     }
 

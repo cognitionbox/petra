@@ -52,89 +52,90 @@ import java.util.Properties;
 
 public class BaseExecutionModesTest extends BaseTest {
 
-  private static Properties original = new Properties(System.getProperties());
+    private static Properties original = new Properties(System.getProperties());
 
-  protected ExecMode getExecMode() {
-    return execMode;
-  }
+    protected ExecMode getExecMode() {
+        return execMode;
+    }
 
-  private ExecMode execMode;
+    private ExecMode execMode;
 
-  public BaseExecutionModesTest(ExecMode execMode) {
-    this.execMode = execMode;
-  }
+    public BaseExecutionModesTest(ExecMode execMode) {
+        this.execMode = execMode;
+    }
 
-  @Parameterized.Parameters
-  public static Collection executionModes() {
-    return Arrays.asList(new Object[][] {
-        {ExecMode.SEQ}
-        ,
-        {ExecMode.PAR}
+    @Parameterized.Parameters
+    public static Collection executionModes() {
+        return Arrays.asList(new Object[][]{
+                {ExecMode.SEQ}
+                ,
+                {ExecMode.PAR}
 //        ,
 //        {ExecMode.DIS}
-    });
-  }
-
-  private long millisToWait = 1000;
-
-  final protected PComputer getGraphComputer() {
-    return PComputer;
-  }
-
-  protected PComputer PComputer;
-  private HazelcastInstance instance;
-  @Before
-  public void setup(){
-    super.setup();
-    IPetraConfig testConfig =
-            new PetraHazelcastTestConfig()
-                    .allowExceptionsPassthrough()
-                    .setMode(execMode)
-                    //.setHazelcastServerMode(HazelcastServerMode.LOCAL).
-                    .enableStatesLogging()
-                    .setIsReachabilityChecksEnabled(true)
-                    .setConstructionGuaranteeChecks(true)
-                    .setDefensiveCopyAllInputsExceptForEffectedInputs(false)
-                    .setStrictModeExtraConstructionGuarantee(false)
-                    .setSequentialModeFactory(new PetraSequentialComponentsFactory())
-                    .setParallelModeFactory(new PetraParallelComponentsFactory())
-                    .setDistributedModeFactory(new PetraHazelcastComponentsFactory());
-    RGraphComputer.setConfig(testConfig);
-    if (execMode.isDIS()){
-      Config config = new Config();
-      RingbufferConfig rbConfig1 = new RingbufferConfig("tasks")
-              .setCapacity(10000)
-              .setTimeToLiveSeconds(30);
-      RingbufferConfig rbConfig2 = new RingbufferConfig("iterationTasks")
-              .setCapacity(10000)
-              .setTimeToLiveSeconds(30);
-      config.addRingBufferConfig(rbConfig1);
-      config.addRingBufferConfig(rbConfig2);
-      instance = Hazelcast.newHazelcastInstance(config);
+        });
     }
-    PComputer = new PComputer();
-  }
 
-  @After
-  public void tearDown(){
-    PComputer.shutdown();
-    PComputer = null;
-    if (instance!=null){
+    private long millisToWait = 1000;
+
+    final protected PComputer getGraphComputer() {
+        return PComputer;
+    }
+
+    protected PComputer PComputer;
+    private HazelcastInstance instance;
+
+    @Before
+    public void setup() {
+        super.setup();
+        IPetraConfig testConfig =
+                new PetraHazelcastTestConfig()
+                        .allowExceptionsPassthrough()
+                        .setMode(execMode)
+                        //.setHazelcastServerMode(HazelcastServerMode.LOCAL).
+                        .enableStatesLogging()
+                        .setIsReachabilityChecksEnabled(true)
+                        .setConstructionGuaranteeChecks(true)
+                        .setDefensiveCopyAllInputsExceptForEffectedInputs(false)
+                        .setStrictModeExtraConstructionGuarantee(false)
+                        .setSequentialModeFactory(new PetraSequentialComponentsFactory())
+                        .setParallelModeFactory(new PetraParallelComponentsFactory())
+                        .setDistributedModeFactory(new PetraHazelcastComponentsFactory());
+        RGraphComputer.setConfig(testConfig);
+        if (execMode.isDIS()) {
+            Config config = new Config();
+            RingbufferConfig rbConfig1 = new RingbufferConfig("tasks")
+                    .setCapacity(10000)
+                    .setTimeToLiveSeconds(30);
+            RingbufferConfig rbConfig2 = new RingbufferConfig("iterationTasks")
+                    .setCapacity(10000)
+                    .setTimeToLiveSeconds(30);
+            config.addRingBufferConfig(rbConfig1);
+            config.addRingBufferConfig(rbConfig2);
+            instance = Hazelcast.newHazelcastInstance(config);
+        }
+        PComputer = new PComputer();
+    }
+
+    @After
+    public void tearDown() {
+        PComputer.shutdown();
+        PComputer = null;
+        if (instance != null) {
 //      if (RGraphComputer.getConfig() instanceof PetraHazelcastTestConfig){
 //        PetraHazelcastTestConfig c = (PetraHazelcastTestConfig) RGraphComputer.getConfig();
 //        c.getHazelcastClient().shutdown();
 //        while(c.getHazelcastClient().getClientService().get)
 //      }
-      instance.shutdown();
-      //instance.getCluster().shutdown();
+            instance.shutdown();
+            //instance.getCluster().shutdown();
+        }
     }
-  }
 
-  private void waitForXmillis(long x){
-    try {
-      Thread.sleep(x);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
+    private void waitForXmillis(long x) {
+        try {
+            Thread.sleep(x);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
-  }
 }
