@@ -49,7 +49,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-import static io.cognitionbox.petra.util.Petra.seq;
+import static io.cognitionbox.petra.util.Petra.choice;
 
 public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> {
 
@@ -213,7 +213,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
     private List<StateIterableTransformerStep> parIterableTransformerSteps = new ArrayList<>();
     private List<StateTransformerStep> seqTransformerSteps = new ArrayList<>();
     private List<StateIterableTransformerStep> seqIterableTransformerSteps = new ArrayList<>();
-    private List<Pair<ExecMode,List<TransformerStep>>> allSteps = new ArrayList<>();
+    private List<Pair<ExecMode,List<TransformerStep>>> allSteps;
 
     public List<StateTransformerStep> getSeqTransformerSteps() {
         return seqTransformerSteps;
@@ -311,16 +311,30 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
         step(ExecMode.SEQ,transformer,(IStep<P>) abstractStep);
     }
 
-    public <P> void skip(){
-        skip(seq());
+    public <P> void choiceSkip(){
+        skip(ExecMode.CHOICE);
     }
 
-    public <P> void skip(ExecMode execMode){
+    private  <P> void skip(ExecMode execMode){
         if (execMode.isPAR() || execMode.isDIS()){
             throw new UnsupportedOperationException("skips can only be sequential or choices.");
         }
         step(execMode, x->x,new Skip());
     }
+
+    public <P> void choice(Class<? extends IStep<? extends P>> step){
+        step(ExecMode.CHOICE, x->x ,Petra.createStep(step));
+    }
+    public <P> void choice(IFunction<X,P> transformer, Class<? extends IStep<? extends P>> step){
+        step(ExecMode.CHOICE, transformer,Petra.createStep(step));
+    }
+    public <P> void choice(IFunction<X,P> transformer, IStep<? extends P> step){
+        step(ExecMode.CHOICE, transformer,step);
+    }
+    public <P> void choice(IStep<? extends P> step){
+        step(ExecMode.CHOICE, x->x,step);
+    }
+
 
     public <P> void step(ExecMode execMode, IFunction<X,P> transformer, Class<? extends IStep<? extends P>> step){
         step(execMode, transformer,Petra.createStep(step));
@@ -387,7 +401,14 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
 
     private boolean endAsBeenCalled = false;
 
+    public void begin(){
+        allSteps = new ArrayList<>();
+    }
+
     public void end() {
+        if (allSteps==null){
+            throw new UnsupportedOperationException("end but no begin.");
+        }
         allSteps.add(Pair.with(lastExecMode, currentSteps));
         endAsBeenCalled = true;
     }

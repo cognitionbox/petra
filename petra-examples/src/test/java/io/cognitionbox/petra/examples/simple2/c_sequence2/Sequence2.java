@@ -76,6 +76,7 @@ public class Sequence2 extends BaseExecutionModesTest {
             {
                 type(X.class);
                 pre(x->x.isAB());
+                begin();
                 step(new SeqEdge2());
                 step(new SeqEdge1());
                 end();

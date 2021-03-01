@@ -8,7 +8,8 @@ public class AtoA extends PGraph<A> {
     {
       type(A.class);
       pre(a->a.value==1 ^ a.value==2);
-      step(seq(),x->x, AtoA1.class);
+      begin();
+      step(AtoA1.class);
       elseStep(x->x,AtoA2.class);
       end();
       post(a->a.value==2 ^ a.value==3);

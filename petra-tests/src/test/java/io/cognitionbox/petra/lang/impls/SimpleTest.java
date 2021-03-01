@@ -68,6 +68,7 @@ public class SimpleTest extends BaseExecutionModesTest {
     {
       type(A.class);
       pre(a->a.value==1);
+      begin();
       step(new AtoA());
       end();
       post(a->a.value==222);

@@ -61,6 +61,7 @@ public class StaticsDetectionTest extends BaseExecutionModesTest {
     {
       type(A.class);
       pre(a->true);
+      begin();
       step(AtoA.class);
       end();
       post(a->true);
