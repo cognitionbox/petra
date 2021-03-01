@@ -67,11 +67,10 @@ public class BaseExecutionModesTest extends BaseTest {
     @Parameterized.Parameters
     public static Collection executionModes() {
         return Arrays.asList(new Object[][]{
-                {ExecMode.SEQ}
-                ,
+                {ExecMode.SEQ},
                 {ExecMode.PAR}
-//        ,
-//        {ExecMode.DIS}
+//                ,
+//                {ExecMode.DIS}
         });
     }
 
