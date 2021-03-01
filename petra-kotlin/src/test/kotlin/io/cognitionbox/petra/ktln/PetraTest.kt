@@ -16,13 +16,7 @@
 package io.cognitionbox.petra.ktln
 
 import io.cognitionbox.petra.factory.PetraParallelComponentsFactory
-import io.cognitionbox.petra.ktln.Petra.anonymous
-import io.cognitionbox.petra.ktln.Petra.anonymousJ1
-import io.cognitionbox.petra.ktln.Petra.rc
-import io.cognitionbox.petra.ktln.Petra.rt
 import io.cognitionbox.petra.lang.*
-import io.cognitionbox.petra.lang.annotations.Extract
-import io.cognitionbox.petra.util.impl.PList
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -33,92 +27,36 @@ class PetraTest{
         RGraphComputer.getConfig().setConstructionGuaranteeChecks(true)
         RGraphComputer.getConfig().setStrictModeExtraConstructionGuarantee(false)
 
-        open class IntList : PList<Int>()
-        @Extract
-        class IntListEx : IntList()
-
-        class Fibonacci : PGraph<Int, IntList>() {
+        class Foo(var value:Int){}
+        class A : KEdge<Foo>(){
             init {
-                pre(rc(Int::class) { a -> true })
-                step(anonymous(Petra.rc(Int::class, { x -> true }), { i: Int ->
-                    var il: IntList? = null
-                    if (i < 2) {
-                        il = IntList()
-                        il.add(i)
-                    } else {
-                        il = IntListEx()
-                        il.add(i - 1)
-                        il.add(i - 2)
-                    }
-                    il
-                }, rt(IntList::class, { x -> true })))
-                joinAll(anonymousJ1(Petra.rc(IntList::class, { i -> i.size === 1 }), { i ->
-                    val il = IntList()
-                    il.add(i.stream().flatMap({ x -> x.stream() }).mapToInt({ y -> y }).sum())
-                    il
-                }, rt(IntList::class, { i -> true })))
-                post(rt(IntList::class, { i -> i.size === 1 }))
+                type(Foo::class)
+                pre({x->x.value==0})
+                func({x->x.value++})
+                post({x->true})
             }
         }
-
-        val lc = PGraphComputer<Int,IntList>()
-        val res = lc.computeWithInput(Fibonacci(), 8)
-        assertEquals(res[0],21)
-    }
-
-    @Test fun test2(){
-        RGraphComputer.getConfig().setParallelModeFactory(PetraParallelComponentsFactory());
-        RGraphComputer.getConfig().enableStatesLogging()
-        RGraphComputer.getConfig().setConstructionGuaranteeChecks(true)
-        RGraphComputer.getConfig().setStrictModeExtraConstructionGuarantee(false)
-
-        open class IntList : PList<Int>()
-        @Extract
-        class IntListEx : IntList()
-
-        class FibSplit : PEdge<Int, IntList>() {
+        class B : KEdge<Foo>(){
             init {
-                pre(rc(Int::class, { i -> true }))
-                func { i ->
-                    if (i < 2) {
-                        val il = IntList()
-                        il.add(i)
-                        il;
-                    } else {
-                        val il = IntListEx()
-                        il.add(i - 1)
-                        il.add(i - 2)
-                        il;
-                    }
-                }
-                post(rt(IntList::class, { il -> il.size === 2 }))
-                post(rt(IntList::class, { il -> il.size === 1 }))
+                type(Foo::class)
+                pre({x->x.value==1})
+                func({x->x.value--})
+                post({x->true})
             }
         }
-
-        class FibJoin : PJoin<IntList, IntList>() {
+        class FooMachine : KGraph<Foo>(){
             init {
-                pre(rc(IntList::class, { i -> i.size === 1 }))
-                func { i ->
-                    val il = IntList()
-                    il.add(i.stream().flatMap<Int> { x -> x.stream() }.mapToInt { y -> y }.sum())
-                    il
-                }
-                post(rt(IntList::class, { i -> true }))
+                type(Foo::class)
+                pre({x->true})
+                begin()
+                choice(A())
+                choice(B())
+                end()
+                post({x->true})
             }
         }
-
-        class Fibonacci : PGraph<Int, IntList>() {
-            init {
-                pre(rc(Int::class, { i -> true }))
-                step(FibSplit())
-                joinAll(FibJoin())
-                post(rt(IntList::class, { i -> i.size === 1 }))
-            }
-        }
-
-        val lc = PGraphComputer<Int,IntList>()
-        val res = lc.computeWithInput(Fibonacci(), 8)
-        assertEquals(res[0],21)
+        val lc = PComputer<Foo>()
+        val res = lc.eval(FooMachine(), Foo(1))
+        assertEquals(res.value,0)
     }
 }

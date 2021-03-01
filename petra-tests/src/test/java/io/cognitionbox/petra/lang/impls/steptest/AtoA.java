@@ -8,6 +8,7 @@ public class AtoA extends PGraph<A> {
     {
       type(A.class);
       pre(a->a.value==1);
+      begin();
       step(par(),x->x, AtoAEdge.class);
       end();
       post(a->a.value==222);

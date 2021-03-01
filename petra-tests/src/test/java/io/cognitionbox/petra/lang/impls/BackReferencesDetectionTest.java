@@ -100,6 +100,7 @@ public class BackReferencesDetectionTest extends BaseExecutionModesTest {
   public static class g extends PGraph<A> {
     {
       type(A.class);
+      begin();
       pre(x->true);
       step(AtoA.class);
       end();

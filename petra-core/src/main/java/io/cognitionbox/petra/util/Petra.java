@@ -73,7 +73,7 @@ public class Petra {
         try {
             return clazz.newInstance();
         } catch (Exception e) {
-            throw new UnsupportedOperationException("cannot create step.");
+            throw new UnsupportedOperationException("cannot create step.",e);
         }
     }
 

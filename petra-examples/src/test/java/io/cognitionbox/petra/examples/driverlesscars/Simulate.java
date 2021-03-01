@@ -17,6 +17,7 @@ public class Simulate extends PGraph<Simlulation> {
                 (getCurrentIteration()<=10 && s.getNoOfCarsInJunction()<=1 &&
                 ((s.signalAisRED() && s.signalBisGREEN()) ^
                         (s.signalAisGREEN() && s.signalBisRED())) ) );
+        begin();
         step(new ChangeSignal1ToGreen());
         step(new ChangeSignal2ToGreen());
         step(new MoveCarIntoJunction());
