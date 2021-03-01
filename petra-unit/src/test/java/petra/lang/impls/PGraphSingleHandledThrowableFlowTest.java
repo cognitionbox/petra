@@ -23,6 +23,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import java.io.Serializable;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
@@ -33,7 +35,7 @@ public class PGraphSingleHandledThrowableFlowTest extends BaseExecutionModesTest
         super(execMode);
     }
 
-    static class X {
+    static class X implements Serializable {
         Integer value;
 
         public X(Integer value) {
