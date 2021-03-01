@@ -29,14 +29,13 @@
         <module>petra-core</module>
         <module>petra-unit</module>
         <module>petra-examples</module>
-        <module>petra-kotlin</module>
         <module>petra-hazelcast</module>
         <module>petra-hazelcast-jet</module>
         <module>petra-tests</module>
     </modules>
 
     <properties>
-        <jacoco.version>0.8.3</jacoco.version>
+        <jacoco.version>0.8.6</jacoco.version>
     </properties>
 
     <reporting>
@@ -118,7 +117,6 @@
             </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.3</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -135,6 +133,11 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.7.1</version>
             </plugin>
         </plugins>
     </build>
