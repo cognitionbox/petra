@@ -49,7 +49,7 @@ public class PetraParallelComponentsFactory implements IPetraComponentsFactory {
 
   @Override
   public ExecutorService createExecutorService(String name){
-    return Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()*2);
+    return Executors.newCachedThreadPool();
     //return blockingExecutorService(1,Runtime.getRuntime().availableProcessors()*2);
   }
 

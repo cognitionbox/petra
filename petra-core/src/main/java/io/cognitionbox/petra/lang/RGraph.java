@@ -518,8 +518,14 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
                         }
                     }
                 } else {
-                    List<Future<StepResult>> futures = RGraphComputer.getWorkerExecutor().invokeAll(callables);
-                    for (Future<StepResult> f : futures){
+                    //List<Future<StepResult>> futures = RGraphComputer.getWorkerExecutor().invokeAll(callables);
+                    callables.forEach(c->RGraphComputer.getTaskQueue().add(c));
+                    while(!callables.stream().allMatch(c->c.isDone())){
+                       try {
+                           Thread.sleep(100);
+                       } catch (Exception e){}
+                    }
+                    for (StepCallable f : callables){
                         StepResult sr = f.get();
                         if (sr.getOutputValue().getValue() instanceof Throwable){
                             this.place.addValue(sr.getOutputValue().getValue());
@@ -704,8 +710,14 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
             }
         } else {
             try {
-                List<Future<StepResult>> futures = RGraphComputer.getWorkerExecutor().invokeAll(callables);
-                for (Future<StepResult> f : futures){
+                //List<Future<StepResult>> futures = RGraphComputer.getWorkerExecutor().invokeAll(callables);
+                callables.forEach(c->RGraphComputer.getTaskQueue().add(c));
+                while(!callables.stream().allMatch(c->c.isDone())){
+                    try {
+                        Thread.sleep(100);
+                    } catch (Exception e){}
+                }
+                for (StepCallable f : callables){
                     StepResult sr = f.get();
                     if (sr.getOutputValue().getValue() instanceof Throwable){
                         this.place.addValue(sr.getOutputValue().getValue());
@@ -719,9 +731,7 @@ public class RGraph<X extends D,D> extends AbstractStep<X> implements IGraph<X> 
                         //putState(f.get().getOutputValue());
                     }
                 }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

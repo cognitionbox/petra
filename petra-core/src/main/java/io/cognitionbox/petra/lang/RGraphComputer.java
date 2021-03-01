@@ -17,6 +17,7 @@ package io.cognitionbox.petra.lang;
 
 import io.cognitionbox.petra.config.IPetraConfig;
 import io.cognitionbox.petra.core.IRingbuffer;
+import io.cognitionbox.petra.core.engine.StepWorker;
 import io.cognitionbox.petra.config.PetraConfig;
 import io.cognitionbox.petra.core.engine.petri.impl.Token;
 import io.cognitionbox.petra.core.impl.*;
@@ -99,7 +100,12 @@ public class RGraphComputer<X extends D, D> implements Serializable {
 
     if (!RGraphComputer.getConfig().getMode().isSEQ()){
       workerExecutor = Petra.getFactory().createExecutorService("exe");
+      RGraphComputer.getWorkerExecutor().submit(new StepWorker());
     }
+
+    // not all nodes should be master as this would load the compute locks
+    // there should be 3 masters and the rest are slaves
+    // there can only be one call to start per node i.e. process
 
     List<AbstractStep> steps = LogicStepsCollector.getAllSteps(this.rootGraph);
 

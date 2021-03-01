@@ -15,6 +15,7 @@
  */
 package io.cognitionbox.petra.ktln
 
+import io.cognitionbox.petra.config.ExecMode
 import io.cognitionbox.petra.factory.PetraParallelComponentsFactory
 import io.cognitionbox.petra.lang.*
 import io.cognitionbox.petra.util.Petra.choice
@@ -23,7 +24,8 @@ import org.junit.Test
 
 class PetraTest{
     @Test fun test1(){
-        RGraphComputer.getConfig().setParallelModeFactory(PetraParallelComponentsFactory());
+        RGraphComputer.getConfig().setMode(ExecMode.PAR)
+        RGraphComputer.getConfig().setParallelModeFactory(PetraParallelComponentsFactory())
         RGraphComputer.getConfig().enableStatesLogging()
         RGraphComputer.getConfig().setConstructionGuaranteeChecks(true)
         RGraphComputer.getConfig().setStrictModeExtraConstructionGuarantee(false)
