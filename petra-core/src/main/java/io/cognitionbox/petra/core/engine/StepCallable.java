@@ -60,11 +60,13 @@ public class StepCallable extends Identifyable implements Callable<StepResult>, 
                     //LOG.info(this.getUniqueId() + ": step processed!");
                 }
                 return result.get();
+//            } catch (Exception e) {
+//                result.set(new StepResult(step.p().getOperationType(), step.getInput(), new Token(new Object()), e));
             } finally {
                 lock.unlock();
             }
         }
-        return null;
+        return result.get();
     }
 
     public boolean isDone() {

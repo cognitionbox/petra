@@ -143,7 +143,7 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
             if (iterationTimer != null && !iterationTimer.periodHasPassed(LocalDateTime.now())) {
                 continue;
             }
-            try {
+//            try {
                 Lg();
                 iteration();
                 List<Throwable> exceptions = exceptions();
@@ -166,9 +166,9 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
                     return getInput().getValue();
                 }
                 //}
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
         }
 //        if (out!=null){
 //            return out;
@@ -459,7 +459,7 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
                 }
             }
         } catch (Exception e) {
-            LOG.error(f.getStep().getStepClazz().getName(), e);
+            throw new RuntimeException(f.getStep().getStepClazz().getName(), e);
         }
     }
 
