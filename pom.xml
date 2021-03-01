@@ -31,7 +31,6 @@
         <module>petra-examples</module>
         <module>petra-hazelcast</module>
         <module>petra-hazelcast-jet</module>
-        <module>petra-tests</module>
     </modules>
 
     <properties>
