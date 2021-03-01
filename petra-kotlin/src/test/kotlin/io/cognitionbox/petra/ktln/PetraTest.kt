@@ -17,6 +17,7 @@ package io.cognitionbox.petra.ktln
 
 import io.cognitionbox.petra.factory.PetraParallelComponentsFactory
 import io.cognitionbox.petra.lang.*
+import io.cognitionbox.petra.util.Petra.choice
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -49,8 +50,8 @@ class PetraTest{
                 type(Foo::class)
                 pre({x->true})
                 begin()
-                choice(A())
-                choice(B())
+                step(choice(),A())
+                step(choice(),B())
                 end()
                 post({x->true})
             }
