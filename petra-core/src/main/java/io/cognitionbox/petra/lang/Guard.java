@@ -18,7 +18,6 @@ package io.cognitionbox.petra.lang;
 import io.cognitionbox.petra.core.impl.ObjectCopyerViaSerialization;
 import io.cognitionbox.petra.core.impl.OperationType;
 import io.cognitionbox.petra.exceptions.TypeEvalException;
-import io.cognitionbox.petra.google.Optional;
 import io.cognitionbox.petra.util.function.IPredicate;
 
 import java.io.Serializable;
