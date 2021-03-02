@@ -997,7 +997,6 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
     public RGraph copy() {
         // we dont copy the id as we need a unique id based on the hashcode of the new instance
         RGraph copy = new RGraph(getPartitionKey());
-        copy.setEffectType(this.getEffectType()); // so we dont have to re-compute
         copy.setClazz(getStepClazz());
         copy.setP(p());
         copy.setInvariant(getInvariant());

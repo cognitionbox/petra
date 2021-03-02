@@ -18,7 +18,6 @@ package io.cognitionbox.petra.config;
 import io.cognitionbox.petra.factory.IPetraComponentsFactory;
 import io.cognitionbox.petra.guarantees.impl.AllFieldsMustBeSerializableUnlessTransient;
 import io.cognitionbox.petra.guarantees.impl.CheckAllPrePostTypesAreStates;
-import io.cognitionbox.petra.guarantees.impl.CheckAllPrePostTypesHaveNoGenericsUnlessTheyAreRefsWhichCanOnlyHaveNonGenericTypes;
 import io.cognitionbox.petra.guarantees.impl.ClassesWithExtractsOnFieldsMustHaveExtractAnnotation;
 import io.cognitionbox.petra.guarantees.impl.EdgeEffectMustHaveInputTypeEqualToOutputType;
 import io.cognitionbox.petra.guarantees.impl.EdgeMustHaveAfunction;
@@ -83,7 +82,6 @@ public class PetraConfig implements IPetraConfig {
     final public StepMustHaveValidPreAndPostCondition StepMustHaveValidPreAndPostCondition_ = new StepMustHaveValidPreAndPostCondition();
     // final public StepsWithSameNonStateInputAndOutputTypesMustBeSideEffects StepWithSameInputAndOutputTypesMustImplementTransform = new StepsWithSameNonStateInputAndOutputTypesMustBeSideEffects();
     final public StepWithImmutablePreOrPostConditionTypesCannotBeSideEffects StepWithImmutablePreOrPostConditionTypesCannotBeSideEffects_ = new StepWithImmutablePreOrPostConditionTypesCannotBeSideEffects();
-    final public CheckAllPrePostTypesHaveNoGenericsUnlessTheyAreRefsWhichCanOnlyHaveNonGenericTypes CheckAllPrePostTypesHaveNoGenericsUnlessTheyAreRefsWhichCanOnlyHaveNonGenericTypes_ = new CheckAllPrePostTypesHaveNoGenericsUnlessTheyAreRefsWhichCanOnlyHaveNonGenericTypes();
     public boolean defensiveCopyAllInputsExceptForEffectedInputs = false;
     protected boolean exceptionsPassthrough = false;
     protected boolean testMode = false;

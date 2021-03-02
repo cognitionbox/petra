@@ -24,15 +24,13 @@ import io.cognitionbox.petra.lang.PEdge;
 // it can only produce P or Q, whether or not C completes successfully.
 // this can be checked for at runtime.
 public class OnlyEdgesWithSideEffectsMustImplementIRollback implements StepCheck {
+
     @Override
     public boolean test(IStep<?> step) {
         if (step instanceof PEdge) {
-            if (step.getEffectType().isPresent()) {
-                return step instanceof IRollback;
-            } else {
-                return !(step instanceof IRollback);
-            }
+            return !(step instanceof IRollback);
         }
         return true;
     }
+
 }

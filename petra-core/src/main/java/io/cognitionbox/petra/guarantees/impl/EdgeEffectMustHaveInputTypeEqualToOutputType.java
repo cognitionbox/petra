@@ -23,10 +23,7 @@ public class EdgeEffectMustHaveInputTypeEqualToOutputType implements StepCheck {
 
     @Override
     public boolean test(IStep<?> step) {
-        boolean sideEffect = step.p().getOperationType() == OperationType.READ_WRITE;
-        if (sideEffect) {
-            return step.getEffectType().isPresent();
-        }
-        return true;
+        return step.p().getOperationType() == OperationType.READ_WRITE;
     }
+
 }

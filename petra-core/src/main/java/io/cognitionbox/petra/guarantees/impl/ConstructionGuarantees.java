@@ -88,7 +88,6 @@ public class ConstructionGuarantees {
         addCheck(new StaticFieldsOnlyAllowedIfFinalAndPrimitive());
         addCheck(new ClassesWithExtractsOnFieldsMustHaveExtractAnnotation());
         addCheck(new ExtractsAtClassLevelMustBeAppliedOnlyToIterablesOrClassesWhichHaveExtractOnFields());
-        addCheck(new CheckAllPrePostTypesHaveNoGenericsUnlessTheyAreRefsWhichCanOnlyHaveNonGenericTypes());
         addCheck(new GraphMustHaveAtLeastOneStepOrJoin());
         addCheck(new EdgeMustHaveAfunction());
     }

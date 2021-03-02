@@ -201,7 +201,6 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
         }
         PEdge.setP(p());
         PEdge.setQ(q());
-        PEdge.setEffectType(this.getEffectType()); // so we dont have to re-compute
         PEdge.setClazz(getStepClazz());
         PEdge.type(type);
         return PEdge;
