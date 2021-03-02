@@ -17,7 +17,7 @@ package io.cognitionbox.petra.core;
 
 import io.cognitionbox.petra.lang.Guard;
 
-public interface IStep<X> extends IIdentifyable, IMaybeEffect {
+public interface IStep<X> extends IIdentifyable {
 
     boolean evalP(X p);
 

@@ -22,23 +22,10 @@ import io.cognitionbox.petra.lang.RGraph;
 @Deprecated
 // effect types can be interfaces
 public class EffectTypesMustBeClassesAndNotInterfaces implements StepCheck {
+
     @Override
     public boolean test(IStep<?> step) {
-        if (step.getEffectType().isPresent()) {
-            return true;//!step.getEffectType().get().isInterface();
-        } else if (step instanceof RGraph) {
-//                boolean joinEffectsOnClassesOnly = true;
-//                for (Object j : ((RGraph) step).getJoinTypes()){
-//                    if (j instanceof IEffect){
-//                        joinEffectsOnClassesOnly =
-//                                joinEffectsOnClassesOnly &&
-//                                !((IEffect) j).getEffectType().isInterface();
-//                    }
-//                }
-//                return joinEffectsOnClassesOnly;
-            return true;
-        } else {
-            return true;
-        }
+        return true;
     }
+
 }

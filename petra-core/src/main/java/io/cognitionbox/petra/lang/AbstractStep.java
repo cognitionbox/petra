@@ -129,30 +129,6 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
         return this;
     }
 
-    private Optional<Class<?>> effectType = null;
-
-    public void setEffectType(Optional<Class<?>> effectType) {
-        this.effectType = effectType;
-    }
-
-    @Override
-    public final Optional<Class<?>> getEffectType() {
-        if (effectType == null) {
-            effectType = Optional.absent();
-            if (p().getOperationType() == OperationType.READ_WRITE) {
-                java.util.Optional<Class<?>> optional = ReflectUtils.getCommonSubType(p().getTypeClass(), q().getTypeClass());
-                //Optional optional = Optional.absent();
-                if (optional.isPresent()) {
-                    effectType = Optional.of(optional.get()); // Optional.absent();//
-                }
-            }
-
-        }
-        return effectType;
-    }
-
-//    final GuardXOR<X> returnType = new GuardXOR<X>(OperationType.RETURN);
-
     public Class<X> getType() {
         return type;
     }

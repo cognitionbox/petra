@@ -86,7 +86,7 @@ public abstract class Optional<T> implements Serializable {
      * @throws NullPointerException if {@code reference} is null
      */
     public static <T> Optional<T> of(T reference) {
-        return new Present<T>(checkNotNull(reference));
+        return new Present<>(checkNotNull(reference));
     }
 
     public Optional() {
