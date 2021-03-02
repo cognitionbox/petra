@@ -27,7 +27,7 @@ import static io.cognitionbox.petra.lang.Void.vd;
 
 public class Guard<E> implements IPredicate<E> {
 
-    private ObjectCopyerViaSerialization copyer = new ObjectCopyerViaSerialization();
+    private final ObjectCopyerViaSerialization copyer = new ObjectCopyerViaSerialization();
 
     protected final OperationType operationType;
     protected final Class<E> eventClazz;
@@ -69,10 +69,6 @@ public class Guard<E> implements IPredicate<E> {
         if (o == null) {
             throw new UnsupportedOperationException("cannot be null");
         }
-    }
-
-    Guard<Object> generic() {
-        return (Guard<Object>) this;
     }
 
     public Class<E> getTypeClass() {

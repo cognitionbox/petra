@@ -859,7 +859,7 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
     }
 
     private boolean checkOutput(Object output) {
-        return (this.q() != null && this.q().generic().test(output));
+        return (this.q() != null && this.q().test(output));
     }
 
     private void Lg() {
