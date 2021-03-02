@@ -25,7 +25,7 @@ import java.io.IOException;
 public abstract class AbstractStep<X> extends Identifyable implements ICallable<X>, IStep<X> {
 
     private Class<? extends IStep> clazz = this.getClass();
-    private IToken<X> inputToken;
+    private IToken<X> inputToken = null;
     private Class<X> type = null;
 
     private boolean elseStep = false;
@@ -35,11 +35,13 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
     protected Guard<X> p = null;
     protected Guard<X> q = null;
 
-    protected AbstractStep() {
-    }
-
     protected AbstractStep(String description) {
         super(description);
+    }
+
+    protected AbstractStep(Guard<X> p, Guard<X> q) {
+        this.p = p;
+        this.q = q;
     }
 
     public abstract AbstractStep copy();
