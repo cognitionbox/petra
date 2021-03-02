@@ -18,12 +18,10 @@ package io.cognitionbox.petra.util;
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.core.impl.ObjectCopyerViaSerialization;
-import io.cognitionbox.petra.core.impl.OperationType;
 import io.cognitionbox.petra.factory.IPetraComponentsFactory;
 import io.cognitionbox.petra.lang.Guard;
 import io.cognitionbox.petra.lang.GuardReturn;
 import io.cognitionbox.petra.lang.GuardWrite;
-import io.cognitionbox.petra.lang.GuardXOR;
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.RGraphComputer;
 import io.cognitionbox.petra.lang.Ref;
@@ -147,12 +145,8 @@ public class Petra {
 
     public static <X> PEdge<X> anonymous(Guard<X> p,
                                          IConsumer<X> function,
-                                         Guard<X>... qs) {
-        GuardXOR<X> pTypeXOR = new GuardXOR<>(OperationType.RETURN);
-        for (Guard q : qs) {
-            pTypeXOR.addChoice(q);
-        }
-        return new PEdge(p, function, pTypeXOR);
+                                         Guard<X> q) {
+        return new PEdge(p, function, q);
     }
 
     public static IPetraComponentsFactory getFactory() {

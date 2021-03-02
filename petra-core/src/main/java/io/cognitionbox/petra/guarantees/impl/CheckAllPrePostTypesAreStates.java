@@ -19,22 +19,13 @@ import io.cognitionbox.petra.core.IGraph;
 import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.guarantees.GraphCheck;
 import io.cognitionbox.petra.lang.Guard;
-import io.cognitionbox.petra.lang.GuardXOR;
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.RGraph;
 
 public class CheckAllPrePostTypesAreStates implements GraphCheck {
 
     private boolean checkPType(Guard guard) {
-        if (guard instanceof GuardXOR) {
-            boolean ok = true;
-            for (Guard p : ((GuardXOR<?>) guard).getChoices()) {
-                ok = ok && checkTypeImpl(p);
-            }
-            return ok;
-        } else {
-            return checkTypeImpl(guard);
-        }
+        return checkTypeImpl(guard);
     }
 
     private boolean checkTypeImpl(Guard guard) {

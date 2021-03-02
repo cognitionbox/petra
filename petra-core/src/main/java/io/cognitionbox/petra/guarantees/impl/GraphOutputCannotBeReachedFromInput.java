@@ -21,7 +21,6 @@ import io.cognitionbox.petra.core.impl.OperationType;
 import io.cognitionbox.petra.core.impl.ReachabilityHelper;
 import io.cognitionbox.petra.guarantees.GraphCheck;
 import io.cognitionbox.petra.lang.Guard;
-import io.cognitionbox.petra.lang.GuardXOR;
 import io.cognitionbox.petra.lang.RGraphComputer;
 import io.cognitionbox.petra.lang.annotations.Extract;
 import org.slf4j.Logger;
@@ -45,11 +44,7 @@ public class GraphOutputCannotBeReachedFromInput implements GraphCheck {
     ReachabilityHelper helper = new ReachabilityHelper();
 
     boolean matchesState(Guard<?> type, Class<?> state) {
-        if (type instanceof GuardXOR<?>) {
-            return ((GuardXOR<?>) type).getChoices().stream().anyMatch(c -> c.getTypeClass().isAssignableFrom(state));
-        } else {
-            return type.getTypeClass().isAssignableFrom(state);
-        }
+        return type.getTypeClass().isAssignableFrom(state);
     }
 
     private int isPostConditionReachable(IGraph<?> step, List<Guard<?>> list) throws PostConditionNotReachable {
@@ -108,13 +103,8 @@ public class GraphOutputCannotBeReachedFromInput implements GraphCheck {
                         if (stp.p().getOperationType() == OperationType.READ_WRITE) {
                             statesToRemove.add(st);
                         }
-                        if (stp.q() instanceof GuardXOR<?>) {
-                            for (Guard<?> qs : ((GuardXOR<?>) stp.q()).getChoices()) {
-                                // writes don't consume and operate on an instance hence no need to deconstruct the output instance
-                                // as this instance would already be atomic in size and cannot be deconstructed
-                                helper.deconstruct(new HashSet<>(), qs.getOperationType(), qs.getTypeClass(), statesToAdd, 0);
-                            }
-                        }
+
+                        helper.deconstruct(new HashSet<>(), stp.q().getOperationType(), stp.q().getTypeClass(), statesToAdd, 0);
                     }
                 }
             }

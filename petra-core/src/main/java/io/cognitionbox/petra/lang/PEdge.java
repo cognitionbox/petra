@@ -57,7 +57,7 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
         super(description);
     }
 
-    public PEdge(Guard<X> p, IConsumer<X> function, GuardXOR<X> q) {
+    public PEdge(Guard<X> p, IConsumer<X> function, Guard<X> q) {
         this.p = p;
         this.function = function;
         this.q = q;
@@ -226,13 +226,11 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
     }
 
     public void post(GuardReturn<X> q) {
-        returnType.addChoice(new Guard(q.getTypeClass(), q.predicate, OperationType.RETURN));
-        setQ(returnType);
+        setQ(q);
     }
 
     public void post(IPredicate<X> predicate) {
-        returnType.addChoice(new Guard(type, predicate, OperationType.RETURN));
-        setQ(returnType);
+        setQ(new Guard<>(type, predicate, OperationType.RETURN));
     }
 
     private IBiPredicate<X, X> v = null;

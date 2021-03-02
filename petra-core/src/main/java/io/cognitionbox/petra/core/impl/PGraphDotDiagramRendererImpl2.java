@@ -18,7 +18,6 @@ package io.cognitionbox.petra.core.impl;
 import io.cognitionbox.petra.core.ILogicBoxDotDiagramRenderer;
 import io.cognitionbox.petra.lang.AbstractStep;
 import io.cognitionbox.petra.lang.Guard;
-import io.cognitionbox.petra.lang.GuardXOR;
 import io.cognitionbox.petra.lang.RGraph;
 import io.cognitionbox.petra.lang.Void;
 import io.cognitionbox.petra.lang.annotations.DoesNotTerminate;
@@ -123,9 +122,7 @@ public class PGraphDotDiagramRendererImpl2 implements ILogicBoxDotDiagramRendere
             if ((logic.q()).isVoid()) {
                 append(Void.class.getSimpleName() + "->stop;\n", logic);
             } else {
-                for (Guard<?> q : ((GuardXOR<?>) logic.q()).getChoices()) {
-                    append(q.getTypeClass().getSimpleName() + "->stop;\n", logic);
-                }
+                append(logic.q().getTypeClass().getSimpleName() + "->stop;\n", logic);
             }
         }
 
@@ -177,16 +174,13 @@ public class PGraphDotDiagramRendererImpl2 implements ILogicBoxDotDiagramRendere
             }
 
             if (step.q() != null) {
-                if (step.q() instanceof GuardXOR<?>) {
-                    for (Guard<?> clazz : ((GuardXOR<?>) step.q()).getChoices()) {
-                        clazzes.add(clazz.getTypeClass());
-                        append(clazz.getTypeClass().getSimpleName() + " [style=filled, fillcolor=blue fontcolor=white];\n", logic);
-                        append(stepDesc + "->" + clazz.getTypeClass().getSimpleName() + " [label=POST];\n", logic);
+                Guard<Object> clazz = step.q();
+                clazzes.add(clazz.getTypeClass());
+                append(clazz.getTypeClass().getSimpleName() + " [style=filled, fillcolor=blue fontcolor=white];\n", logic);
+                append(stepDesc + "->" + clazz.getTypeClass().getSimpleName() + " [label=POST];\n", logic);
 
-                        if (step.getStepClazz().isAnnotationPresent(Feedback.class)) {
-                            append(clazz.getTypeClass().getSimpleName() + "->" + step.p().getTypeClass().getSimpleName() + " [label=feedback];\n", logic);
-                        }
-                    }
+                if (step.getStepClazz().isAnnotationPresent(Feedback.class)) {
+                    append(clazz.getTypeClass().getSimpleName() + "->" + step.p().getTypeClass().getSimpleName() + " [label=feedback];\n", logic);
                 }
             }
             if (step.p() != null) {
