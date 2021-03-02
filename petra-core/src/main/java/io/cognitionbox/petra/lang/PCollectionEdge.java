@@ -21,6 +21,7 @@ import io.cognitionbox.petra.util.function.IBiPredicate;
 import io.cognitionbox.petra.util.function.IFunction;
 
 import java.util.Collection;
+import java.util.function.Consumer;
 
 
 public class PCollectionEdge<X, Y, Z> extends PEdge<X> {
@@ -36,8 +37,7 @@ public class PCollectionEdge<X, Y, Z> extends PEdge<X> {
     private IFunction<X, Y> shared;
 
     public PCollectionEdge() {
-        setP(new Guard(Object.class));
-        setQ(new Guard(Object.class));
+        super(new Guard(Object.class), o -> {}, new Guard(Object.class));
     }
 
     public PCollectionEdge(String partitionKey) {

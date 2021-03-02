@@ -274,19 +274,19 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
             throw new UnsupportedOperationException("cannot have choice in an init step, please perform choice at a deeper level.");
         }
         AbstractStep abstractStep = (AbstractStep) Petra.createStep(step);
-        abstractStep.isInitStep = true;
+        abstractStep.setInitStep(true);
         steps(execMode, transformer, abstractStep);
     }
 
     public <P> void inits(IFunction<X, Iterable<P>> transformer, Class<? extends IStep<? extends P>> step) {
         AbstractStep abstractStep = (AbstractStep) Petra.createStep(step);
-        abstractStep.isInitStep = true;
+        abstractStep.setInitStep(true);
         steps(ExecMode.SEQ, transformer, abstractStep);
     }
 
     public <P> void inits(IFunction<X, Iterable<P>> transformer, IStep<? extends P> step) {
         AbstractStep abstractStep = (AbstractStep) step;
-        abstractStep.isInitStep = true;
+        abstractStep.setInitStep(true);
         steps(ExecMode.SEQ, transformer, abstractStep);
     }
 
@@ -332,7 +332,7 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
     public <P> void elseStep(IFunction<X, P> transformer, Class<? extends IStep<? extends P>> step) {
         AbstractStep<X> abstractStep = (AbstractStep<X>) Petra.createStep(step);
         //abstractStep.setP(new GuardWrite<>(type,x->true));
-        abstractStep.isElseStep = true;
+        abstractStep.setElseStep(true);
         step(ExecMode.SEQ, transformer, (IStep<P>) abstractStep);
     }
 
@@ -368,19 +368,19 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
             throw new UnsupportedOperationException("cannot have choice in an init step, please perform choice at a deeper level.");
         }
         AbstractStep abstractStep = (AbstractStep) Petra.createStep(step);
-        abstractStep.isInitStep = true;
+        abstractStep.setInitStep(true);
         step(execMode, transformer, abstractStep);
     }
 
     public <P> void init(IFunction<X, P> transformer, Class<? extends IStep<? extends P>> step) {
         AbstractStep abstractStep = (AbstractStep) Petra.createStep(step);
-        abstractStep.isInitStep = true;
+        abstractStep.setInitStep(true);
         step(ExecMode.SEQ, transformer, abstractStep);
     }
 
     public <P> void init(IFunction<X, P> transformer, IStep<? extends P> step) {
         AbstractStep abstractStep = (AbstractStep) step;
-        abstractStep.isInitStep = true;
+        abstractStep.setInitStep(true);
         step(ExecMode.SEQ, transformer, abstractStep);
     }
 
@@ -430,9 +430,9 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
     private void executeSeqStep(StateTransformerStep f, ExecMode execMode) {
         try {
             Object value = f.getTransformer().apply(getInput().getValue());
-            if (f.getStep().evalP(value) && (!f.getStep().isInitStep || !f.getStep().isInited)) {
+            if (f.getStep().evalP(value) && (!f.getStep().isInitStep() || !f.getStep().isInited())) {
                 matches.incrementAndGet();
-                if (f.getStep().isInitStep) {
+                if (f.getStep().isInitStep()) {
                     matches.decrementAndGet();
                 }
                 AbstractStep copy = f.getStep().copy();
@@ -442,8 +442,8 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
                 if (sr.getOutputValue().getValue() instanceof Throwable) {
                     this.place.addValue(sr.getOutputValue().getValue());
                 } else {
-                    if (this.isInitStep && !this.isInited) {
-                        this.isInited = true;
+                    if (this.isInitStep() && !this.isInited()) {
+                        setInited(true);
                     }
                 }
                 if (OperationType.READ_WRITE != sr.getOperationType()) {
@@ -454,7 +454,7 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
                 if (f.getStep() instanceof Skip && this.matches.get() == 0) {
                     this.matches.incrementAndGet();
                 }
-                if (!f.getStep().isInitStep && !execMode.isCHOICE()) {
+                if (!f.getStep().isInitStep() && !execMode.isCHOICE()) {
                     throw new GraphException(f.getStep(), getInput().getValue(), getInput().getValue(), Arrays.asList(new PreConditionFailure("non init step not matched.")));
                 }
             }
@@ -466,16 +466,16 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
     private void prepareParStep(StateTransformerStep f, List<StepCallable> callables) {
         try {
             Object value = f.getTransformer().apply(getInput().getValue());
-            if (f.getStep().evalP(value) && (!f.getStep().isInitStep || !f.getStep().isInited)) {
+            if (f.getStep().evalP(value) && (!f.getStep().isInitStep() || !f.getStep().isInited())) {
                 matches.incrementAndGet();
-                if (f.getStep().isInitStep) {
+                if (f.getStep().isInitStep()) {
                     matches.decrementAndGet();
                 }
                 AbstractStep copy = f.getStep().copy();
                 copy.setInput(new Token(value));
                 collectCallable(new StepCallable(this, copy), callables);
             } else {
-                if (!f.getStep().isInitStep) {
+                if (!f.getStep().isInitStep()) {
                     throw new GraphException(f.getStep(), getInput().getValue(), getInput().getValue(), Arrays.asList(new PreConditionFailure("non init step not matched.")));
                 }
             }
@@ -496,9 +496,9 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
         iterable = s.getTransformer().apply(getInput().getValue());
         // if all match run steps against the elements
         List<StepCallable> callables = new ArrayList<>();
-        if (ok && (!s.getStep().isInitStep || !s.getStep().isInited)) {
+        if (ok && (!s.getStep().isInitStep() || !s.getStep().isInited())) {
             matches.incrementAndGet();
-            if (s.getStep().isInitStep) {
+            if (s.getStep().isInitStep()) {
                 matches.decrementAndGet();
             }
             for (Object o : iterable) {
@@ -517,8 +517,8 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
                         if (sr.getOutputValue().getValue() instanceof Throwable) {
                             this.place.addValue(sr.getOutputValue().getValue());
                         } else {
-                            if (this.isInitStep && !this.isInited) {
-                                this.isInited = true;
+                            if (this.isInitStep() && !this.isInited()) {
+                                setInited(true);
                             }
                         }
                         if (OperationType.READ_WRITE != sr.getOperationType()) {
@@ -540,8 +540,8 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
                         if (sr.getOutputValue().getValue() instanceof Throwable) {
                             this.place.addValue(sr.getOutputValue().getValue());
                         } else {
-                            if (this.isInitStep && !this.isInited) {
-                                this.isInited = true;
+                            if (this.isInitStep() && !this.isInited()) {
+                                setInited(true);
                             }
                         }
                         if (OperationType.READ_WRITE != sr.getOperationType()) {
@@ -557,7 +557,7 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
             if (s.getStep() instanceof Skip && this.matches.get() == 0) {
                 this.matches.incrementAndGet();
             }
-            if (!s.getStep().isInitStep && !execMode.isCHOICE()) {
+            if (!s.getStep().isInitStep() && !execMode.isCHOICE()) {
                 throw new GraphException(s.getStep(), getInput().getValue(), getInput().getValue(), Arrays.asList(new PreConditionFailure("non init step not matched.")));
             }
         }
@@ -574,9 +574,9 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
         }
         iterable = f.getTransformer().apply(getInput().getValue());
         // if all match run steps against the elements
-        if (ok && (!f.getStep().isInitStep || !f.getStep().isInited)) {
+        if (ok && (!f.getStep().isInitStep() || !f.getStep().isInited())) {
             matches.incrementAndGet();
-            if (f.getStep().isInitStep) {
+            if (f.getStep().isInitStep()) {
                 matches.decrementAndGet();
             }
             for (Object o : iterable) {
@@ -589,7 +589,7 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
                 }
             }
         } else {
-            if (!f.getStep().isInitStep) {
+            if (!f.getStep().isInitStep()) {
                 throw new GraphException(f.getStep(), getInput().getValue(), getInput().getValue(), Arrays.asList(new PreConditionFailure("non init step not matched.")));
             }
         }
@@ -702,8 +702,8 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
                     if (sr.getOutputValue().getValue() instanceof Throwable) {
                         this.place.addValue(sr.getOutputValue().getValue());
                     } else {
-                        if (this.isInitStep && !this.isInited) {
-                            this.isInited = true;
+                        if (this.isInitStep() && !this.isInited()) {
+                            setInited(true);
                         }
                     }
                     if (OperationType.READ_WRITE != sr.getOperationType()) {
@@ -729,8 +729,8 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
                     if (sr.getOutputValue().getValue() instanceof Throwable) {
                         this.place.addValue(sr.getOutputValue().getValue());
                     } else {
-                        if (this.isInitStep && !this.isInited) {
-                            this.isInited = true;
+                        if (this.isInitStep() && !this.isInited()) {
+                            setInited(true);
                         }
                     }
                     if (OperationType.READ_WRITE != sr.getOperationType()) {
@@ -1015,11 +1015,9 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
         copy.currentSteps = currentSteps;
         copy.lastExecMode = lastExecMode;
 
-        copy.isElseStep = isElseStep;
-
-        copy.isInitStep = isInitStep;
-
-        copy.isInited = isInited;
+        copy.setElseStep(isElseStep());
+        copy.setInitStep(isInitStep());
+        copy.setInited(isInited());
 
         copy.endAsBeenCalled = endAsBeenCalled;
 
@@ -1052,11 +1050,11 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
     }
 
     public void mock(IPredicate<X> kase, IConsumer<X> mock) {
-        this.mocks.add(Pair.with(new GuardWrite(type, kase), mock));
+        this.mocks.add(Pair.with(new GuardWrite(getType(), kase), mock));
     }
 
     public void elseMock(IConsumer<X> mock) {
-        this.mocks.add(Pair.with(new GuardWrite(type, x -> true), mock));
+        this.mocks.add(Pair.with(new GuardWrite(getType(), x -> true), mock));
     }
 
     public void pre(GuardInput<X> p) {
@@ -1064,7 +1062,7 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
     }
 
     public void pre(IPredicate<X> predicate) {
-        setP(new GuardWrite(type, predicate));
+        setP(new GuardWrite(getType(), predicate));
     }
 
     public void post(GuardReturn<X> q) {
@@ -1075,6 +1073,6 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
         if (!endAsBeenCalled) {
             throw new UnsupportedOperationException("end has not been called");
         }
-        setQ(new Guard(type, predicate, OperationType.RETURN));
+        setQ(new Guard(getType(), predicate, OperationType.RETURN));
     }
 }

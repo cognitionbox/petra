@@ -170,8 +170,8 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
         }
         boolean postConditionOk = throwableRef.get() == null && (res != null && q().test(res) && evalV(res));
         if (postConditionOk) {
-            if (this.isInitStep && !this.isInited) {
-                this.isInited = true;
+            if (this.isInitStep() && !this.isInited()) {
+                setInited(true);
             }
             Lg_ALL_STATES("[Eg out]", input);
             return res;
@@ -202,7 +202,7 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
         PEdge.setP(p());
         PEdge.setQ(q());
         PEdge.setClazz(getStepClazz());
-        PEdge.type(type);
+        PEdge.type(getType());
         return PEdge;
     }
 
@@ -221,7 +221,7 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
     }
 
     public void pre(IPredicate<X> predicate) {
-        setP(new GuardWrite(type, predicate));
+        setP(new GuardWrite(getType(), predicate));
     }
 
     public void post(GuardReturn<X> q) {
@@ -229,7 +229,7 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
     }
 
     public void post(IPredicate<X> predicate) {
-        setQ(new Guard<>(type, predicate, OperationType.RETURN));
+        setQ(new Guard<>(getType(), predicate, OperationType.RETURN));
     }
 
     private IBiPredicate<X, X> v = null;
