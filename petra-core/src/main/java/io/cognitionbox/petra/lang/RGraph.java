@@ -97,7 +97,9 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
     private Set<Class<?>> deconstructable = new HashSet<>();
     private List<Pair<Guard<X>, IConsumer<X>>> mocks = new ArrayList<>();
 
-    public RGraph() {
+    public RGraph()
+    {
+        super(""); // FIXME: give it some meaningful name
         init();
     }
 

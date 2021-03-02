@@ -51,6 +51,7 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
     private List<Class<? extends Exception>> throwsRandomly = new ArrayList<>();
 
     public PEdge() {
+        super("");
     }
 
     public PEdge(String description) {
@@ -58,9 +59,8 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
     }
 
     public PEdge(Guard<X> p, IConsumer<X> function, Guard<X> q) {
-        this.p = p;
+        super(p, q);
         this.function = function;
-        this.q = q;
     }
 
     protected Logger logger() {
