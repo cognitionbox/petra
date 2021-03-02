@@ -24,17 +24,33 @@ import java.io.IOException;
 
 public abstract class AbstractStep<X> extends Identifyable implements ICallable<X>, IStep<X> {
 
+    private Class<? extends IStep> clazz = this.getClass();
+    private IToken<X> inputToken;
+    private Class<X> type = null;
+
+    private boolean elseStep = false;
+    private boolean initStep = false;
+    private boolean inited = false;
+
+    protected Guard<X> p = null;
+    protected Guard<X> q = null;
+
+    protected AbstractStep() {
+    }
+
+    protected AbstractStep(String description) {
+        super(description);
+    }
+
+    public abstract AbstractStep copy();
+
     public IToken<X> getInput() {
         return inputToken;
     }
 
-    private IToken<X> inputToken;
-
     public void setInput(IToken<X> input) {
         this.inputToken = input;
     }
-
-    private Class<? extends IStep> clazz = this.getClass();
 
     public Class<? extends IStep> getStepClazz() {
         return clazz;
@@ -44,40 +60,20 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
         this.clazz = aClass;
     }
 
-    protected Guard<X> p = null;
-
-    protected Guard<X> q = null;
-
     protected void setP(Guard<X> p) {
         assertNotNull(p);
         assertNull(this.p());
         this.p = p;
     }
-
     protected void setQ(Guard<X> q) {
         assertNotNull(q);
-        //assertNull(this.q());
         this.q = q;
     }
-
-    protected AbstractStep() {
-    }
-
-    protected AbstractStep(String description) {
-        super(description);
-    }
-
-//    public AbstractStep(String description, Guard<I> p, Guard<O> q) {
-//        super(description);
-//        this.p = p;
-//        this.q = q;
-//    }
 
     private void readObject(java.io.ObjectInputStream stream)
             throws IOException, ClassNotFoundException {
         stream.defaultReadObject();
     }
-
 
     final protected void assertNotNull(Object o) {
         if (o == null) {
@@ -115,42 +111,37 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
         return q;
     }
 
-    public abstract AbstractStep copy();
-
-    private boolean sleepOk = true;
-    private boolean failureDetected = false;
-    private int milliSecondSretryDelay = 0;
-
-    public AbstractStep<X> retryDelay(int milliSeconds) {
-        this.milliSecondSretryDelay = milliSeconds;
-        return this;
-    }
-
     public Class<X> getType() {
         return type;
     }
-
-    Class<X> type = null;
 
     public void type(Class<X> type) {
         this.type = type;
     }
 
     public boolean isElseStep() {
-        return isElseStep;
+        return elseStep;
     }
 
-    boolean isElseStep = false;
-
-    boolean isInitStep = false;
-
-    boolean isInited = false;
+    public void setElseStep(boolean elseStep) {
+        this.elseStep = elseStep;
+    }
 
     public boolean isInitStep() {
-        return isInitStep;
+        return initStep;
+    }
+
+    public void setInitStep(boolean initStep) {
+        this.initStep = initStep;
     }
 
     public boolean isInited() {
-        return isInited;
+        return inited;
     }
+
+    public void setInited(boolean inited) {
+        this.inited = inited;
+    }
+
+
 }
