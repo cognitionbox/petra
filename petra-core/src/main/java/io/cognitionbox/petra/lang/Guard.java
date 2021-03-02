@@ -27,24 +27,31 @@ import static io.cognitionbox.petra.lang.Void.vd;
 
 public class Guard<E> implements IPredicate<E> {
 
-    public Guard() {
+    private ObjectCopyerViaSerialization copyer = new ObjectCopyerViaSerialization();
+
+    protected final OperationType operationType;
+    protected final Class<E> eventClazz;
+    protected final IPredicate<Object> predicate;
+
+    public Guard(Class<E> eventClazz) {
+        this(eventClazz, x -> true, OperationType.READ_WRITE);
+    }
+
+    public Guard(Class<E> eventClazz, IPredicate<E> predicate, OperationType operationType) {
+        assertNotNull(eventClazz);
+        assertNotNull(predicate);
+        this.eventClazz = eventClazz;
+        this.predicate = (IPredicate<Object>) predicate;
+        this.operationType = operationType;
     }
 
     public boolean isVoid() {
         return getTypeClass().equals(Void.class);
     }
 
-    protected OperationType operationType = OperationType.READ_WRITE;
-
     public OperationType getOperationType() {
         return operationType;
     }
-
-    //Class<? extends E> getEffectType() {
-    //    return effectType.get();
-    //}
-
-    //private Optional<Class<? extends E>> effectType;
 
     public Guard<E> copy() {
         return new Guard(eventClazz, predicate, operationType);
@@ -54,79 +61,8 @@ public class Guard<E> implements IPredicate<E> {
         return new Guard(clazz, predicate, operationType);
     }
 
-    protected Class<E> eventClazz;
-
     public IPredicate<Object> getPredicate() {
         return predicate;
-    }
-
-    protected IPredicate<Object> predicate;
-
-//    public Guard(){}
-
-//    public void where(Class<E> eventClazz){
-//        this.eventClazz = eventClazz;
-//    }
-//
-//    public void matches(IPredicate<E> predicate){
-//        this.predicate = (IPredicate<Object>) predicate;
-//    }
-
-    public Guard(Class<E> eventClazz) {
-        this.eventClazz = eventClazz;
-        this.predicate = x -> true;
-        this.operationType = null;
-    }
-
-    public Guard(Class<E> eventClazz, IPredicate<E> predicate, OperationType operationType) {
-//        assertNotNull(eventClazz);
-//        assertNotNull(predicate);
-        this.eventClazz = eventClazz;
-        this.predicate = (IPredicate<Object>) predicate;
-        this.operationType = operationType;
-    }
-
-    public Guard(IPredicate predicate, OperationType operationType) {
-//        assertNotNull(eventClazz);
-//        assertNotNull(predicate);
-        this.eventClazz = (Class<E>) Object.class;
-        this.predicate = (IPredicate<Object>) predicate;
-        this.operationType = operationType;
-    }
-
-    public Guard(Optional<Class<? extends E>> effectType) {
-        this(null, null);
-    }
-
-//    public Guard(IPredicate predicate, Class<? extends PEdge>[] xorReturnTypes) {
-//        this(predicate,null,xorReturnTypes);
-//    }
-//
-//    public Guard(IPredicate predicate, Optional<Class<? extends PEdge>> effectType) {
-//        this(predicate,effectType,null);
-//    }
-//
-//    public Guard(Class<PEdge> eventClazz, IPredicate<PEdge> predicate, Class<? extends PEdge>[] xorReturnTypes) {
-//        this(eventClazz,predicate,null,xorReturnTypes);
-//    }
-//
-//    public Guard(Class<PEdge> eventClazz, IPredicate<PEdge> predicate, Optional<Class<? extends PEdge>> effectType) {
-//        this(eventClazz,predicate,effectType,null);
-//    }
-
-//    public Guard(Class<PEdge> eventClazz, IPredicate<PEdge> predicate) {
-//        this(eventClazz,predicate,null,null);
-//    }
-//
-//    public Guard(Class<PEdge> eventClazz) {
-//        this(eventClazz, x -> true);
-//    }
-
-    public Guard(IPredicate<Object> predicate) {
-        super();
-        assertNotNull(predicate);
-        this.eventClazz = (Class<E>) Object.class;
-        this.predicate = predicate;
     }
 
     private void assertNotNull(Object o) {
@@ -195,7 +131,5 @@ public class Guard<E> implements IPredicate<E> {
         }
         return false;
     }
-
-    private ObjectCopyerViaSerialization copyer = new ObjectCopyerViaSerialization();
 
 }
