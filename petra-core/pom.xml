@@ -7,4 +7,62 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>petra-core</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.checkerframework</groupId>
+            <artifactId>checker-qual</artifactId>
+            <version>2.3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.checkerframework</groupId>
+            <artifactId>checker</artifactId>
+            <version>2.3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.checkerframework</groupId>
+            <artifactId>jdk8</artifactId>
+            <version>2.3.2</version>
+        </dependency>
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>checker</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>3.6.1</version>
+                        <configuration>
+                            <source>1.8</source>
+                            <target>1.8</target>
+                            <compilerArguments>
+                                <Xmaxerrs>10000</Xmaxerrs>
+                                <Xmaxwarns>10000</Xmaxwarns>
+                            </compilerArguments>
+                            <annotationProcessors>
+                                <annotationProcessor>
+                                    org.checkerframework.checker.nullness.NullnessChecker
+                                </annotationProcessor>
+                                <!--                        <annotationProcessor>-->
+                                <!--                            org.checkerframework.checker.interning.InterningChecker-->
+                                <!--                        </annotationProcessor>-->
+                                <!--                        <annotationProcessor>-->
+                                <!--                            org.checkerframework.checker.fenum.FenumChecker-->
+                                <!--                        </annotationProcessor>-->
+                                <!--                        <annotationProcessor>-->
+                                <!--                            org.checkerframework.checker.formatter.FormatterChecker-->
+                                <!--                        </annotationProcessor>-->
+                            </annotationProcessors>
+                            <compilerArgs>
+                                <arg>-AprintErrorStack</arg>
+                                <arg>-Awarns</arg>
+                            </compilerArgs>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
