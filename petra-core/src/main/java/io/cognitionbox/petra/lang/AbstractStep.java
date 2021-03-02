@@ -18,9 +18,6 @@ package io.cognitionbox.petra.lang;
 import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.core.engine.petri.IToken;
 import io.cognitionbox.petra.core.impl.Identifyable;
-import io.cognitionbox.petra.core.impl.OperationType;
-import io.cognitionbox.petra.core.impl.ReflectUtils;
-import io.cognitionbox.petra.google.Optional;
 import io.cognitionbox.petra.util.function.ICallable;
 
 import java.io.IOException;
