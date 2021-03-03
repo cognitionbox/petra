@@ -42,7 +42,6 @@ import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.RGraphComputer;
 import io.cognitionbox.petra.lang.config.PetraHazelcastTestConfig;
 import org.junit.After;
-import org.junit.Before;
 
 import java.util.Properties;
 

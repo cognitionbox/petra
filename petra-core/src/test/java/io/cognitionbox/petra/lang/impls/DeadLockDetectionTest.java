@@ -21,11 +21,11 @@ import io.cognitionbox.petra.exceptions.GraphException;
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.PGraph;
 import io.cognitionbox.petra.lang.RGraphComputer;
+import io.cognitionbox.petra.lang.config.IPetraTestConfig;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import io.cognitionbox.petra.lang.config.IPetraTestConfig;
 
 import java.io.Serializable;
 import java.util.concurrent.TimeoutException;
@@ -91,7 +91,6 @@ public class DeadLockDetectionTest extends BaseExecutionModesTest {
             step(AtoA.class);
         }
     }
-
 
     @Test
     public void testDeadDetection() {

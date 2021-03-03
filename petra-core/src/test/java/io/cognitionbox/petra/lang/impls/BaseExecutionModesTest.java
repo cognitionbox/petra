@@ -68,8 +68,7 @@ public class BaseExecutionModesTest extends BaseTest {
     public static Collection executionModes() {
         return Arrays.asList(new Object[][]{
                 {ExecMode.SEQ},
-                {ExecMode.PAR}
-                ,
+                {ExecMode.PAR},
                 {ExecMode.DIS}
         });
     }
