@@ -18,6 +18,12 @@
         </dependency>
         <dependency>
             <groupId>io.cognitionbox.petra</groupId>
+            <artifactId>petra-core</artifactId>
+            <version>pre-alpha</version>
+            <classifier>tests</classifier>
+        </dependency>
+        <dependency>
+            <groupId>io.cognitionbox.petra</groupId>
             <artifactId>petra-hazelcast</artifactId>
             <version>pre-alpha</version>
         </dependency>

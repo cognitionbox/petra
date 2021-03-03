@@ -13,17 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.cognitionbox.petra.config;
+package io.cognitionbox.petra.lang.config;
 
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.core.HazelcastInstance;
-import io.cognitionbox.petra.lang.config.HazelcastCloudClientConfig;
-import io.cognitionbox.petra.lang.config.HazelcastServerMode;
-import io.cognitionbox.petra.lang.config.IPetraHazelcastConfig;
-import io.cognitionbox.petra.lang.config.PetraHazelcastConfig;
+import io.cognitionbox.petra.config.PetraConfig;
 
-public class PetraJetConfig extends PetraHazelcastConfig {
+public class PetraHazelcastConfig extends PetraConfig implements IPetraHazelcastConfig {
+    protected volatile ClientConfig config;
+    protected HazelcastServerMode hazelcastServerMode = HazelcastServerMode.EMBEDDED;
+    protected volatile HazelcastInstance hazelcastClient;
+
+    public HazelcastServerMode getHazelcastServerMode() {
+        return hazelcastServerMode;
+    }
+
     public IPetraHazelcastConfig setHazelcastServerMode(HazelcastServerMode mode) {
         this.hazelcastServerMode = mode;
         if (getHazelcastServerMode().isCLOUD()) {

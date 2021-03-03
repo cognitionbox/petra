@@ -161,6 +161,16 @@
                 <version>4.13.1</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>com.hazelcast</groupId>
+                <artifactId>hazelcast</artifactId>
+                <version>3.12.5</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hazelcast</groupId>
+                <artifactId>hazelcast-client</artifactId>
+                <version>3.12.5</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

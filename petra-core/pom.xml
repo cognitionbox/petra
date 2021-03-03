@@ -7,4 +7,19 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>petra-core</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.hazelcast/hazelcast -->
+        <dependency>
+            <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast-client</artifactId>
+        </dependency>
+    </dependencies>
 </project>
