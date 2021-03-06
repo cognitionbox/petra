@@ -1,6 +1,8 @@
 package io.cognitionbox.petra.examples.simple.loop;
 
-class A {
+import java.io.Serializable;
+
+class A implements Serializable {
     Integer value = 0;
 
     private Integer captured = null;

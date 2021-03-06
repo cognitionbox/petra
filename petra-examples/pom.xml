@@ -30,8 +30,9 @@
         </dependency>
         <dependency>
             <groupId>io.cognitionbox.petra</groupId>
-            <artifactId>petra-unit</artifactId>
+            <artifactId>petra-core</artifactId>
             <version>pre-alpha</version>
+            <classifier>tests</classifier>
         </dependency>
         <!-- https://mvnrepository.com/artifact/junit/junit -->
         <dependency>

@@ -1,6 +1,8 @@
 package io.cognitionbox.petra.examples.reporting.objects;
 
-public class Person {
+import java.io.Serializable;
+
+public class Person implements Serializable {
     private String firstName;
     private String sirName;
     private Integer age;

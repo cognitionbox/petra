@@ -2,6 +2,7 @@ package io.cognitionbox.petra.examples.reporting.objects;
 
 import io.cognitionbox.petra.lang.annotations.Extract;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,9 +10,8 @@ import java.util.stream.Collectors;
 import static io.cognitionbox.petra.util.Petra.forAll;
 import static io.cognitionbox.petra.util.Petra.thereExists;
 
-//@Extract
-public class School {
-    @Extract
+public class School implements Serializable {
+
     public List<YearGroup> getYearGroups() {
         return yearGroups;
     }

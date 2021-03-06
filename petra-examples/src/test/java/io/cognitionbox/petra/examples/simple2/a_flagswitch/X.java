@@ -1,6 +1,8 @@
 package io.cognitionbox.petra.examples.simple2.a_flagswitch;
 
-class X {
+import java.io.Serializable;
+
+class X implements Serializable {
     Boolean value;
 
     public X(Boolean value) {

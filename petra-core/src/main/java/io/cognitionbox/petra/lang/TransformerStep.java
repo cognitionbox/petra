@@ -2,6 +2,8 @@ package io.cognitionbox.petra.lang;
 
 import io.cognitionbox.petra.core.IStep;
 
-public interface TransformerStep {
+import java.io.Serializable;
+
+public interface TransformerStep extends Serializable {
     IStep getStep();
 }

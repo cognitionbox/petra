@@ -1,6 +1,8 @@
 package io.cognitionbox.petra.examples.simple2.d_parallel_sequences1;
 
-public class Y {
+import java.io.Serializable;
+
+public class Y implements Serializable {
     @Override
     public String toString() {
         return "Y{" +

@@ -22,22 +22,20 @@ package io.cognitionbox.petra.examples.simple.dynamicstepparallism;
 import io.cognitionbox.petra.examples.simple.common.A;
 import io.cognitionbox.petra.lang.annotations.Extract;
 
-//@Extract
-class X {
+import java.io.Serializable;
+
+class X implements Serializable {
     A a1 = new A();
     A a2 = new A();
 
-    @Extract
     public A getA1() {
         return a1;
     }
 
-    @Extract
     public A getA2() {
         return a2;
     }
 
-    @Extract
     public AList getaList() {
         return aList;
     }

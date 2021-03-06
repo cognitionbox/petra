@@ -27,11 +27,13 @@ import io.cognitionbox.petra.examples.reporting.objects.YearGroup;
 import io.cognitionbox.petra.examples.reporting.steps.ProcessSchool;
 import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
+import io.cognitionbox.petra.util.impl.PList;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -51,13 +53,21 @@ public class SchoolExample extends BaseExecutionModesTest {
         PComputer<School> lc = new PComputer();
 
         Teacher teacher1 = new Teacher("Sam", "Bloggs", 31);
-        SchoolClass classA = new SchoolClass(teacher1, Arrays.asList(
-                new Pupil("Adam", "Johnson", 11),
-                new Pupil("Aobby", "Jimbo", 12)));
-        YearGroup year7 = new YearGroup(Arrays.asList(classA));
-        School school = new School(Arrays.asList(year7));
 
+        List<Pupil> pupils = new PList<>();
 
+        pupils.add(new Pupil("Adam", "Johnson", 11));
+        pupils.add( new Pupil("Aobby", "Jimbo", 12));
+
+        SchoolClass classA = new SchoolClass(teacher1, pupils);
+        List<SchoolClass> classes = new PList<>();
+        classes.add(classA);
+        YearGroup year7 = new YearGroup(classes);
+
+        List<YearGroup> yearGroups = new PList<>();
+        yearGroups.add(year7);
+
+        School school = new School(yearGroups);
         School output = lc.eval(new ProcessSchool(), school);
 
         assertThat(output.getAverageScore()).isEqualTo(1);

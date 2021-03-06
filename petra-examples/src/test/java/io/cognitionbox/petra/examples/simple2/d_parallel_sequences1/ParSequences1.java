@@ -22,6 +22,7 @@ import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.PGraph;
+import io.cognitionbox.petra.lang.RGraphComputer;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -75,6 +76,7 @@ public class ParSequences1 extends BaseExecutionModesTest {
             }
         }
 
+        RGraphComputer.getConfig().setIsReachabilityChecksEnabled(false);
         X output = new PComputer<X>().eval(new SeqGraph(), new X(State.A));
         assertThat(output.y1().state()).isEqualTo(State.C);
         assertThat(output.y2().state()).isEqualTo(State.C);

@@ -2,10 +2,11 @@ package io.cognitionbox.petra.examples.reporting.objects;
 
 import io.cognitionbox.petra.lang.annotations.Extract;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Extract
-public class SchoolClass {
+public class SchoolClass implements Serializable {
     private Teacher teacher;
     private List<Pupil> pupils;
 
