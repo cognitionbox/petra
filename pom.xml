@@ -29,7 +29,6 @@
     <modules>
         <module>petra-core</module>
         <module>petra-unit</module>
-        <module>petra-examples</module>
         <module>petra-hazelcast-jet</module>
     </modules>
 
