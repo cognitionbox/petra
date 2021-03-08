@@ -23,29 +23,15 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public final class StepResult implements Serializable {
-    private OperationType operationType;
-    private IToken input;
-    private IToken outputValue;
 
-    public Collection<Throwable> getErrors() {
-        return errors;
-    }
-
-    private Collection<Throwable> errors;
+    private final OperationType operationType;
+    private final IToken input;
+    private final IToken outputValue;
 
     public StepResult(OperationType operationType, IToken input, IToken outputValue) {
-        this(operationType, input, outputValue, Arrays.asList());
-    }
-
-    public StepResult(OperationType operationType, IToken input, IToken outputValue, Throwable error) {
-        this(operationType, input, outputValue, Arrays.asList(error));
-    }
-
-    public StepResult(OperationType operationType, IToken input, IToken outputValue, Collection<Throwable> errors) {
         this.operationType = operationType;
         this.input = input;
         this.outputValue = outputValue;
-        this.errors = errors;
     }
 
     public OperationType getOperationType() {
@@ -59,4 +45,5 @@ public final class StepResult implements Serializable {
     public IToken getOutputValue() {
         return outputValue;
     }
+
 }
