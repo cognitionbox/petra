@@ -18,13 +18,11 @@ package io.cognitionbox.petra.guarantees.impl;
 import io.cognitionbox.petra.guarantees.EdgeCheck;
 import io.cognitionbox.petra.lang.PEdge;
 
-public class EdgeMustHaveAfunction implements EdgeCheck {
+public class EdgeMustHaveAFunction implements EdgeCheck {
+
     @Override
     public boolean test(PEdge<?> edge) {
-        if (edge.getFunction() != null) {
-            return true;
-        } else {
-            return false;
-        }
+        return edge.getFunction() != null;
     }
+
 }

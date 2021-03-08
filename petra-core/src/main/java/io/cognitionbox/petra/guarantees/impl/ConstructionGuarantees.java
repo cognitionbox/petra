@@ -89,7 +89,7 @@ public class ConstructionGuarantees {
         addCheck(new ClassesWithExtractsOnFieldsMustHaveExtractAnnotation());
         addCheck(new ExtractsAtClassLevelMustBeAppliedOnlyToIterablesOrClassesWhichHaveExtractOnFields());
         addCheck(new GraphMustHaveAtLeastOneStepOrJoin());
-        addCheck(new EdgeMustHaveAfunction());
+        addCheck(new EdgeMustHaveAFunction());
     }
 
     public void runAllChecks(List<StepError> stepErrors, IStep step) {

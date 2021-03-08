@@ -20,7 +20,7 @@ import io.cognitionbox.petra.guarantees.impl.AllFieldsMustBeSerializableUnlessTr
 import io.cognitionbox.petra.guarantees.impl.CheckAllPrePostTypesAreStates;
 import io.cognitionbox.petra.guarantees.impl.ClassesWithExtractsOnFieldsMustHaveExtractAnnotation;
 import io.cognitionbox.petra.guarantees.impl.EdgeEffectMustHaveInputTypeEqualToOutputType;
-import io.cognitionbox.petra.guarantees.impl.EdgeMustHaveAfunction;
+import io.cognitionbox.petra.guarantees.impl.EdgeMustHaveAFunction;
 import io.cognitionbox.petra.guarantees.impl.EffectTypesMustBeClassesAndNotInterfaces;
 import io.cognitionbox.petra.guarantees.impl.ExtractsAtClassLevelMustBeAppliedOnlyToIterablesOrClassesWhichHaveExtractOnFields;
 import io.cognitionbox.petra.guarantees.impl.GraphMustHaveAtLeastOneStep;
@@ -72,7 +72,7 @@ public class PetraConfig implements IPetraConfig {
     final public StepsCannotHaveFields StepsCannotHaveFields_ = new StepsCannotHaveFields();
     final public StepsCanCannotDeclareConstructors StepsCanCannotDeclareConstructors_ = new StepsCanCannotDeclareConstructors();
     final public StepsMustHavePublicClasses StepsMustHavePublicClasses_ = new StepsMustHavePublicClasses();
-    final public EdgeMustHaveAfunction EdgeMustHaveAfunction_ = new EdgeMustHaveAfunction();
+    final public EdgeMustHaveAFunction edgeMustHaveAFunction_ = new EdgeMustHaveAFunction();
     final public GraphOutputCannotBeReachedFromInput GraphOutputCannotBeReachedFromInput_ = new GraphOutputCannotBeReachedFromInput();
     final public GraphMustHaveAtLeastOneStepOrJoin GraphMustHaveAtLeastOneStepOrJoin_ = new GraphMustHaveAtLeastOneStepOrJoin();
     final public NoStepsInSameStepHaveSamePreconditionType NoStepsInSameStepHaveSamePreconditionType_ = new NoStepsInSameStepHaveSamePreconditionType();
