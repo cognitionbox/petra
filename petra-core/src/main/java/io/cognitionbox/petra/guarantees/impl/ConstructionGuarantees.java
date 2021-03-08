@@ -94,9 +94,12 @@ public class ConstructionGuarantees {
 
     public void runAllChecks(List<StepError> stepErrors, IStep step) {
         for (Check c : checks) {
-            if ((c instanceof EdgeCheck && step instanceof PEdge) ||
-                    (c instanceof StepCheck && step instanceof IStep) ||
-                    (c instanceof GraphCheck && step instanceof IGraph)) {
+
+            final boolean isEdgeCheck = c instanceof EdgeCheck && step instanceof PEdge;
+            final boolean isStepCheck = c instanceof StepCheck && step instanceof IStep;
+            final boolean isGraphCheck = c instanceof GraphCheck && step instanceof IGraph;
+
+            if (isEdgeCheck || isStepCheck || isGraphCheck) {
                 if (!c.test(step)) {
                     stepErrors.add(new StepError(step, c.getClass().getSimpleName()));
                     if (c instanceof StepMustHaveValidPreAndPostCondition &&
