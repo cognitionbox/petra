@@ -37,15 +37,12 @@ import io.cognitionbox.petra.util.function.IBiConsumer;
 import io.cognitionbox.petra.util.function.IConsumer;
 import io.cognitionbox.petra.util.function.IFunction;
 import io.cognitionbox.petra.util.function.IPredicate;
-import io.cognitionbox.petra.util.function.IRunnable;
 import io.cognitionbox.petra.util.impl.PList;
 import org.javatuples.Pair;
 import org.javatuples.Triplet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.AnnotatedParameterizedType;
-import java.lang.reflect.AnnotatedType;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,7 +50,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -63,7 +59,7 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
 
     final static Logger LOG = LoggerFactory.getLogger(RGraph.class);
     Place place;
-    //List<StepCallable> callables = new ArrayList<>();
+
     private boolean doesNotTerminate = this.getStepClazz().isAnnotationPresent(DoesNotTerminate.class);
     private List<IStep> parallizable = new ArrayList<>();
     private transient IEdgeDotLogger stepDotLogger = new PEdgeDotLoggerImpl();
@@ -91,9 +87,6 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
     private List<TransformerStep> currentSteps;
     private AtomicInteger matches = new AtomicInteger(0);
 
-    //    public void step(IStep<? super I> computation) {
-//        addParallizable(computation);
-//    }
     private Set<Class<?>> deconstructable = new HashSet<>();
     private List<Pair<Guard<X>, IConsumer<X>>> mocks = new ArrayList<>();
 
@@ -187,80 +180,19 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
             }
         }
 
-//        if (out!=null){
-//            return out;
-//        }
-//        // loop terminated before post condition reached
-//        throw new PostConditionFailure();
-
         return getInput().getValue();
     }
 
     void iteration() {
-//        if (currentIteration > getMaxIterations()) {
-//            // if we go past the max iterations, we have failed to meet the post cons
-//            putState(new IterationsTimeoutException());
-//        } else {
 
-//            if (sleepPeriod>0) {
-//                sleep(sleepPeriod);
-//            }
-
-//            boolean b = getPlace().size() == 1;
-//            boolean c = false;
-//            if (b){
-//                for (IToken o : getPlace()){
-//                    if (p().test(o.getValue())){
-//                        c = true;
-//                        break;
-//                    }
-//                }
-//            }
-//            if ((b && c)) {
         place.reset();
-        //if (p().getTypeClass().isAnnotationPresent(Extract.class)){
-        deconstruct(getInput());
-        //}
-//            }
 
-        //De();
+        deconstruct(getInput());
+
         Ex();
         Jn();
-//            Object toReturn = Rt();
-//            if (toReturn != null) {
-//                return (X) toReturn;
-//            } else {
-//                return null;
-//            }
 
-        //  }
     }
-
-//    private TransformerStep currentStep = null;
-//
-//    public void par(){
-//        stateIterableTransformerSteps.remove(currentStep);
-//        parTransformerSteps.remove(currentStep);
-//        if (currentStep instanceof StateIterableTransformerStep){
-//            stateIterableTransformerSteps.add((StateIterableTransformerStep) currentStep);
-//            parIterableTransformerSteps.add((StateIterableTransformerStep) currentStep);
-//        } else if (currentStep instanceof StateTransformerStep){
-//            stateTransformerSteps.add((StateTransformerStep) currentStep);
-//            parTransformerSteps.add((StateTransformerStep) currentStep);
-//        }
-//    }
-//
-//    public void seq(){
-//        stateIterableTransformerSteps.remove(currentStep);
-//        seqTransformerSteps.remove(currentStep);
-//        if (currentStep instanceof StateIterableTransformerStep){
-//            stateIterableTransformerSteps.add((StateIterableTransformerStep) currentStep);
-//            seqIterableTransformerSteps.add((StateIterableTransformerStep) currentStep);
-//        } else if (currentStep instanceof StateTransformerStep){
-//            stateTransformerSteps.add((StateTransformerStep) currentStep);
-//            seqTransformerSteps.add((StateTransformerStep) currentStep);
-//        }
-//    }
 
     public void step(Class<? extends IStep<? extends X>> computation) {
         step(x -> x, Petra.createStep(computation));
@@ -268,22 +200,6 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
 
     public void step(ExecMode execMode, Class<? extends IStep<? extends X>> computation) {
         step(execMode, x -> x, Petra.createStep(computation));
-    }
-
-    public List<StateTransformerStep> getSeqTransformerSteps() {
-        return seqTransformerSteps;
-    }
-
-    public List<StateIterableTransformerStep> getSeqIterableTransformerSteps() {
-        return seqIterableTransformerSteps;
-    }
-
-    public List<StateTransformerStep> getTransformerSteps() {
-        return stateTransformerSteps;
-    }
-
-    public List<StateIterableTransformerStep> getForallTransformerSteps() {
-        return stateIterableTransformerSteps;
     }
 
     public <P> void inits(ExecMode execMode, IFunction<X, Iterable<P>> transformer, Class<? extends IStep<? extends P>> step) {
@@ -310,19 +226,6 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
     public <P> void steps(ExecMode execMode, IFunction<X, Iterable<P>> transformer, Class<? extends IStep<? extends P>> step) {
         steps(execMode, transformer, Petra.createStep(step));
     }
-
-//    public <P> void choice(Class<? extends IStep<? extends P>> step){
-//        step(ExecMode.CHOICE, x->x ,Petra.createStep(step));
-//    }
-//    public <P> void choice(IFunction<X,P> transformer, Class<? extends IStep<? extends P>> step){
-//        step(ExecMode.CHOICE, transformer,Petra.createStep(step));
-//    }
-//    public <P> void choice(IFunction<X,P> transformer, IStep<? extends P> step){
-//        step(ExecMode.CHOICE, transformer,step);
-//    }
-//    public <P> void choice(IStep<? extends P> step){
-//        step(ExecMode.CHOICE, x->x,step);
-//    }
 
     public <P> void steps(IFunction<X, Iterable<P>> transformer, Class<? extends IStep<? extends P>> step) {
         steps(ExecMode.SEQ, transformer, Petra.createStep(step));
@@ -689,15 +592,9 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
         stepDotLogger.logJoin(this, index);
     }
 
-    void De() {
-        for (IToken t : place.getTokens()) {
-            deconstruct(t);
-        }
-    }
-
     // Exclusivity check
     void Ex() {
-        Lg_ALL_STATES("[Ex in]");
+        printInfo("[Ex in]");
         Collection<IToken> toUse = getWorkingStatesToUse();
 //        if (place.tokensMatchedByUniqueStepPreconditions(this.getParallizable())) {
         Collections.rotate(parallizable, 1);
@@ -707,7 +604,7 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
 //                throw new AssertionError("fails overlap check!");
 //            }
 //        }
-        Lg_ALL_STATES("[Ex out]");
+        printInfo("[Ex out]");
     }
 
     Collection<IToken> getWorkingStatesToUse() {
@@ -796,16 +693,8 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
         stepDotLogger.logCompletedStep(this, computation);
     }
 
-    int getNoOfParallizables() {
-        return parallizable.size();
-    }
-
-    public int getNoOfJoins() {
-        return joins.size();
-    }
-
     void Jn() {
-        Lg_ALL_STATES("[Jn in]");
+        printInfo("[Jn in]");
         for (IBiConsumer<Collection<IToken>, RGraph> t : this.joins) {
             t.accept(getWorkingStatesToUse(), this);
         }
@@ -817,19 +706,7 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
                 }
             }
         }
-        Lg_ALL_STATES("[Jn out]");
-    }
-
-    private Object peekState() {
-        Optional<IToken> opt = place.findAny();
-        if (!opt.isPresent()) {
-            return null;
-        }
-        return opt.get().getValue();
-    }
-
-    private boolean doReturnVOID() {
-        return this.getPlace().size() == 0 && this.q().isVoid();
+        printInfo("[Jn out]");
     }
 
     private List<Throwable> exceptions() {
@@ -838,62 +715,6 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
                 .filter(s -> s.getValue() instanceof Throwable)
                 .map(s -> (PetraException) s.getValue())
                 .collect(Collectors.toCollection(() -> new PList<>()));
-    }
-
-    X Rt() {
-        List<Throwable> exceptions = exceptions();
-        if (!exceptions.isEmpty()) {
-            for (Throwable throwable : exceptions) {
-//                throwable.printStackTrace();
-//                for (Throwable t : throwable.getCauses()) {
-//                    t.printStackTrace();
-//                }
-            }
-            return (X) new GraphException(this, (X) this.getInput().getValue(), null, exceptions);
-        }
-        if (checkOutput(getInput().getValue())) {
-            if (this.getPlace().size() == 0) {
-                return (X) new IllegalStateException("cannot have zero tokens in place and not return void.");
-            }
-            Object obj = getInput().getValue();
-            /*
-             * Arpad's Hack
-             */
-            /*
-             * Arpad's Kotlin Hack
-             */
-            for (Kase k : getKases()){
-                if (k.q().getTypeClass().equals(int.class) && Integer.class.isInstance(obj)) {
-                    if (k.evalQ((X) obj)) {
-                        return (X) obj;
-                    }
-                }
-            }
-
-            for (Kase k : getKases()){
-                if (k.q().getTypeClass().equals(int.class)) {
-                    if (Integer.class.isInstance(obj)) {
-                        if (k.evalQ((X) obj)) {
-                            return (X) obj;
-                        }
-                    }
-                }
-            }
-
-            if (checkOutput(obj)) {
-                return (X) obj;
-            }
-        }
-        return null;
-    }
-
-    private boolean checkOutput(Object output) {
-        for (Kase k : getKases()){
-            if (k.q() != null && k.q(output)){
-                return true;
-            }
-        }
-        return false;
     }
 
     void Lg() {
@@ -907,7 +728,7 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
         this.lastStates = newStates;
     }
 
-    private void Lg_ALL_STATES(String desc) {
+    private void printInfo(String desc) {
         if (RGraphComputer.getConfig().isAllStatesLoggingEnabled()) {
             List copy = this.getPlace().stream().map(p -> p.getValue()).collect(Collectors.toList());
             String stepId = "";
@@ -918,92 +739,13 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
         }
     }
 
-    private void Lg_STATE(String desc, IStep edge, Object o) {
-        if (RGraphComputer.getConfig().isStatesLoggingEnabled()) {
-            String stepId = "";
-            if (logImplementationDetails) {
-                stepId = edge.getUniqueId();
-            }
-            LOG.info(desc + " " + RGraphComputer.getConfig().getMode() + " " + " " + this.getPartitionKey() + " " + stepId + ":" + iterationId.get() + " thread=" + Thread.currentThread().getId() + " -> " + o);
-        }
-    }
-
-    private void randomSleepToPreventThreadStarvationAndMinimizeWaitsOnLocks() {
-        sleep((long) (Math.random() * 10));
-    }
-
-    public Long getMaxIterations() {
-        return RGraphComputer.getConfig().isTestMode() ? getTestModeMaxIterations() : Long.MAX_VALUE;
-    }
-
-    protected void setMaxIterations(long maxIterations) {
-        this.maxIterations = maxIterations;
-    }
-
-    public Long getTestModeMaxIterations() {
-        return maxIterations;
-    }
-
     protected void setSleepPeriod(long sleepPeriod) {
         this.sleepPeriod = sleepPeriod;
         this.iterationTimer = new PollingTimer((int) (this.sleepPeriod / 1000), false);
     }
 
-    private void sleep(long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e1) {
-        }
-    }
-
-    synchronized private void removeAllStates(List<IToken> matches) {
-        matches.stream().forEach(m -> removeState(m));
-    }
-
-    private void executeJoin(IRunnable runnable) {
-        runnable.run();
-    }
-
     public void putState(Object t) {
         place.addValue(t);
-    }
-
-    boolean removeState(IToken t) {
-        return place.removeToken(t);
-    }
-
-    private Object takeState() {
-        Optional<IToken> peek = place.findAny();
-        if (peek.isPresent()) {
-            removeState(peek.get());
-        }
-        return peek.get().getValue();
-    }
-
-    private boolean isOutputAnnotatedWithExtract(Class<? extends IStep> stepClass) {
-        AnnotatedType at = stepClass.getAnnotatedSuperclass();
-        if (at instanceof AnnotatedParameterizedType) {
-            AnnotatedType[] aTypes = ((AnnotatedParameterizedType) at)
-                    .getAnnotatedActualTypeArguments();
-            Extract output = aTypes[1].getAnnotation(Extract.class);
-            if (output != null) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean isInputAnnotatedWithExtract(Class<? extends IStep> stepClass) {
-        AnnotatedType at = stepClass.getAnnotatedSuperclass();
-        if (at instanceof AnnotatedParameterizedType) {
-            AnnotatedType[] aTypes = ((AnnotatedParameterizedType) at)
-                    .getAnnotatedActualTypeArguments();
-            Extract input = aTypes[0].getAnnotation(Extract.class);
-            if (input != null) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private void deconstruct(IToken s) {
@@ -1103,10 +845,4 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
         setQ(q);
     }
 
-//    public void post(IPredicate<X> predicate) {
-//        if (!endAsBeenCalled) {
-//            throw new UnsupportedOperationException("end has not been called");
-//        }
-//        setQ(new Guard(getType(), predicate, OperationType.RETURN));
-//    }
 }
