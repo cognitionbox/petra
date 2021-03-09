@@ -88,7 +88,6 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
     private AtomicInteger matches = new AtomicInteger(0);
 
     private Set<Class<?>> deconstructable = new HashSet<>();
-    private List<Pair<Guard<X>, IConsumer<X>>> mocks = new ArrayList<>();
 
     public RGraph()
     {
@@ -596,14 +595,10 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
     void Ex() {
         printInfo("[Ex in]");
         Collection<IToken> toUse = getWorkingStatesToUse();
-//        if (place.tokensMatchedByUniqueStepPreconditions(this.getParallizable())) {
+
         Collections.rotate(parallizable, 1);
-        matchComputationsToStatesAndExecute(parallizable);
-//        } else {
-//            if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
-//                throw new AssertionError("fails overlap check!");
-//            }
-//        }
+        matchComputationsToStatesAndExecute();
+
         printInfo("[Ex out]");
     }
 
@@ -665,24 +660,8 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
         }
     }
 
-    private void matchComputationsToStatesAndExecute(List<IStep> steps) {
-        if (this.mocks.isEmpty()) {
-            executeAllSteps();
-        } else {
-            int count = 0;
-            Pair<Guard<X>, IConsumer<X>> match = null;
-            for (int i = 0; i < mocks.size() - 1; i++) {
-                if (mocks.get(i).getValue0().test(getInput().getValue())) {
-                    match = mocks.get(i);
-                    count++;
-                }
-            }
-            if (count == 1) {
-                match.getValue1().accept(getInput().getValue());
-            } else if (count == 0) { // the elseMock
-                mocks.get(mocks.size() - 1).getValue1().accept(getInput().getValue());
-            }
-        }
+    private void matchComputationsToStatesAndExecute() {
+        executeAllSteps();
     }
 
     <D> void addParallizable(IStep<? extends D> computation) {
@@ -823,14 +802,6 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
     public X call() throws Exception {
         initInput();
         return executeMatchingLoopUntilPostCondition();
-    }
-
-    public void mock(IPredicate<X> kase, IConsumer<X> mock) {
-        this.mocks.add(Pair.with(new GuardWrite(getType(), kase), mock));
-    }
-
-    public void elseMock(IConsumer<X> mock) {
-        this.mocks.add(Pair.with(new GuardWrite(getType(), x -> true), mock));
     }
 
     public void pre(GuardInput<X> p) {

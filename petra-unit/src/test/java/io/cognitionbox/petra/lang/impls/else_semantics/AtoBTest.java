@@ -53,19 +53,4 @@ public class AtoBTest extends BaseExecutionModesTest {
         assertThat(res.values.stream().map(v -> v.value).collect(Collectors.toList())).allMatch(v -> v == "B");
     }
 
-    @Test
-    public void testAtoBMock() {
-        getGraphComputer().getConfig().setConstructionGuaranteeChecks(false);
-        getGraphComputer().getConfig().setStrictModeExtraConstructionGuarantee(false);
-        List<Value> values = new ArrayList<>();
-        values.add(new Value("A"));
-        values.add(new Value("A"));
-        values.add(new Value("A"));
-        values.add(new Value("A"));
-        X res = (X) getGraphComputer().eval(new AtoBMock(), new X(new Value("A"), new Value("A"), values));
-        assertThat(res.value1.value).isEqualTo("B");
-        assertThat(res.value2.value).isEqualTo("B");
-        assertThat(res.values.stream().map(v -> v.value).collect(Collectors.toList())).allMatch(v -> v == "B");
-    }
-
 }
