@@ -1,15 +1,12 @@
 package io.cognitionbox.petra.lang;
 
 import io.cognitionbox.petra.core.impl.OperationType;
-import io.cognitionbox.petra.util.Petra;
 import io.cognitionbox.petra.util.function.IPredicate;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import static io.cognitionbox.petra.util.Petra.rw;
 
 public class Kase<E> implements IKase<E> {
     private final AtomicBoolean covered = new AtomicBoolean(false);

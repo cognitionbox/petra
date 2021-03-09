@@ -22,8 +22,6 @@ import io.cognitionbox.petra.lang.RGraph;
 import io.cognitionbox.petra.lang.Ref;
 import io.cognitionbox.petra.util.function.ICallable;
 import io.cognitionbox.petra.util.impl.PLock;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.concurrent.Callable;

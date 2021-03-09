@@ -20,7 +20,6 @@ import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.PGraph;
 import io.cognitionbox.petra.lang.annotations.Extract;
-import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import io.cognitionbox.petra.util.impl.PList;
 import org.junit.Test;
 import org.junit.runner.RunWith;

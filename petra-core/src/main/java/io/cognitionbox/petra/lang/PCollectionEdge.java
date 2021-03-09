@@ -21,7 +21,6 @@ import io.cognitionbox.petra.util.function.IBiPredicate;
 import io.cognitionbox.petra.util.function.IFunction;
 
 import java.util.Collection;
-import java.util.function.Consumer;
 
 
 public class PCollectionEdge<X, Y, Z> extends PEdge<X> {

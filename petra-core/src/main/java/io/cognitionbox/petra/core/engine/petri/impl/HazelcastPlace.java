@@ -16,21 +16,12 @@
 package io.cognitionbox.petra.core.engine.petri.impl;
 
 import com.hazelcast.core.IMap;
-import com.hazelcast.query.Predicate;
-import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.core.engine.petri.AbstractPlace;
 import io.cognitionbox.petra.core.engine.petri.IToken;
-import io.cognitionbox.petra.lang.AbstractStep;
-import io.cognitionbox.petra.lang.Guard;
 import io.cognitionbox.petra.lang.RGraphComputer;
 import io.cognitionbox.petra.lang.config.IPetraHazelcastConfig;
-import io.cognitionbox.petra.util.function.IPredicate;
-import org.javatuples.Pair;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public final class HazelcastPlace extends AbstractPlace<IMap<String, IToken>> {

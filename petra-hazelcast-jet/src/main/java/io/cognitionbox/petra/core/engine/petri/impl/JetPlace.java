@@ -16,13 +16,9 @@
 package io.cognitionbox.petra.core.engine.petri.impl;
 
 import com.hazelcast.jet.IMapJet;
-import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.core.engine.petri.AbstractPlace;
 import io.cognitionbox.petra.core.engine.petri.IToken;
-import io.cognitionbox.petra.util.function.IPredicate;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 public final class JetPlace extends AbstractPlace<IMapJet<String, IToken>> {

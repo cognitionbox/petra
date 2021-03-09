@@ -15,7 +15,6 @@
  */
 package io.cognitionbox.petra.core.impl;
 
-import io.cognitionbox.petra.core.impl.ObjectCopyerViaSerialization;
 import org.junit.Test;
 
 import java.io.IOException;

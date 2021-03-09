@@ -15,21 +15,12 @@
  */
 package io.cognitionbox.petra.core.engine.petri.impl;
 
-import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.core.engine.petri.AbstractPlace;
 import io.cognitionbox.petra.core.engine.petri.IToken;
-import io.cognitionbox.petra.lang.AbstractStep;
-import io.cognitionbox.petra.lang.Guard;
-import io.cognitionbox.petra.util.function.IPredicate;
-import org.javatuples.Pair;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-
-import static java.util.stream.Collectors.toList;
 
 public final class ConcurrentHashMapPlace extends AbstractPlace<Map<String, IToken>> {
 

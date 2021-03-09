@@ -17,7 +17,6 @@ package io.cognitionbox.petra.guarantees.impl;
 
 import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.guarantees.StepCheck;
-import io.cognitionbox.petra.lang.RGraph;
 
 @Deprecated
 // effect types can be interfaces

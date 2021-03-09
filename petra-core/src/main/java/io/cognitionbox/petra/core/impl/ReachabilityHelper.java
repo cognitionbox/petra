@@ -17,13 +17,11 @@ package io.cognitionbox.petra.core.impl;
 
 import io.cognitionbox.petra.guarantees.impl.ClassesWithExtractsOnFieldsMustHaveExtractAnnotation;
 import io.cognitionbox.petra.guarantees.impl.ExtractsAtClassLevelMustBeAppliedOnlyToIterablesOrClassesWhichHaveExtractOnFields;
-import io.cognitionbox.petra.lang.Guard;
 import io.cognitionbox.petra.lang.Ref;
 import io.cognitionbox.petra.lang.Void;
 import io.cognitionbox.petra.lang.annotations.Extract;
 import io.cognitionbox.petra.lang.annotations.SharedResource;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
