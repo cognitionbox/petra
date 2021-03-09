@@ -69,7 +69,6 @@ public class ConstructionGuarantees {
         //addCheck(new StepsCannotHaveFields());
 
         if (config.isStrictModeExtraConstructionGuarantee()) {
-            addCheck(new CheckAllPrePostTypesAreStates());
             addCheck(new NoStepsInSameStepHaveSamePreconditionType());
         }
 

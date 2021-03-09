@@ -17,7 +17,6 @@ package io.cognitionbox.petra.config;
 
 import io.cognitionbox.petra.factory.IPetraComponentsFactory;
 import io.cognitionbox.petra.guarantees.impl.AllFieldsMustBeSerializableUnlessTransient;
-import io.cognitionbox.petra.guarantees.impl.CheckAllPrePostTypesAreStates;
 import io.cognitionbox.petra.guarantees.impl.ClassesWithExtractsOnFieldsMustHaveExtractAnnotation;
 import io.cognitionbox.petra.guarantees.impl.EdgeEffectMustHaveInputTypeEqualToOutputType;
 import io.cognitionbox.petra.guarantees.impl.EdgeMustHaveAfunction;
@@ -78,7 +77,6 @@ public class PetraConfig implements IPetraConfig {
     final public NoStepsInSameStepHaveSamePreconditionType NoStepsInSameStepHaveSamePreconditionType_ = new NoStepsInSameStepHaveSamePreconditionType();
     final public OnlyStepWithSideAffectTrueMustImplementSideEffect OnlyStepWithSideAffectTrueMustImplementSideEffect_ = new OnlyStepWithSideAffectTrueMustImplementSideEffect();
     // final public StepOutputTypesAssignableFromInputTypesMustHaveSideAffectAnnotation StepOutputTypesAssignableFromInputTypesMustHaveSideAffectAnnotation = new StepOutputTypesAssignableFromInputTypesMustHaveSideAffectAnnotation();
-    final public CheckAllPrePostTypesAreStates CheckAllPrePostTypesAreStates_ = new CheckAllPrePostTypesAreStates();
     final public StepMustHaveValidPreAndPostCondition StepMustHaveValidPreAndPostCondition_ = new StepMustHaveValidPreAndPostCondition();
     // final public StepsWithSameNonStateInputAndOutputTypesMustBeSideEffects StepWithSameInputAndOutputTypesMustImplementTransform = new StepsWithSameNonStateInputAndOutputTypesMustBeSideEffects();
     final public StepWithImmutablePreOrPostConditionTypesCannotBeSideEffects StepWithImmutablePreOrPostConditionTypesCannotBeSideEffects_ = new StepWithImmutablePreOrPostConditionTypesCannotBeSideEffects();
