@@ -19,65 +19,65 @@ import io.cognitionbox.petra.factory.IPetraComponentsFactory;
 
 public interface IPetraConfig {
 
-    public IPetraComponentsFactory getSequentialModeFactory();
+    IPetraComponentsFactory getSequentialModeFactory();
 
-    public IPetraComponentsFactory getParallelModeFactory();
+    IPetraComponentsFactory getParallelModeFactory();
 
-    public IPetraComponentsFactory getDistributedModeFactory();
+    IPetraComponentsFactory getDistributedModeFactory();
 
-    public IPetraConfig setSequentialModeFactory(IPetraComponentsFactory factory);
+    IPetraConfig setSequentialModeFactory(IPetraComponentsFactory factory);
 
-    public IPetraConfig setParallelModeFactory(IPetraComponentsFactory factory);
+    IPetraConfig setParallelModeFactory(IPetraComponentsFactory factory);
 
-    public IPetraConfig setDistributedModeFactory(IPetraComponentsFactory factory);
+    IPetraConfig setDistributedModeFactory(IPetraComponentsFactory factory);
 
-    public boolean isExceptionsPassthrough();
+    boolean isExceptionsPassthrough();
 
-    public boolean isTestMode();
+    boolean isTestMode();
 
-    public long getMaxIterations();
+    long getMaxIterations();
 
-    public IPetraConfig setSleepPeriod(long sleepPeriod);
+    IPetraConfig setSleepPeriod(long sleepPeriod);
 
-    public IPetraConfig setDeadLockRecovery(boolean deadLockRecovery);
+    IPetraConfig setDeadLockRecovery(boolean deadLockRecovery);
 
-    public boolean isDeadLockRecoveryActive();
+    boolean isDeadLockRecoveryActive();
 
-    public boolean isDefensiveCopyAllInputs();
+    boolean isDefensiveCopyAllInputs();
 
-    public IPetraConfig setDefensiveCopyAllInputsExceptForEffectedInputs(boolean defensiveCopyAllInputsExceptForEffectedInputs);
+    IPetraConfig setDefensiveCopyAllInputsExceptForEffectedInputs(boolean defensiveCopyAllInputsExceptForEffectedInputs);
 
-    public IPetraConfig setIsReachabilityChecksEnabled(boolean isReachabilityChecksEnabled);
+    IPetraConfig setIsReachabilityChecksEnabled(boolean isReachabilityChecksEnabled);
 
-    public boolean isReachabilityChecksEnabled();
+    boolean isReachabilityChecksEnabled();
 
-    public ExecMode getMode();
+    ExecMode getMode();
 
-    public IPetraConfig setMode(ExecMode mode);
+    IPetraConfig setMode(ExecMode mode);
 
-    public boolean isDebugModeEnabled();
+    boolean isDebugModeEnabled();
 
-    public void enableDebugMode();
+    void enableDebugMode();
 
-    public IPetraConfig enableStatesLogging();
+    IPetraConfig enableStatesLogging();
 
-    public IPetraConfig enableAllStatesLogging();
+    IPetraConfig enableAllStatesLogging();
 
-    public boolean isConstructionGuaranteeChecks();
+    boolean isConstructionGuaranteeChecks();
 
-    public IPetraConfig setConstructionGuaranteeChecks(boolean constructionGuaranteeChecks);
+    IPetraConfig setConstructionGuaranteeChecks(boolean constructionGuaranteeChecks);
 
-    public boolean isStrictModeExtraConstructionGuarantee();
+    boolean isStrictModeExtraConstructionGuarantee();
 
-    public IPetraConfig setStrictModeExtraConstructionGuarantee(boolean strictModeExtraConstructionGuarantee);
+    IPetraConfig setStrictModeExtraConstructionGuarantee(boolean strictModeExtraConstructionGuarantee);
 
-    public boolean isStatesLoggingEnabled();
+    boolean isStatesLoggingEnabled();
 
-    public boolean isAllStatesLoggingEnabled();
+    boolean isAllStatesLoggingEnabled();
 
-    public boolean isEnableUserCodeDeployment();
+    boolean isEnableUserCodeDeployment();
 
-    public IPetraConfig setEnableUserCodeDeployment(boolean enableUserCodeDeployment);
+    IPetraConfig setEnableUserCodeDeployment(boolean enableUserCodeDeployment);
 
-    public long getSleepPeriod();
+    long getSleepPeriod();
 }

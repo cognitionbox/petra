@@ -35,7 +35,6 @@ import java.util.List;
 
 public class ConstructionGuarantees {
 
-    final Logger LOG = LoggerFactory.getLogger(ConstructionGuarantees.class);
     private IPetraConfig config;
 
     private List<Check> checks = new ArrayList<>();
@@ -107,14 +106,4 @@ public class ConstructionGuarantees {
         }
     }
 
-    public static boolean isSideEffect(AbstractStep<?> step) {
-        return true;
-    }
-
-    String printErrorDotDiagram(RGraph xGraphSafe) {
-        PGraphDotDiagramRendererImpl2 renderer = new PGraphDotDiagramRendererImpl2();
-        renderer.render(xGraphSafe);
-        renderer.finish();
-        return renderer.getDotOutput();
-    }
 }

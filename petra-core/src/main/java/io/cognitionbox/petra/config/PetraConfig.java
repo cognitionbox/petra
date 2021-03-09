@@ -16,70 +16,9 @@
 package io.cognitionbox.petra.config;
 
 import io.cognitionbox.petra.factory.IPetraComponentsFactory;
-import io.cognitionbox.petra.guarantees.impl.AllFieldsMustBeSerializableUnlessTransient;
-import io.cognitionbox.petra.guarantees.impl.ClassesWithExtractsOnFieldsMustHaveExtractAnnotation;
-import io.cognitionbox.petra.guarantees.impl.EdgeEffectMustHaveInputTypeEqualToOutputType;
-import io.cognitionbox.petra.guarantees.impl.EdgeMustHaveAfunction;
-import io.cognitionbox.petra.guarantees.impl.EffectTypesMustBeClassesAndNotInterfaces;
-import io.cognitionbox.petra.guarantees.impl.ExtractsAtClassLevelMustBeAppliedOnlyToIterablesOrClassesWhichHaveExtractOnFields;
-import io.cognitionbox.petra.guarantees.impl.GraphMustHaveAtLeastOneStep;
-import io.cognitionbox.petra.guarantees.impl.GraphMustHaveAtLeastOneStepOrJoin;
-import io.cognitionbox.petra.guarantees.impl.GraphOutputCannotBeReachedFromInput;
-import io.cognitionbox.petra.guarantees.impl.NoStepsInSameStepHaveSamePreconditionType;
-import io.cognitionbox.petra.guarantees.impl.OnlyEdgesWithSideEffectsMustImplementIRollback;
-import io.cognitionbox.petra.guarantees.impl.OnlyStepWithSideAffectTrueMustImplementSideEffect;
-import io.cognitionbox.petra.guarantees.impl.PrePostTypesMustBeBoundToUniquePredicates;
-import io.cognitionbox.petra.guarantees.impl.StaticFieldsOnlyAllowedIfFinalAndPrimitive;
-import io.cognitionbox.petra.guarantees.impl.StepMustHaveValidPreAndPostCondition;
-import io.cognitionbox.petra.guarantees.impl.StepWithImmutablePreOrPostConditionTypesCannotBeSideEffects;
-import io.cognitionbox.petra.guarantees.impl.StepsCanCannotDeclareConstructors;
-import io.cognitionbox.petra.guarantees.impl.StepsCanOnlyEverImplementOneInterfaceWhichIsIRollback;
-import io.cognitionbox.petra.guarantees.impl.StepsCannotHaveFields;
-import io.cognitionbox.petra.guarantees.impl.StepsMustHavePublicClasses;
 
 public class PetraConfig implements IPetraConfig {
-    final public PrePostTypesMustBeBoundToUniquePredicates
-            PrePostTypesMustBeBoundToUniquePredicates_ =
-            new PrePostTypesMustBeBoundToUniquePredicates();
-    final public EdgeEffectMustHaveInputTypeEqualToOutputType
-            EdgeEffectMustHaveInputTypeEqualToOutputType_ =
-            new EdgeEffectMustHaveInputTypeEqualToOutputType();
-    final public EffectTypesMustBeClassesAndNotInterfaces
-            EffectTypesMustBeClassesAndNotInterfaces_ = new EffectTypesMustBeClassesAndNotInterfaces();
-    final public AllFieldsMustBeSerializableUnlessTransient
-            AllFieldsMustBeSerializableUnlessTransient_ =
-            new AllFieldsMustBeSerializableUnlessTransient();
-    final public StaticFieldsOnlyAllowedIfFinalAndPrimitive
-            StaticFieldsOnlyAllowedIfFinalAndPrimitive_ =
-            new StaticFieldsOnlyAllowedIfFinalAndPrimitive();
-    final public StepsCanOnlyEverImplementOneInterfaceWhichIsIRollback
-            StepsCanOnlyEverImplementOneInterfaceWhichIsIRollback_ =
-            new StepsCanOnlyEverImplementOneInterfaceWhichIsIRollback();
-    //     final public GraphContainingEffectStepsMustItselfBeAnEffect
-//            GraphContainingEffectStepsMustItselfBeAnEffect =
-//            new GraphContainingEffectStepsMustItselfBeAnEffect();
-    final public OnlyEdgesWithSideEffectsMustImplementIRollback
-            OnlyEdgesWithSideEffectsMustImplementIRollback_
-            = new OnlyEdgesWithSideEffectsMustImplementIRollback();
-    final public ClassesWithExtractsOnFieldsMustHaveExtractAnnotation
-            ClassesWithExtractsOnFieldsMustHaveExtractAnnotation_ =
-            new ClassesWithExtractsOnFieldsMustHaveExtractAnnotation();
-    final public ExtractsAtClassLevelMustBeAppliedOnlyToIterablesOrClassesWhichHaveExtractOnFields
-            ExtractsAtClassLevelMustBeAppliedOnlyToIterablesOrClassesWhichHaveExtractOnFields_ =
-            new ExtractsAtClassLevelMustBeAppliedOnlyToIterablesOrClassesWhichHaveExtractOnFields();
-    final public GraphMustHaveAtLeastOneStep GraphMustHaveAtLeastOneStep_ = new GraphMustHaveAtLeastOneStep();
-    final public StepsCannotHaveFields StepsCannotHaveFields_ = new StepsCannotHaveFields();
-    final public StepsCanCannotDeclareConstructors StepsCanCannotDeclareConstructors_ = new StepsCanCannotDeclareConstructors();
-    final public StepsMustHavePublicClasses StepsMustHavePublicClasses_ = new StepsMustHavePublicClasses();
-    final public EdgeMustHaveAfunction EdgeMustHaveAfunction_ = new EdgeMustHaveAfunction();
-    final public GraphOutputCannotBeReachedFromInput GraphOutputCannotBeReachedFromInput_ = new GraphOutputCannotBeReachedFromInput();
-    final public GraphMustHaveAtLeastOneStepOrJoin GraphMustHaveAtLeastOneStepOrJoin_ = new GraphMustHaveAtLeastOneStepOrJoin();
-    final public NoStepsInSameStepHaveSamePreconditionType NoStepsInSameStepHaveSamePreconditionType_ = new NoStepsInSameStepHaveSamePreconditionType();
-    final public OnlyStepWithSideAffectTrueMustImplementSideEffect OnlyStepWithSideAffectTrueMustImplementSideEffect_ = new OnlyStepWithSideAffectTrueMustImplementSideEffect();
-    // final public StepOutputTypesAssignableFromInputTypesMustHaveSideAffectAnnotation StepOutputTypesAssignableFromInputTypesMustHaveSideAffectAnnotation = new StepOutputTypesAssignableFromInputTypesMustHaveSideAffectAnnotation();
-    final public StepMustHaveValidPreAndPostCondition StepMustHaveValidPreAndPostCondition_ = new StepMustHaveValidPreAndPostCondition();
-    // final public StepsWithSameNonStateInputAndOutputTypesMustBeSideEffects StepWithSameInputAndOutputTypesMustImplementTransform = new StepsWithSameNonStateInputAndOutputTypesMustBeSideEffects();
-    final public StepWithImmutablePreOrPostConditionTypesCannotBeSideEffects StepWithImmutablePreOrPostConditionTypesCannotBeSideEffects_ = new StepWithImmutablePreOrPostConditionTypesCannotBeSideEffects();
+
     public boolean defensiveCopyAllInputsExceptForEffectedInputs = false;
     protected boolean exceptionsPassthrough = false;
     protected boolean testMode = false;
