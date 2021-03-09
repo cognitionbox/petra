@@ -32,46 +32,10 @@ import java.util.Set;
 
 public class ReachabilityHelper {
 
-    private boolean isDefaultAccess(Class<?> clazz) {
-        return !Modifier.isPrivate(clazz.getModifiers()) &&
-                !Modifier.isPublic(clazz.getModifiers()) &&
-                !Modifier.isProtected(clazz.getModifiers());
-    }
-
-    private Guard<?> copyPTypeWithClass(Guard<?> type, Class<?> clazz) {
-        return type.copyWithClass(clazz);
-    }
-
     public void addState(Class<?> type, Set<Class<?>> types) {
         if (!Void.class.equals(type)) {
             types.add(type);
         }
-    }
-
-    private boolean extractOnFieldOk(Class<?> clazz) {
-        for (Field f : ReflectUtils.getAllFieldsAccessibleFromObject(clazz)) {
-            if (f.isAnnotationPresent(Extract.class)) {
-                if (clazz.isAnnotationPresent(Extract.class)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private boolean extractOnClassOk(Class<?> clazz) {
-        if (!clazz.isAnnotationPresent(Extract.class)) {
-            return true;
-        }
-        if (Iterable.class.isAssignableFrom(clazz) || Collection.class.isAssignableFrom(clazz)) {
-            return true;
-        }
-        for (Field f : ReflectUtils.getAllFieldsAccessibleFromObject(clazz)) {
-            if (f.isAnnotationPresent(Extract.class)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public void deconstruct(Set<Class<?>> resourceTypes, OperationType opp, Class<?> type, Set<Class<?>> types, int depth) {
