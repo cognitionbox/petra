@@ -70,7 +70,6 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
     private boolean logImplementationDetails = false;
     private AtomicLong iterationId = new AtomicLong(0);
     private long currentIteration;
-    private Long maxIterations = RGraphComputer.getConfig().getMaxIterations();
     private long sleepPeriod = RGraphComputer.getConfig().getSleepPeriod();
     private List<TransformerStep> transformerSteps = new ArrayList<>();
     private IPredicate<X> loopInvariant = x -> true;
@@ -98,10 +97,6 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
     public RGraph(String description) {
         super(description);
         init();
-    }
-
-    public List<TransformerStep> getAllTransformerSteps() {
-        return transformerSteps;
     }
 
     public boolean isDoesNotTerminate() {

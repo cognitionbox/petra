@@ -107,10 +107,6 @@ public class ReachabilityHelper {
             addState(type, types);
         }
 
-//        if (type.isAnnotationPresent(Extract.class) && opp!=null && opp==OperationType.READ){
-//            addState(type,types);
-//        }
-
     }
 
     public static class ResourceConflictDetected extends RuntimeException {

@@ -49,17 +49,6 @@ public final class HazelcastPlace extends AbstractPlace<IMap<String, IToken>> {
     }
 
     @Override
-    public Collection<IToken> filterTokensByValue(IPredicate<Object> filter) {
-        return getBackingMap().values(new Predicate<String, IToken>() {
-
-            @Override
-            public boolean apply(Map.Entry<String, IToken> entry) {
-                return filter.test(entry.getValue().getValue());
-            }
-        });
-    }
-
-    @Override
     public Optional<IToken> findAny() {
         return getBackingMap().values().stream().findAny();
     }
@@ -72,44 +61,4 @@ public final class HazelcastPlace extends AbstractPlace<IMap<String, IToken>> {
                 .getMap(getUniqueId());
     }
 
-    @Override
-    public boolean tokensMatchedByUniqueStepPreconditions(List<IStep> steps) {
-        IPredicate<IToken> predicate =
-                s -> {
-                    int matches = 0;
-                    for (Object step : steps) {
-                        if (step instanceof AbstractStep) {
-                            if (((AbstractStep) step).evalP(s.getValue())) {
-                                matches++;
-                                if (matches > 1) {
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                    for (Object joinTypes : steps) {
-                        if (joinTypes instanceof Pair) {
-                            boolean joinMatches = true;
-                            // iterate input types
-                            for (Guard type : ((Pair<List<Guard>, Guard>) joinTypes).getValue0()) {
-                                joinMatches = type.test(s) && joinMatches;
-                            }
-                            if (joinMatches) {
-                                matches++;
-                                if (matches > 1) {
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                    return false;
-                };
-        //return !getBackingMap().values().parallelStream().anyMatch(predicate);
-        return getBackingMap().values(new Predicate<String, IToken>() {
-            @Override
-            public boolean apply(Map.Entry<String, IToken> entry) {
-                return predicate.test(entry.getValue());
-            }
-        }).isEmpty();
-    }
 }

@@ -24,14 +24,14 @@ public class PEdgeDotLoggerImpl implements IEdgeDotLogger {
     private StringBuilder diagram = new StringBuilder();
 
     @Override
-    public void logCompletedStep(IStep from, IStep too) {
-        if (((Identifyable) from).getPartitionKey().contains("extractThrowablesStep") ||
-                ((Identifyable) too).getPartitionKey().contains("extractThrowablesStep")) {
+    public void logCompletedStep(IStep from, IStep to) {
+        if (from.getPartitionKey().contains("extractThrowablesStep") ||
+                to.getPartitionKey().contains("extractThrowablesStep")) {
             return;
         }
-        diagram.append(from + "->" + too + " [style=dotted, label=owns];\n");
-        if (too instanceof PGraph) {
-            diagram.append(((PGraph) too).getTransitions());
+        diagram.append(from + "->" + to + " [style=dotted, label=owns];\n");
+        if (to instanceof PGraph) {
+            diagram.append(((PGraph) to).getTransitions());
         }
     }
 

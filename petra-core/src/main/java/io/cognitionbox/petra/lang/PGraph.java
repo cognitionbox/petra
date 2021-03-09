@@ -16,6 +16,7 @@
 package io.cognitionbox.petra.lang;
 
 public class PGraph<X> extends RGraph<X, Object> {
+
     public PGraph(String description) {
         super(description);
     }
@@ -23,7 +24,4 @@ public class PGraph<X> extends RGraph<X, Object> {
     public PGraph() {
     }
 
-    // final public void step(IStep<?> computation) {
-    //     super.step(computation);
-    // }
 }

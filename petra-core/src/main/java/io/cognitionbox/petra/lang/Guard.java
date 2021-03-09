@@ -76,28 +76,24 @@ public class Guard<E> implements IPredicate<E> {
 
     @Override
     public boolean test(Object value) {
-        Object x = value;
-//        if (rw instanceof Ref){
-//            x = ((Ref) rw).get();
-//        }
-        if (x == null && !Void.class.equals(eventClazz)) {
+        if (value == null && !Void.class.equals(eventClazz)) {
             return false;
         }
         /*
          * Arpad's Kotlin Hack
          */
-        if (this.eventClazz.equals(int.class) && Integer.class.isInstance(x)) {
+        if (this.eventClazz.equals(int.class) && Integer.class.isInstance(value)) {
             try {
-                return this.predicate.test(x);
+                return this.predicate.test(value);
             } catch (Exception e) {
                 throw new TypeEvalException(e);
             }
         }
 
         // allows nulls to be return, allowing for an "option" rw
-        if (x == null || x == vd) {
+        if (value == null || value == vd) {
             try {
-                return this.predicate.test(x);
+                return this.predicate.test(value);
             } catch (IllegalArgumentException e) {
                 // for kotlin support
                 if (e.getMessage().contains("Parameter specified as non-null is null")) {
@@ -109,12 +105,12 @@ public class Guard<E> implements IPredicate<E> {
             return false;
         }
 
-        if (this.eventClazz.isInstance(x)) {
+        if (this.eventClazz.isInstance(value)) {
             try {
-                Object xToUse = x;
+                Object xToUse = value;
                 if (RGraphComputer.getConfig().isDefensiveCopyAllInputs()) {
                     try {
-                        xToUse = copyer.copy((Serializable) x);
+                        xToUse = copyer.copy((Serializable) value);
                     } catch (Exception e) {
                         return false;
                     }

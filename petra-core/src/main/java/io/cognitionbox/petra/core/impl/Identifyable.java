@@ -51,6 +51,5 @@ public class Identifyable implements IIdentifyable, Serializable {
     @Override
     public String toString() {
         return getPartitionKey();
-        //return getUniqueId();
     }
 }

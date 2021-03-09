@@ -62,17 +62,6 @@ public abstract class AbstractPlace<M extends Map<String, IToken>> extends Ident
     }
 
     @Override
-    public boolean removeToken(IToken token) {
-        return tryLockThenRunnableFinallyUnlock(() -> {
-            if (token.getValue() == null || token.getValue() instanceof Void)
-                return false;
-            getBackingMap().remove(token.getUniqueId(), token);
-            return true;
-        });
-    }
-
-
-    @Override
     public Collection<IToken> getTokens() {
         return getBackingMap().values();
     }

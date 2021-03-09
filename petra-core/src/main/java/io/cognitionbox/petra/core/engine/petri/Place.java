@@ -15,25 +15,17 @@
  */
 package io.cognitionbox.petra.core.engine.petri;
 
-import io.cognitionbox.petra.core.IStep;
-import io.cognitionbox.petra.util.function.IPredicate;
-
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 public interface Place {
-    void addValue(Object value);
 
-    boolean removeToken(IToken token);
+    void addValue(Object value);
 
     Collection<IToken> getTokens();
 
-    Collection<IToken> filterTokensByValue(IPredicate<Object> filter);
-
     Optional<IToken> findAny();
 
-    boolean tokensMatchedByUniqueStepPreconditions(List<IStep> steps);
-
     void reset();
+
 }

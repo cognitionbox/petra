@@ -165,17 +165,6 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
 
     private Kase<X> activeKase = null;
 
-//    boolean setActiveKase(X value) {
-//        for (int i=kases.size()-1;i>=0;i--){
-//            Kase k = kases.get(i);
-//            if (k.evalP(value)){
-//                activeKase = k;
-//                break;
-//            }
-//        }
-//        return true;
-//    }
-
     private Kase lastActivatedKase;
     private Set<Kase> activatedKases = new HashSet<>();
     boolean setActiveKase(X value) {

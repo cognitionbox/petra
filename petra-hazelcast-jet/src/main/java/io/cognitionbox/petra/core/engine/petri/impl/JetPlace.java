@@ -37,19 +37,8 @@ public final class JetPlace extends AbstractPlace<IMapJet<String, IToken>> {
     }
 
     @Override
-    public Collection<IToken> filterTokensByValue(IPredicate<Object> filter) {
-        return null;
-    }
-
-    @Override
     public Optional<IToken> findAny() {
         return Optional.empty();
     }
 
-    @Override
-    public boolean tokensMatchedByUniqueStepPreconditions(List<IStep> list) {
-        return false;
-    }
-
-    // DistributedStream.fromList(unwrap(toUse))
 }

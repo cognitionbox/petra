@@ -43,11 +43,4 @@ public final class PollingTimer implements Serializable {
         }
     }
 
-    public final int getSecondsToPass() {
-        return this.secondsToPass;
-    }
-
-    public final boolean getSynchronizeToMinuteInterval() {
-        return this.synchronizeToMinuteInterval;
-    }
 }

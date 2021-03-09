@@ -76,11 +76,7 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
         return this;
     }
 
-    protected void setMillisBeforeRetry(long millisBeforeRetry) {
-        this.PEdgeRollbackHelper = new PEdgeRollbackHelper(millisBeforeRetry);
-    }
-
-    private void Lg_ALL_STATES(String desc, X value) {
+    private void printInfo(String desc, X value) {
         if (RGraphComputer.getConfig().isAllStatesLoggingEnabled()) {
             LOG.info(desc + " " + RGraphComputer.getConfig().getMode() + " " + " " + this.getPartitionKey() + " " + " thread=" + Thread.currentThread().getId() + " -> " + value);
         }
@@ -89,7 +85,7 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
     @Override
     public X call() {
         X input = getInput().getValue();
-        Lg_ALL_STATES("[Eg in]",input);
+        printInfo("[Eg in]", input);
         setActiveKase(getInput().getValue());
         if (!getActiveKase().p().test(input)) {
             return (X) input;
@@ -174,7 +170,7 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
             if (this.isInitStep() && !this.isInited()) {
                 setInited(true);
             }
-            Lg_ALL_STATES("[Eg out]", input);
+            printInfo("[Eg out]", input);
             return res;
         } else if (RGraphComputer.getConfig().isExceptionsPassthrough()) {
             // need to think about aggregating exceptions at parent graph level
@@ -221,18 +217,6 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
     public void pre(GuardInput<X> p) {
         setP(p);
     }
-
-//    public void pre(IPredicate<X> predicate) {
-//        setP(new GuardWrite(getType(), predicate));
-//    }
-//
-//    public void post(GuardReturn<X> q) {
-//        setQ(q);
-//    }
-//
-//    public void post(IPredicate<X> predicate) {
-//        setQ(new Guard<>(getType(), predicate, OperationType.RETURN));
-//    }
 
     private IBiPredicate<X, X> v = null;
 

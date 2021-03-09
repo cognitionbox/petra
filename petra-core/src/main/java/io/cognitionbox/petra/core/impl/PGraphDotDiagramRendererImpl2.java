@@ -24,6 +24,8 @@ import io.cognitionbox.petra.lang.annotations.DoesNotTerminate;
 import io.cognitionbox.petra.lang.annotations.Extract;
 import io.cognitionbox.petra.lang.annotations.Feedback;
 import org.javatuples.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -38,6 +40,8 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
 public class PGraphDotDiagramRendererImpl2 implements ILogicBoxDotDiagramRenderer, Serializable {
+
+    private static final Logger LOG = LoggerFactory.getLogger(PGraphDotDiagramRendererImpl2.class);
 
     public PGraphDotDiagramRendererImpl2() {
         diagram.append("digraph Petra {\n");
@@ -81,21 +85,14 @@ public class PGraphDotDiagramRendererImpl2 implements ILogicBoxDotDiagramRendere
 
     private Set<Class<?>> clazzes = new CopyOnWriteArraySet<>();
 
-    private boolean isDefaultAccess(Class<?> clazz) {
-        return !Modifier.isPrivate(clazz.getModifiers()) &&
-                !Modifier.isPublic(clazz.getModifiers()) &&
-                !Modifier.isProtected(clazz.getModifiers());
-    }
-
     private void renderAssignableRelations(Set<Class<?>> clazzes, RGraph step) {
         for (Class<?> c1 : clazzes) {
             for (Class<?> c2 : clazzes) {
                 if (!c1.equals(c2) && c1.isAssignableFrom(c2)) {
                     try {
-//            c1.getDeclaredMethod(CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, c1.getSimpleName()));
-//            c2.getDeclaredMethod(CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, c2.getSimpleName()));
                         append(c2.getSimpleName() + "->" + c1.getSimpleName() + " [label=assignable];\n", step);
                     } catch (Exception e) {
+                        LOG.error(e.getMessage(), e);
                     }
                 }
             }
@@ -112,8 +109,6 @@ public class PGraphDotDiagramRendererImpl2 implements ILogicBoxDotDiagramRendere
                                 s.q().getTypeClass().getSimpleName().equals("ExtractableThrowableList")))
                         .collect(Collectors.toList());
 
-        //collectObjectClasses(steps);
-
         append("start [shape=circle, style=filled, fillcolor=green];\n", logic);
         append("start->" + logic.p().getTypeClass().getSimpleName() + ";\n", logic);
 
@@ -128,41 +123,15 @@ public class PGraphDotDiagramRendererImpl2 implements ILogicBoxDotDiagramRendere
 
         // render all steps and states individually
         for (AbstractStep step : steps) {
-            String stepDesc = ((Identifyable) step).getPartitionKey();
+            String stepDesc = step.getPartitionKey();
             if (step.p() != null) {
                 // diagram.append
                 append(step.p().getTypeClass().getSimpleName() + " [style=filled, fillcolor=blue fontcolor=white];\n", logic);
                 append(step.p().getTypeClass().getSimpleName() + " [style=filled, fillcolor=blue fontcolor=white];\n", logic);
-//        if (step.p() instanceof ExtractPType){
-//          // flip the flow for better visuals
-//          append(step.p().getTypeClass().getSimpleName()+"->"+step.p().getTypeClass().getSimpleName()+";\n");
-//        } else {
-//          append(step.p().getTypeClass().getSimpleName()+"->"+step.p().getTypeClass().getSimpleName()+";\n");
-//        }
-
-//        for (Object w : step.p().getWeakerPTypes()){
-//          if (w instanceof Guard){
-//            append(((Guard) w).getTypeClass().getSimpleName()+"->"+step.p().getTypeClass().getSimpleName()+";\n");
-//          }
-//        }
-
             }
             if (step.q() != null) {
                 append(step.q().getTypeClass().getSimpleName() + " [style=filled, fillcolor=blue fontcolor=white];\n", logic);
                 append(step.q().getTypeClass().getSimpleName() + " [style=filled, fillcolor=blue fontcolor=white];\n", logic);
-//        if (step.q() instanceof ExtractPType){
-//          // flip the flow for better visuals
-//          append(step.q().getTypeClass().getSimpleName()+"->"+step.q().getTypeClass().getSimpleName()+";\n");
-//        } else {
-//          append(step.q().getTypeClass().getSimpleName()+"->"+step.q().getTypeClass().getSimpleName()+";\n");
-//        }
-
-//        for (Object w : step.q().getWeakerPTypes()){
-//          if (w instanceof Guard){
-//            append(((Guard) w).getTypeClass().getSimpleName()+"->"+step.q().getTypeClass().getSimpleName()+";\n");
-//          }
-//        }
-
             }
             append(stepDesc + " [shape=rect style=filled, fillcolor=orange];\n", logic);
         }
@@ -224,27 +193,7 @@ public class PGraphDotDiagramRendererImpl2 implements ILogicBoxDotDiagramRendere
         return false;
     }
 
-//  private EnhancedRandom random = EnhancedRandomBuilder.aNewEnhancedRandomBuilder()
-//          .seed(123L)
-//          .objectPoolSize(100)
-//          .randomizationDepth(3)
-//          .stringLengthRange(5, 50)
-//          .collectionSizeRange(1, 10)
-//          .scanClasspathForConcreteTypes(true)
-//          .overrideDefaultInitialization(false)
-//          .build();
-
     private void deconstruct(RGraph step, Class<?> clazz) {
-
-//    if (step instanceof RGraph){
-//      for (Object s : ((RGraph) step).getParallizable()){
-//        if (s instanceof IStep){
-//          if (clazz.isAssignableFrom(((IStep) s).p().getTypeClass())){
-//            append(((IStep) s).p().getTypeClass().getSimpleName()+"->"+clazz.getSimpleName()+" [style=dashed, label=subclass];\n");
-//          }
-//        }
-//      }
-//    }
 
         clazzes.add(clazz);
         append(clazz.getSimpleName() + " [style=filled, fillcolor=blue fontcolor=white];\n", step);

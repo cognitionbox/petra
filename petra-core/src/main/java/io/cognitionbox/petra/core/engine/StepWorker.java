@@ -31,8 +31,7 @@ public class StepWorker implements Callable<Boolean>, Serializable {
     public Boolean call() throws Exception {
         long seq = 0;
         IRingbuffer<Serializable> tasks = RGraphComputer.getTaskQueue();
-        int count = 0;
-        while (true) {//count<10){
+        while (true) {
             if (seq <= tasks.tailSequence()) {
                 Serializable read = tasks.readOne(seq);
                 if (read instanceof StepCallable) {
@@ -58,8 +57,6 @@ public class StepWorker implements Callable<Boolean>, Serializable {
             } else {
                 Thread.sleep(20);
             }
-            count++;
         }
-        //return true;
     }
 }

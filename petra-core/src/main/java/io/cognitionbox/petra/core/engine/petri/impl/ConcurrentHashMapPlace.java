@@ -45,49 +45,8 @@ public final class ConcurrentHashMapPlace extends AbstractPlace<Map<String, ITok
     }
 
     @Override
-    public Collection<IToken> filterTokensByValue(IPredicate<Object> filter) {
-        return getBackingMap().values().parallelStream().filter(e -> filter.test(e.getValue())).collect(toList());
-    }
-
-    @Override
     public Optional<IToken> findAny() {
         return getBackingMap().values().parallelStream().findAny();
     }
-
-    @Override
-    public boolean tokensMatchedByUniqueStepPreconditions(List<IStep> steps) {
-        IPredicate<IToken> predicate =
-                s -> {
-                    int matches = 0;
-                    for (Object step : steps) {
-                        if (step instanceof AbstractStep) {
-                            if (((AbstractStep) step).evalP(s.getValue())) {
-                                matches++;
-                                if (matches > 1) {
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                    for (Object joinTypes : steps) {
-                        if (joinTypes instanceof Pair) {
-                            boolean joinMatches = true;
-                            // iterate input types
-                            for (Guard type : ((Pair<List<Guard>, Guard>) joinTypes).getValue0()) {
-                                joinMatches = type.test(s) && joinMatches;
-                            }
-                            if (joinMatches) {
-                                matches++;
-                                if (matches > 1) {
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                    return false;
-                };
-        return !getBackingMap().values().parallelStream().anyMatch(predicate);
-    }
-
 
 }

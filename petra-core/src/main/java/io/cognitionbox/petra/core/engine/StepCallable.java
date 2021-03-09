@@ -32,7 +32,6 @@ import java.util.concurrent.locks.Lock;
 import static io.cognitionbox.petra.util.Petra.ref;
 
 public class StepCallable extends Identifyable implements Callable<StepResult>, Serializable, ICallable<StepResult> {
-    final static Logger LOG = LoggerFactory.getLogger(StepCallable.class);
     private static final long serialVersionUID = 1L;
     protected Lock lock = new PLock();
     protected RGraph parent;
@@ -57,7 +56,6 @@ public class StepCallable extends Identifyable implements Callable<StepResult>, 
                     Object out = step.call();
                     result.set(new StepResult(step.p().getOperationType(), step.getInput(), new Token(out)));
                     done.set(true);
-                    //LOG.info(this.getUniqueId() + ": step processed!");
                 }
                 return result.get();
             } finally {
