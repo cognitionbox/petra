@@ -18,9 +18,17 @@ package io.cognitionbox.petra.lang;
 import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.core.engine.petri.IToken;
 import io.cognitionbox.petra.core.impl.Identifyable;
+import io.cognitionbox.petra.core.impl.OperationType;
 import io.cognitionbox.petra.util.function.ICallable;
+import io.cognitionbox.petra.util.function.IPredicate;
+import org.javatuples.Pair;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AbstractStep<X> extends Identifyable implements ICallable<X>, IStep<X> {
 
@@ -34,6 +42,16 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
 
     protected Guard<X> p = null;
     protected Guard<X> q = null;
+
+    private RGraph<?,?> parent;
+
+    public RGraph<?,?> getParent() {
+        return parent;
+    }
+
+    void setParent(RGraph<?,?> parent) {
+        this.parent = parent;
+    }
 
     protected AbstractStep(String description) {
         super(description);
@@ -145,5 +163,94 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
         this.inited = inited;
     }
 
+    private Kase<X> activeKase = null;
 
+//    boolean setActiveKase(X value) {
+//        for (int i=kases.size()-1;i>=0;i--){
+//            Kase k = kases.get(i);
+//            if (k.evalP(value)){
+//                activeKase = k;
+//                break;
+//            }
+//        }
+//        return true;
+//    }
+
+    private Kase lastActivatedKase;
+    private Set<Kase> activatedKases = new HashSet<>();
+    boolean setActiveKase(X value) {
+        activeKase = null;
+        for (Kase k : kases){
+            if (k.evalP(value)){
+                if (activatedKases.size()==kases.size()){
+                    activatedKases.clear();
+                }
+                if (k!=lastActivatedKase && activatedKases.contains(k)){
+                    throw new IllegalStateException("active kase not changed!");
+                }
+                activeKase = k;
+                activatedKases.add(activeKase);
+                lastActivatedKase = k;
+                break;
+            }
+        }
+        if (activeKase==null){
+            activeKase = new Kase<X>(this,type,x->false,x->false);
+        }
+        return true;
+    }
+
+    public Kase<X> getActiveKase() {
+        return activeKase;
+    }
+
+    final AtomicInteger kaseId = new AtomicInteger();
+
+    protected List<Kase<X>> kases = new ArrayList<>();
+
+    public List<Kase<X>> getKases(){
+        return new ArrayList<>(kases);
+    }
+
+    public void kase(IPredicate<X> pre, IPredicate<X> post) {
+        kases.add(new Kase<X>(this,type,pre,post));
+    }
+
+    public void kase(IPredicate<X> pre, IPredicate<X> post, Cover cover, Ignore... ignores) {
+        kases.add(new Kase<X>(this,type,pre,post,cover,ignores));
+    }
+
+    public void kase(IPredicate<X> pre, IPredicate<X> post, Ignore... ignores) {
+        kases.add(new Kase<X>(this,type,pre,post,new Cover(),ignores));
+    }
+
+
+    public void defaultKase(IPredicate<X> pre, IPredicate<X> post) {
+        kases.add(new Kase<X>(this,type,pre,post,true,new Cover(),new Ignore[]{}));
+    }
+
+    public Set<Pair<Class<? extends IStep>,Integer>> getIgnoredKases() {
+        return ignoredKases;
+    }
+
+    private Set<Pair<Class<? extends IStep>,Integer>> ignoredKases = new HashSet<>();
+    public void ignoreKase(int kase){
+        this.ignoredKases.add(Pair.with(this.getStepClazz(),kase));
+    }
+
+    void setKases(List<Kase<X>> kases){
+        this.kases = kases;
+    }
+
+    public void pre(IPredicate<X> predicate) {
+        setP(new Guard(type, predicate, OperationType.READ_WRITE));
+    }
+    protected boolean endAsBeenCalled = false;
+    public void post(IPredicate<X> predicate) {
+        if (!endAsBeenCalled) {
+            throw new UnsupportedOperationException("end has not been called");
+        }
+        setQ(new Guard(type,predicate, OperationType.READ_WRITE));
+        kases.add(new Kase<X>(this,type,p,q));
+    }
 }

@@ -108,7 +108,6 @@ public class PGraphSingleHandledThrowableFlowTest extends BaseExecutionModesTest
         {
             type(X.class);
             pre(x -> x.value == 0);
-            post(x -> x.value == 1 || x.value == 3);
             func(x -> {
                 try {
                     int y = 1 / 0;
@@ -116,6 +115,7 @@ public class PGraphSingleHandledThrowableFlowTest extends BaseExecutionModesTest
                     x.value = 3;
                 }
             });
+            post(x -> x.value == 1 || x.value == 3);
         }
     }
 }

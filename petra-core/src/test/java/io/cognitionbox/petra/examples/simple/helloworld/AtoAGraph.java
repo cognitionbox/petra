@@ -24,10 +24,10 @@ import io.cognitionbox.petra.lang.PGraph;
 public class AtoAGraph extends PGraph<A> {
     {
         type(A.class);
-        pre(x -> getCurrentIteration() == 0);
+        pre(x -> loopIteration() == 0);
         begin();
         step(new AtoA());
         end();
-        post(x -> getCurrentIteration() == 1);
+        post(x -> loopIteration() == 1);
     }
 }

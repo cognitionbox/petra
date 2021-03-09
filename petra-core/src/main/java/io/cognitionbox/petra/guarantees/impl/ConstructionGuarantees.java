@@ -65,7 +65,7 @@ public class ConstructionGuarantees {
         //addCheck(new StepsCannotHaveFields());
 
         //addCheck(new StepsCanCannotDeclareConstructors());
-        addCheck(new PrePostTypesMustBeBoundToUniquePredicates());
+        //addCheck(new PrePostTypesMustBeBoundToUniquePredicates());
         //addCheck(new StepsCannotHaveFields());
 
         if (config.isStrictModeExtraConstructionGuarantee()) {
