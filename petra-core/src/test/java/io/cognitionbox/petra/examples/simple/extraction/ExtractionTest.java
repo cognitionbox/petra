@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Petra.  If not, see <https://www.gnu.org/licenses/>.
  */
-package io.cognitionbox.petra.examples.simple.forkjoin;
+package io.cognitionbox.petra.examples.simple.extraction;
 
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.examples.simple.common.A;
@@ -28,34 +28,28 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
-public class ForkJoinMain extends BaseExecutionModesTest {
-    public ForkJoinMain(ExecMode execMode) {
+public class ExtractionTest extends BaseExecutionModesTest {
+    public ExtractionTest(ExecMode execMode) {
         super(execMode);
     }
 
     /*
-     * Traditionally Fork/JoinMain is about forking and joining threads.
-     * Petra is a data focused programming paradigm, we are only interested
-     * in splitting data and transforming it in parallel where possible, then combining result.
+     * This a simple extraction.
+     * The class AB is defined to contain A and B references.
+     * The AB class itself is annotated with @Extract instructing
+     * the runtime to deconstruct it into its constituents.
+     * This will cause it to reflectively traverse the object engine looking for
+     * fields annotated with @Extract.
      *
-     * The example below shows to steps which get called in parallel repeatably,
-     * until a certain condition is met and their results are joined.
-     *
-     * The aim is to increment X and Y integer values from 0 upto 10 in parallel,
-     * then combine X and Y back into a result which can be returned.
-     *
-     * We do this using a combination of steps and joins.
-     * Steps always run first and execute in parallel where possible.
-     * Joins always run in the order they are defined, sequentially after all steps finished.
-     *
+     * In this example there are just two fields A and B with this annotation.
+     * The deconstruction of AB into A and B means that A and B become available for
+     * being matched by steps in the engine. Hence they can be processed in parallel.
+     * In this example we simply print out the A and B instances.
      */
     @Test
     public void test() {
-        AB output = new PComputer<AB>().eval(new ABtoAB(), new AB(new A(), new B()));
-        assertThat(output.getA().value).isEqualTo(10);
-        assertThat(output.getB().value).isEqualTo(10);
+        AB result = new PComputer<AB>().eval(new ExtractAB(), new AB(new A(), new B()));
     }
 }

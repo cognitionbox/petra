@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Petra.  If not, see <https://www.gnu.org/licenses/>.
  */
-package io.cognitionbox.petra.examples.simple2.b_sequence1;
+package io.cognitionbox.petra.examples.simple2.helloworld;
 
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.lang.PComputer;
@@ -30,8 +30,8 @@ import org.junit.runners.Parameterized;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
-public class Sequence1 extends BaseExecutionModesTest {
-    public Sequence1(ExecMode execMode) {
+public class HelloWorldTest extends BaseExecutionModesTest {
+    public HelloWorldTest(ExecMode execMode) {
         super(execMode);
     }
 
@@ -52,31 +52,30 @@ public class Sequence1 extends BaseExecutionModesTest {
     @Test
     public void test() {
 
-        class SeqEdge extends PEdge<X> {
+        class AtoA extends PEdge<X> {
             {
                 type(X.class);
-                pre(x -> x.isA() ^ x.isB());
+                pre(x -> x.isBlankOrHelloWorld());
                 func(x -> {
-                    x.state(State.values()[x.state().ordinal() + 1]);
+                    x.value = "hello world.";
                 });
-                post(x -> x.isB() ^ x.isC());
+                post(x -> x.isHelloWorld());
             }
         }
 
-        class SeqGraph extends PGraph<X> {
+        class AtoAGraph extends PGraph<X> {
             {
                 type(X.class);
-                pre(x -> x.isAB());
+                pre(x -> x.isBlank());
                 begin();
-                step(new SeqEdge());
+                step(new AtoA());
                 end();
-                post(x -> x.isC());
+                post(x -> x.isHelloWorld());
             }
         }
 
-        X output = new PComputer<X>().eval(new SeqGraph(), new X(State.A));
-        assertThat(output.state()).isEqualTo(State.C);
-
+        X output = new PComputer<X>().eval(new AtoAGraph(), new X(""));
+        assertThat(output.value).isEqualTo("hello world.");
 
     }
 }

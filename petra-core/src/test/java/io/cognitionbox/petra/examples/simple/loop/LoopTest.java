@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Petra.  If not, see <https://www.gnu.org/licenses/>.
  */
-package io.cognitionbox.petra.examples.simple.helloworld;
+package io.cognitionbox.petra.examples.simple.loop;
 
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.lang.PComputer;
@@ -28,22 +28,24 @@ import org.junit.runners.Parameterized;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
-public class HelloWorldMain extends BaseExecutionModesTest {
-    public HelloWorldMain(ExecMode execMode) {
+public class LoopTest extends BaseExecutionModesTest {
+    public LoopTest(ExecMode execMode) {
         super(execMode);
     }
 
     /*
-     * This simple example consumes an input A,
-     * does nothing with it and passes it straight
-     * through to the the post-condition.
-     *
-     * Once it is output from the root of the engine A's message is printed.
+     * This shows how to create a simple loop directly in Petra.
+     * We have a simple engine which consumes X when its integer value is less than 10.
+     * The step inside it also takes X, there is no need to put the same constrain as before as
+     * A has already passed the initial constraint. No this step can increment A's integer by 1,
+     * and return A.
+     * Once A's value reaches 10, it will be returned by the produces post-condition,
+     * hence the loop terminates.
      */
     @Test
     public void test() {
-        A output = new PComputer<A>().eval(new AtoAGraph(), new A(""));
+        A output = new PComputer<A>().eval(new AtoA(), new A());
         System.out.println("OUTPUT: " + output.value);
-        assertThat(output.value).isEqualTo("hello world.");
+        assertThat(output.value).isEqualTo(10);
     }
 }

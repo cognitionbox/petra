@@ -16,18 +16,25 @@
  * You should have received a copy of the GNU General Public License
  * along with Petra.  If not, see <https://www.gnu.org/licenses/>.
  */
-package io.cognitionbox.petra.examples.driverlesscars;
+package io.cognitionbox.petra.examples.tradingsystem;
 
 import io.cognitionbox.petra.config.ExecMode;
+import io.cognitionbox.petra.examples.tradingsystem.objects.RandomTrader;
+import io.cognitionbox.petra.examples.tradingsystem.objects.State;
+import io.cognitionbox.petra.examples.tradingsystem.steps.TradingSystem;
 import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+@Ignore
 @RunWith(Parameterized.class)
-public class SimulationMain extends BaseExecutionModesTest {
-    public SimulationMain(ExecMode execMode) {
+public class TradingSystemTest extends BaseExecutionModesTest {
+    public TradingSystemTest(ExecMode execMode) {
         super(execMode);
     }
 
@@ -47,13 +54,22 @@ public class SimulationMain extends BaseExecutionModesTest {
     public void test() {
         PComputer.getConfig()
                 .enableStatesLogging()
+                .setMode(ExecMode.PAR)
                 .setConstructionGuaranteeChecks(false)
-                .setStrictModeExtraConstructionGuarantee(true);
+                .setStrictModeExtraConstructionGuarantee(false);
 
-        PComputer<Simlulation> lc = new PComputer();
+        PComputer<State> lc = new PComputer();
+        State state = new State();
 
-        Simlulation simlulation = new Simlulation();
-        simlulation.loadCars(10);
-        Simlulation output = lc.eval(new Simulate(), simlulation);
+        state.addTrader(new RandomTrader());
+        state.addTrader(new RandomTrader());
+        state.addTrader(new RandomTrader());
+        state.addTrader(new RandomTrader());
+
+        State output = lc.eval(new TradingSystem(), state);
+
+        assertThat(output.getExposureStore().getExposure()).isEqualTo(200);
+        assertThat(output.getExposureStore().hasAvgExposure()).isEqualTo(true);
+        assertThat(output.getDecisionStore().hasAvgLimitPrice()).isEqualTo(true);
     }
 }

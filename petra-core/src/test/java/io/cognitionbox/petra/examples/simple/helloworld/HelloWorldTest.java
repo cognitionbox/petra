@@ -16,12 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with Petra.  If not, see <https://www.gnu.org/licenses/>.
  */
-package io.cognitionbox.petra.examples.simple.paralleloop;
+package io.cognitionbox.petra.examples.simple.helloworld;
 
 import io.cognitionbox.petra.config.ExecMode;
-import io.cognitionbox.petra.examples.simple.common.A;
-import io.cognitionbox.petra.examples.simple.common.AB;
-import io.cognitionbox.petra.examples.simple.common.B;
 import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import org.junit.Test;
@@ -31,22 +28,22 @@ import org.junit.runners.Parameterized;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
-public class ParallelLoopMain extends BaseExecutionModesTest {
-    public ParallelLoopMain(ExecMode execMode) {
+public class HelloWorldTest extends BaseExecutionModesTest {
+    public HelloWorldTest(ExecMode execMode) {
         super(execMode);
     }
 
     /*
-     * This is like the LoopMain example but we have two steps doing the same thing.
-     * Each operating on a separate object, thus Petra automatically parallelizes these steps.
-     * Instead of returning the result we swallow through use of the optional() function.
-     * When the condition of the option is met it rt the actual value, else it will return null,
-     * which will be safely swallowed in Petra.
+     * This simple example consumes an input A,
+     * does nothing with it and passes it straight
+     * through to the the post-condition.
+     *
+     * Once it is output from the root of the engine A's message is printed.
      */
     @Test
     public void test() {
-        AB result = new PComputer<AB>().eval(new ABtoAB(), new AB(new A(), new B()));
-        assertThat(result.getA().value).isEqualTo(10);
-        assertThat(result.getB().value).isEqualTo(10);
+        A output = new PComputer<A>().eval(new AtoAGraph(), new A(""));
+        System.out.println("OUTPUT: " + output.value);
+        assertThat(output.value).isEqualTo("hello world.");
     }
 }

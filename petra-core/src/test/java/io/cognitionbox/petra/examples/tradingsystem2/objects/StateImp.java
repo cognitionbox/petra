@@ -31,8 +31,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static io.cognitionbox.petra.examples.tradingsystem2.TradingSystem2Main.LONG_INSTRUMENT;
-import static io.cognitionbox.petra.examples.tradingsystem2.TradingSystem2Main.SHORT_INSTRUMENT;
+import static io.cognitionbox.petra.examples.tradingsystem2.TradingSystem2Test.LONG_INSTRUMENT;
+import static io.cognitionbox.petra.examples.tradingsystem2.TradingSystem2Test.SHORT_INSTRUMENT;
 
 public class StateImp implements State {
     // if in live mode, use live feed, if in historical mode, use historical feed

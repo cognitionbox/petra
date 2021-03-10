@@ -16,12 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with Petra.  If not, see <https://www.gnu.org/licenses/>.
  */
-package io.cognitionbox.petra.examples.simple2.a_flagswitch;
+package io.cognitionbox.petra.examples.simple2.d_parallel_sequences1;
 
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.PGraph;
+import io.cognitionbox.petra.lang.RGraphComputer;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,8 +31,8 @@ import org.junit.runners.Parameterized;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
-public class FlagSwitch extends BaseExecutionModesTest {
-    public FlagSwitch(ExecMode execMode) {
+public class ParSequences1Test extends BaseExecutionModesTest {
+    public ParSequences1Test(ExecMode execMode) {
         super(execMode);
     }
 
@@ -52,32 +53,33 @@ public class FlagSwitch extends BaseExecutionModesTest {
     @Test
     public void test() {
 
-        class FlagEdge extends PEdge<X> {
+        class SeqEdge extends PEdge<Y> {
             {
-                type(X.class);
-                pre(x -> x.value == false);
-                func(x -> {
-                    x.value = true;
+                type(Y.class);
+                pre(y -> y.isA() ^ y.isB());
+                func(y -> {
+                    y.state(State.values()[y.state().ordinal() + 1]);
                 });
-                post(x -> x.value == true);
+                post(y -> y.isB() ^ y.isC());
             }
         }
 
-        class FlagGraph extends PGraph<X> {
+        class SeqGraph extends PGraph<X> {
             {
                 type(X.class);
-                //invariant(x -> x.value==true ^ x.value==false);
-                pre(x -> x.value == false);
+                pre(x -> (x.y1().isA() ^ x.y1().isB()) && (x.y2().isA() ^ x.y2().isB()));
                 begin();
-                step(new FlagEdge());
+                step(x -> x.y1(), new SeqEdge());
+                step(x -> x.y2(), new SeqEdge());
                 end();
-                post(x -> x.value == true);
+                post(x -> x.y1().isC() && x.y2().isC());
             }
         }
 
-        X output = new PComputer<X>().eval(new FlagGraph(), new X(false));
-
-        assertThat(output.value).isEqualTo(true);
+        RGraphComputer.getConfig().setIsReachabilityChecksEnabled(false);
+        X output = new PComputer<X>().eval(new SeqGraph(), new X(State.A));
+        assertThat(output.y1().state()).isEqualTo(State.C);
+        assertThat(output.y2().state()).isEqualTo(State.C);
 
     }
 }

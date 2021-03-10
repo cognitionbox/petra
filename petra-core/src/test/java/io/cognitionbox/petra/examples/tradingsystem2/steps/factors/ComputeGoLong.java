@@ -3,7 +3,7 @@ package io.cognitionbox.petra.examples.tradingsystem2.steps.factors;
 import io.cognitionbox.petra.examples.tradingsystem2.objects.State;
 import io.cognitionbox.petra.lang.PEdge;
 
-import static io.cognitionbox.petra.examples.tradingsystem2.TradingSystem2Main.LONG_INSTRUMENT;
+import static io.cognitionbox.petra.examples.tradingsystem2.TradingSystem2Test.LONG_INSTRUMENT;
 
 public class ComputeGoLong extends PEdge<State> {
     {

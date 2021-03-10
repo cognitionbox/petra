@@ -16,46 +16,46 @@
  * You should have received a copy of the GNU General Public License
  * along with Petra.  If not, see <https://www.gnu.org/licenses/>.
  */
-package io.cognitionbox.petra.examples.simple.autoretry;
+package io.cognitionbox.petra.examples.simple.forkjoin;
 
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.examples.simple.common.A;
 import io.cognitionbox.petra.examples.simple.common.AB;
 import io.cognitionbox.petra.examples.simple.common.B;
 import io.cognitionbox.petra.lang.PComputer;
-import io.cognitionbox.petra.lang.RGraphComputer;
-import io.cognitionbox.petra.lang.config.PetraTestConfig;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Ignore
 @RunWith(Parameterized.class)
-public class AutoRetryMain extends BaseExecutionModesTest {
-    public AutoRetryMain(ExecMode execMode) {
+public class ForkJoinTest extends BaseExecutionModesTest {
+    public ForkJoinTest(ExecMode execMode) {
         super(execMode);
     }
 
     /*
-     * This is like the LoopMain example but we have two steps doing the same thing.
-     * Each operating on a separate object, thus Petra automatically parallelizes these steps.
-     * Instead of returning the result we swallow through use of the optional() function.
-     * When the condition of the option is met it rt the actual value, else it will return null,
-     * which will be safely swallowed in Petra.
+     * Traditionally Fork/JoinMain is about forking and joining threads.
+     * Petra is a data focused programming paradigm, we are only interested
+     * in splitting data and transforming it in parallel where possible, then combining result.
+     *
+     * The example below shows to steps which get called in parallel repeatably,
+     * until a certain condition is met and their results are joined.
+     *
+     * The aim is to increment X and Y integer values from 0 upto 10 in parallel,
+     * then combine X and Y back into a result which can be returned.
+     *
+     * We do this using a combination of steps and joins.
+     * Steps always run first and execute in parallel where possible.
+     * Joins always run in the order they are defined, sequentially after all steps finished.
+     *
      */
     @Test
     public void test() {
-
-        ((PetraTestConfig) RGraphComputer.getConfig()).disableExceptionsPassthrough();
-
-        AB result = new PComputer<AB>()
-                .eval(new ABtoAB(), new AB(new A(), new B()));
-
-        assertThat(result.getA().value).isEqualTo(10);
-        assertThat(result.getB().value).isEqualTo(10);
+        AB output = new PComputer<AB>().eval(new ABtoAB(), new AB(new A(), new B()));
+        assertThat(output.getA().value).isEqualTo(10);
+        assertThat(output.getB().value).isEqualTo(10);
     }
 }

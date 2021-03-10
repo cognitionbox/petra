@@ -30,8 +30,8 @@ import org.junit.runners.Parameterized;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
-public class Sequence2 extends BaseExecutionModesTest {
-    public Sequence2(ExecMode execMode) {
+public class Sequence2Test extends BaseExecutionModesTest {
+    public Sequence2Test(ExecMode execMode) {
         super(execMode);
     }
 

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Petra.  If not, see <https://www.gnu.org/licenses/>.
  */
-package io.cognitionbox.petra.examples.simple2.helloworld;
+package io.cognitionbox.petra.examples.simple2.a_flagswitch;
 
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.lang.PComputer;
@@ -30,8 +30,8 @@ import org.junit.runners.Parameterized;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
-public class HelloWorld extends BaseExecutionModesTest {
-    public HelloWorld(ExecMode execMode) {
+public class FlagSwitchTest extends BaseExecutionModesTest {
+    public FlagSwitchTest(ExecMode execMode) {
         super(execMode);
     }
 
@@ -52,30 +52,32 @@ public class HelloWorld extends BaseExecutionModesTest {
     @Test
     public void test() {
 
-        class AtoA extends PEdge<X> {
+        class FlagEdge extends PEdge<X> {
             {
                 type(X.class);
-                pre(x -> x.isBlankOrHelloWorld());
+                pre(x -> x.value == false);
                 func(x -> {
-                    x.value = "hello world.";
+                    x.value = true;
                 });
-                post(x -> x.isHelloWorld());
+                post(x -> x.value == true);
             }
         }
 
-        class AtoAGraph extends PGraph<X> {
+        class FlagGraph extends PGraph<X> {
             {
                 type(X.class);
-                pre(x -> x.isBlank());
+                //invariant(x -> x.value==true ^ x.value==false);
+                pre(x -> x.value == false);
                 begin();
-                step(new AtoA());
+                step(new FlagEdge());
                 end();
-                post(x -> x.isHelloWorld());
+                post(x -> x.value == true);
             }
         }
 
-        X output = new PComputer<X>().eval(new AtoAGraph(), new X(""));
-        assertThat(output.value).isEqualTo("hello world.");
+        X output = new PComputer<X>().eval(new FlagGraph(), new X(false));
+
+        assertThat(output.value).isEqualTo(true);
 
     }
 }

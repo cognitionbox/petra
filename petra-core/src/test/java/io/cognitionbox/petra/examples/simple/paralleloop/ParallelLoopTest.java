@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Petra.  If not, see <https://www.gnu.org/licenses/>.
  */
-package io.cognitionbox.petra.examples.simple.extraction;
+package io.cognitionbox.petra.examples.simple.paralleloop;
 
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.examples.simple.common.A;
@@ -28,28 +28,25 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
-public class ExtractionMain extends BaseExecutionModesTest {
-    public ExtractionMain(ExecMode execMode) {
+public class ParallelLoopTest extends BaseExecutionModesTest {
+    public ParallelLoopTest(ExecMode execMode) {
         super(execMode);
     }
 
     /*
-     * This a simple extraction.
-     * The class AB is defined to contain A and B references.
-     * The AB class itself is annotated with @Extract instructing
-     * the runtime to deconstruct it into its constituents.
-     * This will cause it to reflectively traverse the object engine looking for
-     * fields annotated with @Extract.
-     *
-     * In this example there are just two fields A and B with this annotation.
-     * The deconstruction of AB into A and B means that A and B become available for
-     * being matched by steps in the engine. Hence they can be processed in parallel.
-     * In this example we simply print out the A and B instances.
+     * This is like the LoopMain example but we have two steps doing the same thing.
+     * Each operating on a separate object, thus Petra automatically parallelizes these steps.
+     * Instead of returning the result we swallow through use of the optional() function.
+     * When the condition of the option is met it rt the actual value, else it will return null,
+     * which will be safely swallowed in Petra.
      */
     @Test
     public void test() {
-        AB result = new PComputer<AB>().eval(new ExtractAB(), new AB(new A(), new B()));
+        AB result = new PComputer<AB>().eval(new ABtoAB(), new AB(new A(), new B()));
+        assertThat(result.getA().value).isEqualTo(10);
+        assertThat(result.getB().value).isEqualTo(10);
     }
 }

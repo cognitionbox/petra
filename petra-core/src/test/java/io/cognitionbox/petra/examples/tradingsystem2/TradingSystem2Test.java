@@ -39,7 +39,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class TradingSystem2Main {
+public class TradingSystem2Test {
 
     public final static String LONG_INSTRUMENT = "ABC.USUSD";
     public final static String SHORT_INSTRUMENT = "BA.USUSD";

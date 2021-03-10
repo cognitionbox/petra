@@ -37,8 +37,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
-public class SchoolExample extends BaseExecutionModesTest {
-    public SchoolExample(ExecMode execMode) {
+public class SchoolExampleTest extends BaseExecutionModesTest {
+    public SchoolExampleTest(ExecMode execMode) {
         super(execMode);
     }
 

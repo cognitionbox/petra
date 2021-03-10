@@ -16,10 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with Petra.  If not, see <https://www.gnu.org/licenses/>.
  */
-package io.cognitionbox.petra.examples.simple.loop;
+package io.cognitionbox.petra.examples.simple2.f_parallel_sequences3;
 
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.lang.PComputer;
+import io.cognitionbox.petra.lang.RGraphComputer;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,24 +29,29 @@ import org.junit.runners.Parameterized;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
-public class LoopMain extends BaseExecutionModesTest {
-    public LoopMain(ExecMode execMode) {
+public class ParSequences3Test extends BaseExecutionModesTest {
+    public ParSequences3Test(ExecMode execMode) {
         super(execMode);
     }
 
     /*
-     * This shows how to create a simple loop directly in Petra.
-     * We have a simple engine which consumes X when its integer value is less than 10.
-     * The step inside it also takes X, there is no need to put the same constrain as before as
-     * A has already passed the initial constraint. No this step can increment A's integer by 1,
-     * and return A.
-     * Once A's value reaches 10, it will be returned by the produces post-condition,
-     * hence the loop terminates.
+     * Laws:
+     *
+     * Only for the Graphs:
+     *
+     * POST => PRE
+     * LC => PRE
+     * POST <=> ¬LC
+     *
+     *
+     * Only for Edges:
+     *
+     * PRE </=> POST
      */
     @Test
     public void test() {
-        A output = new PComputer<A>().eval(new AtoA(), new A());
-        System.out.println("OUTPUT: " + output.value);
-        assertThat(output.value).isEqualTo(10);
+        RGraphComputer.getConfig().setIsReachabilityChecksEnabled(false);
+        X output = new PComputer<X>().eval(new SeqGraph(), new X(State.A));
+        assertThat(output.ys()).allMatch(y -> y.state() == State.C);
     }
 }

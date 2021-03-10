@@ -26,8 +26,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 @RunWith(Parameterized.class)
-public class DynamicStepParallelismMain extends BaseExecutionModesTest {
-    public DynamicStepParallelismMain(ExecMode execMode) {
+public class DynamicStepParallelismTest extends BaseExecutionModesTest {
+    public DynamicStepParallelismTest(ExecMode execMode) {
         super(execMode);
     }
 

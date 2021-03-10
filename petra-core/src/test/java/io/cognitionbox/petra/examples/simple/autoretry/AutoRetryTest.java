@@ -16,42 +16,46 @@
  * You should have received a copy of the GNU General Public License
  * along with Petra.  If not, see <https://www.gnu.org/licenses/>.
  */
-package io.cognitionbox.petra.examples.simple2.f_parallel_sequences3;
+package io.cognitionbox.petra.examples.simple.autoretry;
 
 import io.cognitionbox.petra.config.ExecMode;
+import io.cognitionbox.petra.examples.simple.common.A;
+import io.cognitionbox.petra.examples.simple.common.AB;
+import io.cognitionbox.petra.examples.simple.common.B;
 import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.RGraphComputer;
+import io.cognitionbox.petra.lang.config.PetraTestConfig;
 import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Ignore
 @RunWith(Parameterized.class)
-public class ParSequences3 extends BaseExecutionModesTest {
-    public ParSequences3(ExecMode execMode) {
+public class AutoRetryTest extends BaseExecutionModesTest {
+    public AutoRetryTest(ExecMode execMode) {
         super(execMode);
     }
 
     /*
-     * Laws:
-     *
-     * Only for the Graphs:
-     *
-     * POST => PRE
-     * LC => PRE
-     * POST <=> ¬LC
-     *
-     *
-     * Only for Edges:
-     *
-     * PRE </=> POST
+     * This is like the LoopMain example but we have two steps doing the same thing.
+     * Each operating on a separate object, thus Petra automatically parallelizes these steps.
+     * Instead of returning the result we swallow through use of the optional() function.
+     * When the condition of the option is met it rt the actual value, else it will return null,
+     * which will be safely swallowed in Petra.
      */
     @Test
     public void test() {
-        RGraphComputer.getConfig().setIsReachabilityChecksEnabled(false);
-        X output = new PComputer<X>().eval(new SeqGraph(), new X(State.A));
-        assertThat(output.ys()).allMatch(y -> y.state() == State.C);
+
+        ((PetraTestConfig) RGraphComputer.getConfig()).disableExceptionsPassthrough();
+
+        AB result = new PComputer<AB>()
+                .eval(new ABtoAB(), new AB(new A(), new B()));
+
+        assertThat(result.getA().value).isEqualTo(10);
+        assertThat(result.getB().value).isEqualTo(10);
     }
 }
