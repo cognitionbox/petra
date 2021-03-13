@@ -14,7 +14,7 @@ public class Simulate extends PGraph<Simlulation> {
 //                ((s.signalAisRED() && s.signalBisGREEN()) ^
 //                        (s.signalAisGREEN() && s.signalBisRED())) ) );
         pre(s ->
-                (getCurrentIteration() <= 10 && s.getNoOfCarsInJunction() <= 1 &&
+                (loopIteration() <= 10 && s.getNoOfCarsInJunction() <= 1 &&
                         ((s.signalAisRED() && s.signalBisGREEN()) ^
                                 (s.signalAisGREEN() && s.signalBisRED()))));
         begin();
@@ -23,6 +23,6 @@ public class Simulate extends PGraph<Simlulation> {
         step(new MoveCarIntoJunction());
         step(new MoveCarOutOfJunction());
         end();
-        post(c -> getCurrentIteration() == 10);
+        post(c -> loopIteration() == 10);
     }
 }

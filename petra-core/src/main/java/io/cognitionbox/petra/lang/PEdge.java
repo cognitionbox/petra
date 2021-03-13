@@ -89,8 +89,9 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
     @Override
     public X call() {
         X input = getInput().getValue();
-        Lg_ALL_STATES("[Eg in]", input);
-        if (!p().test(input)) {
+        Lg_ALL_STATES("[Eg in]",input);
+        setActiveKase(getInput().getValue());
+        if (!getActiveKase().p().test(input)) {
             return (X) input;
         }
         PEdgeRollbackHelper.capture(input, this);
@@ -201,6 +202,7 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
         }
         PEdge.setP(p());
         PEdge.setQ(q());
+        PEdge.setKases(getKases());
         PEdge.setClazz(getStepClazz());
         PEdge.type(getType());
         return PEdge;
@@ -220,17 +222,17 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
         setP(p);
     }
 
-    public void pre(IPredicate<X> predicate) {
-        setP(new GuardWrite(getType(), predicate));
-    }
-
-    public void post(GuardReturn<X> q) {
-        setQ(q);
-    }
-
-    public void post(IPredicate<X> predicate) {
-        setQ(new Guard<>(getType(), predicate, OperationType.RETURN));
-    }
+//    public void pre(IPredicate<X> predicate) {
+//        setP(new GuardWrite(getType(), predicate));
+//    }
+//
+//    public void post(GuardReturn<X> q) {
+//        setQ(q);
+//    }
+//
+//    public void post(IPredicate<X> predicate) {
+//        setQ(new Guard<>(getType(), predicate, OperationType.RETURN));
+//    }
 
     private IBiPredicate<X, X> v = null;
 
@@ -245,5 +247,10 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
             // need to plumb in old value using the object transaction restore
             return this.v.test(x, x);
         }
+    }
+
+    public void post(IPredicate<X> predicate) {
+        setQ(new Guard(getType(),predicate, OperationType.READ_WRITE));
+        kases.add(new Kase<X>(this,getType(),p,q));
     }
 }
