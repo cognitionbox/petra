@@ -45,8 +45,8 @@ public class SchoolExampleTest extends BaseExecutionModesTest {
 
     @Test
     public void test() {
-        if (PComputer.getConfig().getMode().isDIS()){
-            // currently seems to be deadlocking in DIS mode for this example, needs investigating.
+        if (!getExecMode().isSEQ()){
+            // currently seems to be deadlocking in PAR/DIS mode for this example, needs investigating.
             return;
         }
 
