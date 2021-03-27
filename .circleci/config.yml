@@ -30,7 +30,8 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
-      - run: mvn clean install dependency:resolve-plugins dependency:go-offline
+      - run: mvn clean install -pl petra-core dependency:resolve-plugins dependency:go-offline
+      - run: mvn clean install -pl petra-unit -am petra-core dependency:resolve-plugins dependency:go-offline
 
       - save_cache:
           paths:
