@@ -24,6 +24,7 @@ import io.cognitionbox.petra.lang.PGraph;
 public class AtoA extends PGraph<A> {
     {
         type(A.class);
+        iterations(a->10);
         pre(a -> a.value >= 0 && a.value <= 10);
         begin();
         step(new IncrementA());

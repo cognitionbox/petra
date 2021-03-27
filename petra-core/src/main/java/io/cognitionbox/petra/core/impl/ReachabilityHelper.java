@@ -74,15 +74,15 @@ public class ReachabilityHelper {
         return false;
     }
 
-    public void deconstruct(Set<Class<?>> resourceTypes, OperationType opp, Class<?> type, Set<Class<?>> types, int depth) {
-        deconstructImpl(resourceTypes, opp, type, types, depth);
+    public void deconstruct(Set<Class<?>> resourceTypes, Class<?> type, Set<Class<?>> types, int depth) {
+        deconstructImpl(resourceTypes, type, types, depth);
         Extract ext = type.getAnnotation(Extract.class);
         if (ext != null) {
             addState(type, types);
         }
     }
 
-    private void deconstructImpl(Set<Class<?>> resourceTypes, OperationType opp, Class<?> type, Set<Class<?>> types, int depth) {
+    private void deconstructImpl(Set<Class<?>> resourceTypes, Class<?> type, Set<Class<?>> types, int depth) {
         if (!ExtractsAtClassLevelMustBeAppliedOnlyToIterablesOrClassesWhichHaveExtractOnFields.extractOnClassOk(type)) {
             throw new AssertionError("Extracts at class level must be applied only to iterables or classes which have extract on fields.");
         }
@@ -99,7 +99,7 @@ public class ReachabilityHelper {
                     if (selectedClazz.isAnnotationPresent(SharedResource.class)) {
                         throw new ResourceConflictDetected(selectedClazz, "Cannot operate on more than 1 of the same SharedResource at a time.");
                     }
-                    deconstruct(resourceTypes, null, selectedClazz, types, depth + 1);
+                    deconstruct(resourceTypes, selectedClazz, types, depth + 1);
                 }
             } else {
                 int fieldIndex = 0;
@@ -114,7 +114,7 @@ public class ReachabilityHelper {
                         if (m.getReturnType().equals(Ref.class)) {
                             ParameterizedType pt = (ParameterizedType) m.getGenericReturnType();
                             selectedClazz = (Class<?>) pt.getActualTypeArguments()[0];
-                            deconstruct(resourceTypes, null, selectedClazz, types, depth + 1);
+                            deconstruct(resourceTypes, selectedClazz, types, depth + 1);
                             Extract ext = m.getAnnotation(Extract.class);
                             if (ext != null) {
                                 addState(type, types);
@@ -128,7 +128,7 @@ public class ReachabilityHelper {
                                     resourceTypes.add(selectedClazz);
                                 }
                             }
-                            deconstruct(resourceTypes, null, selectedClazz, types, depth + 1);
+                            deconstruct(resourceTypes, selectedClazz, types, depth + 1);
                             Extract ext = m.getAnnotation(Extract.class);
                             if (ext != null) {
                                 addState(type, types);

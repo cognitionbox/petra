@@ -53,15 +53,12 @@ public class ConstructionGuarantees {
 
         initAllChecksExceptForThoseNotCompatibleWithGraphsGeneratedByReachabilityCheck();
 
-        addCheck(new EdgeEffectMustHaveInputTypeEqualToOutputType());
-
 //        if (!config.JoinEffectMustHaveOnlyOneInputTypeEqualToTheOutputType_.test( step)){
 //            stepErrors.add(new StepError(step,config.JoinEffectMustHaveOnlyOneInputTypeEqualToTheOutputType.getClass().getSimpleName()));
 //        }
 
         //addCheck(new OnlyEdgesWithSideEffectsMustImplementIRollback());
         addCheck(new OnlyStepWithSideAffectTrueMustImplementSideEffect());
-        addCheck(new StepWithImmutablePreOrPostConditionTypesCannotBeSideEffects());
         //addCheck(new StepsCannotHaveFields());
 
         //addCheck(new StepsCanCannotDeclareConstructors());

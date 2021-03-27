@@ -76,6 +76,7 @@ public class Sequence2Test extends BaseExecutionModesTest {
         class SeqGraph extends PGraph<X> {
             {
                 type(X.class);
+                iterations(x->2);
                 pre(x -> x.isAB());
                 begin();
                 step(new SeqEdge2());

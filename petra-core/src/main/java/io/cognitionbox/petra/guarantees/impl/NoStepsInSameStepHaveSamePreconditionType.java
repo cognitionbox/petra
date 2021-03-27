@@ -29,15 +29,15 @@ public class NoStepsInSameStepHaveSamePreconditionType implements StepCheck {
                     if (s1.getStepClazz().equals(s2.getStepClazz())) {
                         continue;
                     }
-                    if (s1.p().getTypeClass().isAssignableFrom(s2.p().getTypeClass()) ||
-                            s2.p().getTypeClass().isAssignableFrom(s1.p().getTypeClass())) {
+                    if (s1.getType().isAssignableFrom(s2.getType()) ||
+                            s2.getType().isAssignableFrom(s1.getType())) {
                         return false;
                     }
                 }
             }
         } else if (step instanceof PEdge) {
             return true;
-            //return !step.p().getTypeClass().equals(step.q().getTypeClass());
+            //return !step.getType().equals(step.q().getTypeClass());
         }
         return true;
     }

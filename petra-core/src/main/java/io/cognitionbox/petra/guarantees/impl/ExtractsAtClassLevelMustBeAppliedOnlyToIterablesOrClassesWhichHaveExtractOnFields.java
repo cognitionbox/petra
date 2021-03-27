@@ -48,7 +48,7 @@ public class ExtractsAtClassLevelMustBeAppliedOnlyToIterablesOrClassesWhichHaveE
         if (step.p() == null) {
             return true;
         }
-        boolean a = extractOnClassOk(step.p().getTypeClass());
+        boolean a = extractOnClassOk(step.getType());
         if (step.q() == null) {
             return true;
         }

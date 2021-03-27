@@ -71,8 +71,8 @@ public class TradingSystem2Test {
         State output = computer.eval(new TradingSystem(), state);
 
         Num pnl = output.getTraders().stream().map(t -> t.getClosedPnl()).reduce(PrecisionNum.valueOf(0), Num::plus);
-        assertThat(pnl.doubleValue()).isEqualTo(315.26233332103152113621264922180);
-        assertThat(output.getTrader(state.getChosenLongShortPair().getToLong()).getClosedPnl().doubleValue()).isEqualTo(123.23233332103152113621264922180);
-        assertThat(output.getTrader(state.getChosenLongShortPair().getToShort()).getClosedPnl().doubleValue()).isEqualTo(192.030);
+        assertThat(pnl.doubleValue()).isEqualTo(392.2333560011153);
+        assertThat(output.getTrader(state.getChosenLongShortPair().getToLong()).getClosedPnl().doubleValue()).isEqualTo(259.6533560011153);
+        assertThat(output.getTrader(state.getChosenLongShortPair().getToShort()).getClosedPnl().doubleValue()).isEqualTo(132.58);
     }
 }

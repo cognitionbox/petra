@@ -13,10 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class HistoricalFeed extends AbstractFeed {
     private final Map<String, List<Quote>> quoteSeriesMap = new ConcurrentHashMap<>();
-    private int day = 0;
+    private final Map<String, AtomicInteger> quoteDayMap = new ConcurrentHashMap<>();
 
     @Override
     public boolean isStarted(String instrument) {
@@ -78,12 +79,13 @@ public class HistoricalFeed extends AbstractFeed {
         return quotes;
     }
 
-    public void step() {
-        day++;
+    public void step(String instrument) {
+        quoteDayMap.putIfAbsent(instrument,new AtomicInteger(0));
+        quoteDayMap.get(instrument).incrementAndGet();
     }
 
-    public int getDay() {
-        return day;
+    public int getDay(String instrument) {
+        return quoteDayMap.getOrDefault(instrument,new AtomicInteger(0)).get();
     }
 
 
@@ -94,7 +96,7 @@ public class HistoricalFeed extends AbstractFeed {
         final List<Quote> quotes = quoteSeriesMap.get(instrument);
         if (quotes.isEmpty()) return null;
 
-        return quotes.get(day);
+        return quotes.get(getDay(instrument));
 
     }
 

@@ -58,7 +58,7 @@ public class PGraphDotDiagramRendererImpl2 implements ILogicBoxDotDiagramRendere
                 diagram.append(s);
                 diagramSet.add(s);
                 if (graph.getStepClazz().isAnnotationPresent(DoesNotTerminate.class)) {
-                    String cycleBack = v + "->" + graph.p().getTypeClass().getSimpleName() + " [label=cycle];\n";
+                    String cycleBack = v + "->" + graph.getType().getSimpleName() + " [label=cycle];\n";
                     if (!diagramSet.contains(cycleBack)) {
                         diagram.append(cycleBack);
                         diagramSet.add(cycleBack);
@@ -108,14 +108,14 @@ public class PGraphDotDiagramRendererImpl2 implements ILogicBoxDotDiagramRendere
         List<AbstractStep> steps =
                 LogicStepsCollector.getAllSteps(logic, joinTypes)
                         .stream()
-                        .filter(s -> !(s.p().getTypeClass().getSimpleName().equals("ThrowableList") &&
+                        .filter(s -> !(s.getType().getSimpleName().equals("ThrowableList") &&
                                 s.q().getTypeClass().getSimpleName().equals("ExtractableThrowableList")))
                         .collect(Collectors.toList());
 
         //collectObjectClasses(steps);
 
         append("start [shape=circle, style=filled, fillcolor=green];\n", logic);
-        append("start->" + logic.p().getTypeClass().getSimpleName() + ";\n", logic);
+        append("start->" + logic.getType().getSimpleName() + ";\n", logic);
 
         if (logic.q() != null) {
             append("stop [shape=doubleoctagon, style=filled, fillcolor=red];\n", logic);
@@ -131,18 +131,18 @@ public class PGraphDotDiagramRendererImpl2 implements ILogicBoxDotDiagramRendere
             String stepDesc = ((Identifyable) step).getPartitionKey();
             if (step.p() != null) {
                 // diagram.append
-                append(step.p().getTypeClass().getSimpleName() + " [style=filled, fillcolor=blue fontcolor=white];\n", logic);
-                append(step.p().getTypeClass().getSimpleName() + " [style=filled, fillcolor=blue fontcolor=white];\n", logic);
+                append(step.getType().getSimpleName() + " [style=filled, fillcolor=blue fontcolor=white];\n", logic);
+                append(step.getType().getSimpleName() + " [style=filled, fillcolor=blue fontcolor=white];\n", logic);
 //        if (step.p() instanceof ExtractPType){
 //          // flip the flow for better visuals
-//          append(step.p().getTypeClass().getSimpleName()+"->"+step.p().getTypeClass().getSimpleName()+";\n");
+//          append(step.getType().getSimpleName()+"->"+step.getType().getSimpleName()+";\n");
 //        } else {
-//          append(step.p().getTypeClass().getSimpleName()+"->"+step.p().getTypeClass().getSimpleName()+";\n");
+//          append(step.getType().getSimpleName()+"->"+step.getType().getSimpleName()+";\n");
 //        }
 
 //        for (Object w : step.p().getWeakerPTypes()){
 //          if (w instanceof Guard){
-//            append(((Guard) w).getTypeClass().getSimpleName()+"->"+step.p().getTypeClass().getSimpleName()+";\n");
+//            append(((Guard) w).getTypeClass().getSimpleName()+"->"+step.getType().getSimpleName()+";\n");
 //          }
 //        }
 
@@ -170,7 +170,7 @@ public class PGraphDotDiagramRendererImpl2 implements ILogicBoxDotDiagramRendere
         for (AbstractStep step : steps) {
             String stepDesc = ((Identifyable) step).getPartitionKey();
             if (step.p() != null) {
-                append(step.p().getTypeClass().getSimpleName() + "->" + stepDesc + " [label=PRE];\n", logic);
+                append(step.getType().getSimpleName() + "->" + stepDesc + " [label=PRE];\n", logic);
             }
 
             if (step.q() != null) {
@@ -180,7 +180,7 @@ public class PGraphDotDiagramRendererImpl2 implements ILogicBoxDotDiagramRendere
                 append(stepDesc + "->" + clazz.getTypeClass().getSimpleName() + " [label=POST];\n", logic);
 
                 if (step.getStepClazz().isAnnotationPresent(Feedback.class)) {
-                    append(clazz.getTypeClass().getSimpleName() + "->" + step.p().getTypeClass().getSimpleName() + " [label=feedback];\n", logic);
+                    append(clazz.getTypeClass().getSimpleName() + "->" + step.getType().getSimpleName() + " [label=feedback];\n", logic);
                 }
             }
             if (step.p() != null) {
@@ -239,8 +239,8 @@ public class PGraphDotDiagramRendererImpl2 implements ILogicBoxDotDiagramRendere
 //    if (step instanceof RGraph){
 //      for (Object s : ((RGraph) step).getParallizable()){
 //        if (s instanceof IStep){
-//          if (clazz.isAssignableFrom(((IStep) s).p().getTypeClass())){
-//            append(((IStep) s).p().getTypeClass().getSimpleName()+"->"+clazz.getSimpleName()+" [style=dashed, label=subclass];\n");
+//          if (clazz.isAssignableFrom(((IStep) s).getType())){
+//            append(((IStep) s).getType().getSimpleName()+"->"+clazz.getSimpleName()+" [style=dashed, label=subclass];\n");
 //          }
 //        }
 //      }

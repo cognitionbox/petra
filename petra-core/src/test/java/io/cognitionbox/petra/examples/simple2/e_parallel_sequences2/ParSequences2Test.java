@@ -79,8 +79,10 @@ public class ParSequences2Test extends BaseExecutionModesTest {
                 type(X.class);
                 pre(x -> x.y1().isAB() && x.y2().isAB());
                 begin();
+                step(new SeqEdge1());
                 step(new SeqEdge2());
                 step(new SeqEdge1());
+                step(new SeqEdge2());
                 end();
                 post(x -> x.y1().isC() && x.y2().isC());
             }

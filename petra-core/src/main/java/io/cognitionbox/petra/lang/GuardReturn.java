@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 package io.cognitionbox.petra.lang;
-
-import io.cognitionbox.petra.core.impl.OperationType;
 import io.cognitionbox.petra.util.function.IPredicate;
 
 public class GuardReturn<E> extends Guard<E> {
     public GuardReturn(Class<E> eventClazz, IPredicate<E> predicate) {
-        super(eventClazz, predicate, OperationType.RETURN);
+        super(eventClazz, predicate);
     }
 }

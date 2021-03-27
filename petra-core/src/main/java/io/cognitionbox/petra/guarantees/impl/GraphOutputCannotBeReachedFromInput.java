@@ -17,7 +17,6 @@ package io.cognitionbox.petra.guarantees.impl;
 
 import io.cognitionbox.petra.core.IGraph;
 import io.cognitionbox.petra.core.IStep;
-import io.cognitionbox.petra.core.impl.OperationType;
 import io.cognitionbox.petra.core.impl.ReachabilityHelper;
 import io.cognitionbox.petra.guarantees.GraphCheck;
 import io.cognitionbox.petra.lang.Guard;
@@ -54,9 +53,9 @@ public class GraphOutputCannotBeReachedFromInput implements GraphCheck {
         Set<Set<Class<?>>> previousStates = new HashSet<>();
         Set<Class<?>> lastState = null;
 
-        Class<?> input = step.p().getTypeClass();
-        if (step.p().getTypeClass().isAnnotationPresent(Extract.class)) {
-            helper.deconstruct(new HashSet<>(), step.p().getOperationType(), step.p().getTypeClass(), state, 0);
+        Class<?> input = step.getType();
+        if (step.getType().isAnnotationPresent(Extract.class)) {
+            helper.deconstruct(new HashSet<>(), step.getType(), state, 0);
             state.add(input);
         } else {
             state.add(input);
@@ -72,7 +71,7 @@ public class GraphOutputCannotBeReachedFromInput implements GraphCheck {
             for (Class<?> s : state) {
                 int matches = 0;
                 for (IStep<?> stp : step.getParallizable()) {
-                    if (stp.p().getTypeClass().isAssignableFrom(s)) {
+                    if (stp.getType().isAssignableFrom(s)) {
                         matches++;
                         if (matches > 1) {
                             throw new IllegalStateException("pre condition conflicts, pre conditions compete for same type");
@@ -84,27 +83,25 @@ public class GraphOutputCannotBeReachedFromInput implements GraphCheck {
 
         int count = 0;
         while (true) {
-            if (((state.size() == 1 && (step.p().getTypeClass().isAssignableFrom(new ArrayList<>(state).get(0)))))) {
-                if (step.p().getTypeClass().isAnnotationPresent(Extract.class)) {
-                    helper.deconstruct(new HashSet<>(), step.p().getOperationType(), step.p().getTypeClass(), state, 0);
+            if (((state.size() == 1 && (step.getType().isAssignableFrom(new ArrayList<>(state).get(0)))))) {
+                if (step.getType().isAnnotationPresent(Extract.class)) {
+                    helper.deconstruct(new HashSet<>(), step.getType(), state, 0);
                 }
             }
             Set<Class<?>> statesToRemove = new HashSet<>();
             Set<Class<?>> statesToAdd = new HashSet<>();
             for (IStep<?> stp : step.getParallizable()) { //perm
                 for (Class<?> st : state) {
-                    if (stp.p().getTypeClass().isAssignableFrom(st)) {
+                    if (stp.getType().isAssignableFrom(st)) {
                         stepsVisitCount.get(stp).incrementAndGet();
 
                         // if consume or write need to replace the input type with output type
                         // if read just add the output type and leave the input type
                         // it works differently to for equivalent semantics in execution runtime where we
                         // do not remove the state for effects.
-                        if (stp.p().getOperationType() == OperationType.READ_WRITE) {
-                            statesToRemove.add(st);
-                        }
+                        statesToRemove.add(st);
 
-                        helper.deconstruct(new HashSet<>(), stp.q().getOperationType(), stp.q().getTypeClass(), statesToAdd, 0);
+                        helper.deconstruct(new HashSet<>(), stp.q().getTypeClass(), statesToAdd, 0);
                     }
                 }
             }

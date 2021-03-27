@@ -46,7 +46,7 @@ public class ClassesWithExtractsOnFieldsMustHaveExtractAnnotation implements Ste
         if (step.p() == null) {
             return true;
         }
-        boolean a = extractOnFieldOk(step.p().getTypeClass());
+        boolean a = extractOnFieldOk(step.getType());
         if (step.q() == null) {
             return true;
         }

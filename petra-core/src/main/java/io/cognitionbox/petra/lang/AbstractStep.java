@@ -18,7 +18,6 @@ package io.cognitionbox.petra.lang;
 import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.core.engine.petri.IToken;
 import io.cognitionbox.petra.core.impl.Identifyable;
-import io.cognitionbox.petra.core.impl.OperationType;
 import io.cognitionbox.petra.util.function.ICallable;
 import io.cognitionbox.petra.util.function.IPredicate;
 import org.javatuples.Pair;
@@ -34,7 +33,6 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
 
     private Class<? extends IStep> clazz = this.getClass();
     private IToken<X> inputToken = null;
-    private Class<X> type = null;
 
     private boolean elseStep = false;
     private boolean initStep = false;
@@ -131,14 +129,6 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
         return q;
     }
 
-    public Class<X> getType() {
-        return type;
-    }
-
-    public void type(Class<X> type) {
-        this.type = type;
-    }
-
     public boolean isElseStep() {
         return elseStep;
     }
@@ -163,7 +153,7 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
         this.inited = inited;
     }
 
-    private Kase<X> activeKase = null;
+    Kase<X> activeKase = null;
 
 //    boolean setActiveKase(X value) {
 //        for (int i=kases.size()-1;i>=0;i--){
@@ -178,6 +168,9 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
 
     private Kase lastActivatedKase;
     private Set<Kase> activatedKases = new HashSet<>();
+    void resetActiveKase() {
+        activeKase = null;
+    }
     boolean setActiveKase(X value) {
         activeKase = null;
         for (Kase k : kases){
@@ -185,9 +178,9 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
                 if (activatedKases.size()==kases.size()){
                     activatedKases.clear();
                 }
-                if (k!=lastActivatedKase && activatedKases.contains(k)){
-                    throw new IllegalStateException("active kase not changed!");
-                }
+//                if (k!=lastActivatedKase && activatedKases.contains(k)){
+//                    throw new IllegalStateException("active kase not changed!");
+//                }
                 activeKase = k;
                 activatedKases.add(activeKase);
                 lastActivatedKase = k;
@@ -243,14 +236,24 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
     }
 
     public void pre(IPredicate<X> predicate) {
-        setP(new Guard(type, predicate, OperationType.READ_WRITE));
+        setP(new Guard(type, predicate));
     }
     protected boolean endAsBeenCalled = false;
     public void post(IPredicate<X> predicate) {
         if (!endAsBeenCalled) {
             throw new UnsupportedOperationException("end has not been called");
         }
-        setQ(new Guard(type,predicate, OperationType.READ_WRITE));
+        setQ(new Guard(type,predicate));
         kases.add(new Kase<X>(this,type,p,q));
+    }
+
+    public Class<X> getType() {
+        return type;
+    }
+
+    Class<X> type = null;
+
+    public void type(Class<X> type) {
+        this.type = type;
     }
 }

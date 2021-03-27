@@ -19,7 +19,6 @@ import io.cognitionbox.petra.factory.IPetraComponentsFactory;
 import io.cognitionbox.petra.guarantees.impl.AllFieldsMustBeSerializableUnlessTransient;
 import io.cognitionbox.petra.guarantees.impl.CheckAllPrePostTypesAreStates;
 import io.cognitionbox.petra.guarantees.impl.ClassesWithExtractsOnFieldsMustHaveExtractAnnotation;
-import io.cognitionbox.petra.guarantees.impl.EdgeEffectMustHaveInputTypeEqualToOutputType;
 import io.cognitionbox.petra.guarantees.impl.EdgeMustHaveAFunction;
 import io.cognitionbox.petra.guarantees.impl.EffectTypesMustBeClassesAndNotInterfaces;
 import io.cognitionbox.petra.guarantees.impl.ExtractsAtClassLevelMustBeAppliedOnlyToIterablesOrClassesWhichHaveExtractOnFields;
@@ -32,7 +31,6 @@ import io.cognitionbox.petra.guarantees.impl.OnlyStepWithSideAffectTrueMustImple
 import io.cognitionbox.petra.guarantees.impl.PrePostTypesMustBeBoundToUniquePredicates;
 import io.cognitionbox.petra.guarantees.impl.StaticFieldsOnlyAllowedIfFinalAndPrimitive;
 import io.cognitionbox.petra.guarantees.impl.StepMustHaveValidPreAndPostCondition;
-import io.cognitionbox.petra.guarantees.impl.StepWithImmutablePreOrPostConditionTypesCannotBeSideEffects;
 import io.cognitionbox.petra.guarantees.impl.StepsCanCannotDeclareConstructors;
 import io.cognitionbox.petra.guarantees.impl.StepsCanOnlyEverImplementOneInterfaceWhichIsIRollback;
 import io.cognitionbox.petra.guarantees.impl.StepsCannotHaveFields;
@@ -42,9 +40,6 @@ public class PetraConfig implements IPetraConfig {
     final public PrePostTypesMustBeBoundToUniquePredicates
             PrePostTypesMustBeBoundToUniquePredicates_ =
             new PrePostTypesMustBeBoundToUniquePredicates();
-    final public EdgeEffectMustHaveInputTypeEqualToOutputType
-            EdgeEffectMustHaveInputTypeEqualToOutputType_ =
-            new EdgeEffectMustHaveInputTypeEqualToOutputType();
     final public EffectTypesMustBeClassesAndNotInterfaces
             EffectTypesMustBeClassesAndNotInterfaces_ = new EffectTypesMustBeClassesAndNotInterfaces();
     final public AllFieldsMustBeSerializableUnlessTransient
@@ -81,7 +76,6 @@ public class PetraConfig implements IPetraConfig {
     final public CheckAllPrePostTypesAreStates CheckAllPrePostTypesAreStates_ = new CheckAllPrePostTypesAreStates();
     final public StepMustHaveValidPreAndPostCondition StepMustHaveValidPreAndPostCondition_ = new StepMustHaveValidPreAndPostCondition();
     // final public StepsWithSameNonStateInputAndOutputTypesMustBeSideEffects StepWithSameInputAndOutputTypesMustImplementTransform = new StepsWithSameNonStateInputAndOutputTypesMustBeSideEffects();
-    final public StepWithImmutablePreOrPostConditionTypesCannotBeSideEffects StepWithImmutablePreOrPostConditionTypesCannotBeSideEffects_ = new StepWithImmutablePreOrPostConditionTypesCannotBeSideEffects();
     public boolean defensiveCopyAllInputsExceptForEffectedInputs = false;
     protected boolean exceptionsPassthrough = false;
     protected boolean testMode = false;

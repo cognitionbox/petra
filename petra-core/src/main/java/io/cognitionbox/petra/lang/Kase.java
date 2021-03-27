@@ -1,15 +1,11 @@
 package io.cognitionbox.petra.lang;
 
-import io.cognitionbox.petra.core.impl.OperationType;
-import io.cognitionbox.petra.util.Petra;
 import io.cognitionbox.petra.util.function.IPredicate;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import static io.cognitionbox.petra.util.Petra.rw;
 
 public class Kase<E> implements IKase<E> {
     private final AtomicBoolean covered = new AtomicBoolean(false);
@@ -46,8 +42,8 @@ public class Kase<E> implements IKase<E> {
     private AbstractStep step;
     public Kase(AbstractStep step, Class<E> eventClazz, IPredicate<E> pre, IPredicate<E> post, Cover cover, Ignore[] ignores) {
         this.step = step;
-        this.p = new Guard(eventClazz, pre, OperationType.READ_WRITE);
-        this.q = new Guard(eventClazz, post, OperationType.READ_WRITE);
+        this.p = new Guard(eventClazz, pre);
+        this.q = new Guard(eventClazz, post);
         this.id = step.kaseId.getAndIncrement();
         this.cover = cover;
         this.ignores = Arrays.asList(ignores);

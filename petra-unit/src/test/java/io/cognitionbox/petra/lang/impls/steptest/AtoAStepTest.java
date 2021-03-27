@@ -15,7 +15,6 @@
  */
 package io.cognitionbox.petra.lang.impls.steptest;
 
-
 import io.cognitionbox.petra.core.IStep;
 import io.cognitionbox.petra.lang.RGraphComputer;
 import io.cognitionbox.petra.lang.StepTest;

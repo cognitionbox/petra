@@ -28,7 +28,7 @@ public class StaticFieldsOnlyAllowedIfFinalAndPrimitive implements StepCheck {
         if (step.p() == null) {
             return true;
         }
-        Class<?> preType = step.p().getTypeClass();
+        Class<?> preType = step.getType();
 
         if (step.q() == null) {
             return true;

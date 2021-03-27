@@ -16,7 +16,6 @@
 package io.cognitionbox.petra.core.engine;
 
 import io.cognitionbox.petra.core.engine.petri.IToken;
-import io.cognitionbox.petra.core.impl.OperationType;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -24,18 +23,12 @@ import java.util.Collection;
 
 public final class StepResult implements Serializable {
 
-    private final OperationType operationType;
     private final IToken input;
     private final IToken outputValue;
 
-    public StepResult(OperationType operationType, IToken input, IToken outputValue) {
-        this.operationType = operationType;
+    public StepResult(IToken input, IToken outputValue) {
         this.input = input;
         this.outputValue = outputValue;
-    }
-
-    public OperationType getOperationType() {
-        return operationType;
     }
 
     public IToken getInput() {

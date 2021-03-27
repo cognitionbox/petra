@@ -15,11 +15,10 @@
  */
 package io.cognitionbox.petra.lang;
 
-import io.cognitionbox.petra.core.impl.OperationType;
 import io.cognitionbox.petra.util.function.IPredicate;
 
 public class GuardInput<E> extends Guard<E> {
-    GuardInput(Class<E> eventClazz, IPredicate<E> predicate, OperationType operationType) {
-        super(eventClazz, predicate, operationType);
+    GuardInput(Class<E> eventClazz, IPredicate<E> predicate) {
+        super(eventClazz, predicate);
     }
 }

@@ -37,7 +37,7 @@ public class UpdateQuotes extends PCollectionEdge<State, HistoricalFeed, Trader>
         func(
                 (feed, trader) -> {
                     Quote quote = feed.getQuote(trader.getInstrument());
-                    feed.step();
+                    feed.step(trader.getInstrument());
                     trader.setCurrentQuote(quote);
                     trader.getDecisions().forEach(d -> {
                         d.setCurrentQuote(quote);

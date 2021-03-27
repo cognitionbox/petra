@@ -66,8 +66,8 @@ public class PetraBaseTest extends BaseTest {
                         .setMode(execMode)
                         //.setHazelcastServerMode(HazelcastServerMode.LOCAL).
                         .enableStatesLogging()
-                        .setIsReachabilityChecksEnabled(true)
-                        .setConstructionGuaranteeChecks(true)
+                        .setIsReachabilityChecksEnabled(false)
+                        .setConstructionGuaranteeChecks(false)
                         .setDefensiveCopyAllInputsExceptForEffectedInputs(false)
                         .setStrictModeExtraConstructionGuarantee(false)
                         .setSequentialModeFactory(new PetraSequentialComponentsFactory())

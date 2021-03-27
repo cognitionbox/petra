@@ -16,7 +16,6 @@
 package io.cognitionbox.petra.lang;
 
 import io.cognitionbox.petra.core.impl.ObjectCopyerViaSerialization;
-import io.cognitionbox.petra.core.impl.OperationType;
 import io.cognitionbox.petra.exceptions.TypeEvalException;
 import io.cognitionbox.petra.util.function.IPredicate;
 
@@ -28,36 +27,30 @@ public class Guard<E> implements IPredicate<E> {
 
     private final ObjectCopyerViaSerialization copyer = new ObjectCopyerViaSerialization();
 
-    protected final OperationType operationType;
     protected final Class<E> eventClazz;
     protected final IPredicate<Object> predicate;
 
     public Guard(Class<E> eventClazz) {
-        this(eventClazz, x -> true, OperationType.READ_WRITE);
+        this(eventClazz, x -> true);
     }
 
-    public Guard(Class<E> eventClazz, IPredicate<E> predicate, OperationType operationType) {
+    public Guard(Class<E> eventClazz, IPredicate<E> predicate) {
         assertNotNull(eventClazz);
         assertNotNull(predicate);
         this.eventClazz = eventClazz;
         this.predicate = (IPredicate<Object>) predicate;
-        this.operationType = operationType;
     }
 
     public boolean isVoid() {
         return getTypeClass().equals(Void.class);
     }
 
-    public OperationType getOperationType() {
-        return operationType;
-    }
-
     public Guard<E> copy() {
-        return new Guard(eventClazz, predicate, operationType);
+        return new Guard(eventClazz, predicate);
     }
 
     public Guard<E> copyWithClass(Class<?> clazz) {
-        return new Guard(clazz, predicate, operationType);
+        return new Guard(clazz, predicate);
     }
 
     public IPredicate<Object> getPredicate() {

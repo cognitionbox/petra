@@ -9,7 +9,7 @@ public class ChoiceMachine extends PGraph<Foo> {
         type(Foo.class);
         pre(foo -> foo.choices == null);
         begin();
-        init(foo -> foo, MakeChoice.class);
+        step(foo -> foo, MakeChoice.class);
         step(choice(), ActOnA.class);
         step(choice(), ActOnB.class);
         step(choice(), ActOnC.class);

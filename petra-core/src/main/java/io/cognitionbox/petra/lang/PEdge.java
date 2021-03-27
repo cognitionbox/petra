@@ -16,7 +16,6 @@
 package io.cognitionbox.petra.lang;
 
 import io.cognitionbox.petra.core.impl.ObjectCopyerViaSerialization;
-import io.cognitionbox.petra.core.impl.OperationType;
 import io.cognitionbox.petra.core.impl.PEdgeRollbackHelper;
 import io.cognitionbox.petra.exceptions.EdgeException;
 import io.cognitionbox.petra.exceptions.conditions.PostConditionFailure;
@@ -90,7 +89,6 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
     public X call() {
         X input = getInput().getValue();
         Lg_ALL_STATES("[Eg in]",input);
-        setActiveKase(getInput().getValue());
         if (!getActiveKase().p().test(input)) {
             return (X) input;
         }
@@ -169,7 +167,7 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
             throwableRef.set(e);
             LOG.error(this.getStepClazz().getSimpleName() + " " + this.getUniqueId(), e);
         }
-        boolean postConditionOk = throwableRef.get() == null && (res != null && q().test(res) && evalV(res));
+        boolean postConditionOk = throwableRef.get()==null && (res!=null && getActiveKase().q(res) && evalV(res));
         if (postConditionOk) {
             if (this.isInitStep() && !this.isInited()) {
                 setInited(true);
@@ -200,9 +198,10 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
             PEdge = new PEdge(getPartitionKey());
             PEdge.func(function);
         }
-        PEdge.setP(p());
-        PEdge.setQ(q());
+//        PEdge.setP(p());
+//        PEdge.setQ(q());
         PEdge.setKases(getKases());
+        PEdge.activeKase = this.activeKase;
         PEdge.setClazz(getStepClazz());
         PEdge.type(getType());
         return PEdge;
@@ -250,7 +249,7 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
     }
 
     public void post(IPredicate<X> predicate) {
-        setQ(new Guard(getType(),predicate, OperationType.READ_WRITE));
+        setQ(new Guard(getType(),predicate));
         kases.add(new Kase<X>(this,getType(),p,q));
     }
 }

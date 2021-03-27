@@ -30,4 +30,6 @@ public interface IStep<X> extends IIdentifyable {
     Class<?> getStepClazz();
 
     boolean isDoesNotTerminate();
+
+    Class<X> getType();
 }

@@ -22,7 +22,7 @@ import io.cognitionbox.petra.lang.annotations.DoesNotTerminate;
 public class StepMustHaveValidPreAndPostCondition implements StepCheck {
     @Override
     public boolean test(IStep<?> step) {
-        boolean a = step.p() != null && step.p().getTypeClass() != null;
+        boolean a = step.p() != null && step.getType() != null;
         boolean b = step.q() != null && step.q().getTypeClass() != null;
         boolean c = step.q() == null && step.getStepClazz().isAnnotationPresent(DoesNotTerminate.class);
         return (a && b) || (a && c);

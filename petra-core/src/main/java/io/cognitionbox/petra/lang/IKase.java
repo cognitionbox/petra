@@ -1,6 +1,8 @@
 package io.cognitionbox.petra.lang;
 
-public interface IKase<E> {
+import java.io.Serializable;
+
+public interface IKase<E> extends Serializable {
     Guard<E> p();
     Guard<E> q();
     boolean evalP(E value);

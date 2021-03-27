@@ -36,8 +36,13 @@ public class PCollectionEdge<X, Y, Z> extends PEdge<X> {
     private IFunction<X, Collection<Z>> collection;
     private IFunction<X, Y> shared;
 
-    public PCollectionEdge() {
-        super(new Guard(Object.class), o -> {}, new Guard(Object.class));
+    public PCollectionEdge() {}
+
+    @Override
+    public void type(Class<X> type) {
+        super.type(type);
+        pre(x -> true);
+        post(x -> true);
     }
 
     public PCollectionEdge(String partitionKey) {

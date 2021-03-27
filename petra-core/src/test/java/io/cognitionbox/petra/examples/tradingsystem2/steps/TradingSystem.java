@@ -15,6 +15,7 @@ public class TradingSystem extends PGraph<State> {
     {
         type(State.class);
         //setSleepPeriod(1000);
+        iterations(x->1097);
         pre(state -> !state.hasFeed());
         begin();
         init(state -> state, SelectHistoricalFeed.class);
@@ -30,6 +31,6 @@ public class TradingSystem extends PGraph<State> {
         steps(state -> state.getTraders(), Trade.class);
         step(state -> state, UpdateQuotes.class);
         end();
-        post(state -> state.getHistoricalFeed().getDay()==1000);
+        post(state -> true);
     }
 }

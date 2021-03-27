@@ -55,7 +55,7 @@ public class StepCallable extends Identifyable implements Callable<StepResult>, 
             try {
                 if (!done.get()) {
                     Object out = step.call();
-                    result.set(new StepResult(step.p().getOperationType(), step.getInput(), new Token(out)));
+                    result.set(new StepResult(step.getInput(), new Token(out)));
                     done.set(true);
                     //LOG.info(this.getUniqueId() + ": step processed!");
                 }

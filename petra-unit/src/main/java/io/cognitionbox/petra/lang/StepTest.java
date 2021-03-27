@@ -21,7 +21,9 @@ import io.cognitionbox.petra.core.engine.petri.impl.Token;
 import io.cognitionbox.petra.core.impl.Identifyable;
 import io.cognitionbox.petra.core.impl.PGraphDotDiagramRendererImpl2;
 import io.cognitionbox.petra.exceptions.EdgeException;
+import io.cognitionbox.petra.exceptions.GraphException;
 import io.cognitionbox.petra.exceptions.IterationsTimeoutException;
+import io.cognitionbox.petra.exceptions.PetraException;
 import io.cognitionbox.petra.lang.impls.PetraBaseTest;
 import io.cognitionbox.petra.util.Petra;
 import junit.framework.TestCase;
@@ -151,6 +153,14 @@ public abstract class StepTest<X> extends PetraBaseTest {
     @After
     public void after() {
         X out = stepFixture.getOutput();
+        if (out instanceof PetraException){
+            for (Throwable e : ((PetraException) out).getCauses()){
+                e.printStackTrace();
+            }
+        }
+        if (out instanceof GraphException || out instanceof EdgeException){
+            Assert.fail("exception: "+out);
+        }
         if (out == null) {
             Assert.fail("output is null");
         }
