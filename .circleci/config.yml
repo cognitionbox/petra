@@ -31,7 +31,7 @@ jobs:
             - v1-dependencies-
 
       - run: mvn clean install -pl petra-core dependency:resolve-plugins dependency:go-offline
-      - run: mvn clean install -pl petra-unit -am petra-core dependency:resolve-plugins dependency:go-offline
+      - run: mvn clean install -pl petra-unit -am dependency:resolve-plugins dependency:go-offline
 
       - save_cache:
           paths:
