@@ -16,11 +16,6 @@
             <version>pre-alpha</version>
         </dependency>
         <dependency>
-            <groupId>io.cognitionbox.petra</groupId>
-            <artifactId>petra-hazelcast</artifactId>
-            <version>pre-alpha</version>
-        </dependency>
-        <dependency>
             <groupId>com.hazelcast.jet</groupId>
             <artifactId>hazelcast-jet</artifactId>
             <version>3.0</version>
