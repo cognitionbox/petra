@@ -7,13 +7,15 @@
 
 ### What is Petra? ###
 
-Petra is a concise hybrid functional and object-oriented 
-general purpose programming language which aims to make 
-parallel and distributed programs easier to code and verify.
+* Programmable Workflows
+* Seamless Object & State Oriented Programming
+* Easier Parallel Programming
+* Easier Verification & Validation
+* Java 8 Embedded DSL
 
-Petra = Automatic Parallel/Distributed programming + 
-            Programming with state made easy + 
-                    Software Verification                              
+Petra is a concise and expressive object-oriented 
+general purpose workflow programming language which aims to make 
+state-oriented, parallel and distributed programs easier to code and verify.                         
                     
 The aim of Petra is to provide a modern programming paradigm, 
 a concise language and tooling to meet today's complex software needs. 
@@ -26,59 +28,32 @@ Petra's reference implementation is a general purpose embedded Java 8 DSL
 (Domain Specific Language), with built in automatic software verification features.
 The embedded DSL has been designed in a way that makes it feel like a native language.
 Most embedded DSLs in Java use method chaining, however Petra uses a function sequence pattern
-for better readability. Future versions will support method chaining in addition to the 
-function sequence pattern as it is useful for dynamically / programmatically building up statements. 
-This would be useful in an AI system that needs to write and verify it's own code, 
-however for initial use cases the function sequence pattern will be more than enough.
+for better readability. Future versions will support the builder pattern (method chaining) 
+in addition to the function sequence pattern as it is useful for dynamically / programmatically building up statements. 
+This would be useful in an AI system that needs to write and verify it's own code.
 
-Petra aims to be purely functional and Petra programs are constructed in a declarative manor.
+Petra programs are easy to reason about and they are constructed in a declarative manor.
 Petra has parallel and distributed programming built into its core and a program can be executed in 
 sequential, parallel or distributed modes, whilst maintaining consistent semantics.
 
+Currently distributed implementation is experimental and is likely to be unstable.
+
 ### What is this repository for? ###
 
-This repo contains the following projects (please note the distributed implementation requires either of the hazelcast projects below, however both implementations are experimental and are likely to be unstable): 
+This repo contains the following projects: 
 
 #### petra-core ####
 Java source code for the reference implementation of Petra.
-
-#### petra-examples ####
-Simple examples for using Petra with Java.
-
-#### petra-hazelcast ####
-Java implementation for the Hazelcast IMDG implementation of the Petra components
-factory ```IPetraComponentsFactory```. This enables Petra to be executed using
-distributed objects using Hazelcast's in-memory data grid technology.
  
-#### petra-hazelcast-jet ####
+#### petra-hazelcast-jet (experimental) ####
 Java implementation for the Hazelcast JET implementation of the Petra components
 factory ```IPetraComponentsFactory```. This enables Petra to be executed using
 distributed objects using Hazelcast's in-memory data grid technology and 
 Jet streaming technology. Jet can process large distributed data structures with
 lower latency.
 
-#### petra-kotlin ####
-A tiny Kotlin library to make it even easier to use Kotlin with Petra.
-
-#### petra-tests ####
-Tests for all execution modes of Petra. ```SEQ```, ```PAR``` and ```DIS``` modes
-(Sequential, Parallel and Distributed modes).
-
-### Distributed Deployment Architecture ###
-
-Petra can be deployed against any Hazelcast cluster hosted on-site or on in the cloud or directly on Hazelcast Cloud for convenience.
-Petra worker nodes can run on any Java 8 environment. When Petra worker nodes start they compete to become the master node.
-There can only be one master node, all other nodes will be workers. 
-The master node owns the root level Petra iteration loop. If the master goes down one of the other worker nodes
-will try to become the master in order to own and execute the root iteration loop.
-When an Petra application starts the root iteration loop causes tasks to be added to Petra's task ring buffer.
-All nodes are able to process tasks from the ring buffer. During processing of a task more tasks can be added to the ring buffer.
-Tasks are never removed from the ring buffer but they are marked as complete once successfully completed.
-
-Below is a simple diagram showing the distributed deployment architecture. 
-
-![Alt text](https://g.gravizo.com/svg?digraph%20PetraArchitecture%20{rankdir=LR;%22Petra%20worker%20node%201%20(Master)%22-%3E%22Hazelcast%20IMDG%20/%20JET%20cluster%22%22Petra%20worker%20node%202%22-%3E%22Hazelcast%20IMDG%20/%20JET%20cluster%22%22Petra%20worker%20node%203%22-%3E%22Hazelcast%20IMDG%20/%20JET%20cluster%22%22Petra%20worker%20node%20n%20...%22-%3E%22Hazelcast%20IMDG%20/%20JET%20cluster%22})
-     
+#### petra-unit ####
+Contains source for Petra's step test system which makes it easy to unit test petra components.
 
 ### How do I get set up? ###
 
@@ -90,17 +65,13 @@ This will build the projects in the order as defined by parent pom file (see bel
 ```
 <modules>
     <module>petra-core</module>
-    <module>petra-examples</module>
-    <module>petra-kotlin</module>
-    <module>petra-hazelcast</module>
     <module>petra-hazelcast-jet</module>
-    <module>petra-tests</module>
+    <module>petra-unit</module>
 </modules>
 ```
 
-Then you can include the ```petra-core```, ```petra-hazelcast``` and/or
- ```petra-kotlin``` dependencies in your projects (see below).
-```petra-hazelcast-jet``` needs some more development before its ready.
+Then you can include the ```petra-core``` and/or
+ ```petra-unit``` dependencies in your projects (see below).
 
 ```
 <dependency>
@@ -113,15 +84,7 @@ Then you can include the ```petra-core```, ```petra-hazelcast``` and/or
 ```
 <dependency>
 	<groupId>io.cognitionbox.petra</groupId>
-	<artifactId>petra-hazelcast</artifactId>
-	<version>pre-alpha</version>
-</dependency>
-```
-
-```
-<dependency>
-	<groupId>io.cognitionbox.petra</groupId>
-	<artifactId>petra-kotlin</artifactId>
+	<artifactId>petra-unit</artifactId>
 	<version>pre-alpha</version>
 </dependency>
 ```
@@ -132,23 +95,22 @@ however Petra has been constructed in a way that will allow for distributed mode
 
 ### Petra's Programming Paradigm ###
 
-Petra is a hybrid of Object-orientated, Pure Functional and 
-Parallel / Distributed Programming.
-Petra aim's to make it impossible to do anything that is "impure".
+Petra's two kinds of computation steps: PGraph, PEdge (see below).
+PGraphs can contain other PGraphs or PEdges. 
+PEdges contain Java code which mutates state.
+These steps have 'pre/post' conditions or 'kases' 
+which provide a contract for describing how the state is mutated.
+This allow complex system to be composed of a hierarchy of steps, 
+whilst being able to mutate state in a safe.
 
-Petra's two main programming components, PGraph, PEdge (see below)
-are analogous to pure functions, even when they mutating state i.e. causing a side-effect.
-This means a complex system can be composed of a hierarchy of function calls, 
-whilst being able to mutate state in a safe and pure way.
-
-Petra aims to parallelize at all opportunities whilst removing the
-developers overhead to hand code parallel algorithms using traditional
+Petra makes it easier to do parallel programming by removing the need to hand code
 concurrency primitives like threads, locks and fork/joins, etc.
-Multiple PGraph and PEdge steps run in parallel where possible given their data dependencies.   
 
-Petra features a form of transactional memory which allows it to rollback to "good" states,
-before retrying computations, this helps to provide a pure programming environment, 
-where its clear to the programmer and the runtime what state the system is actually in.
+Petra also ensures the parallel programming is carried out in a safe way in order to prevent
+common errors such as deadlocks, race-conditions and data-races. 
+
+Petra has a form of transactional memory which allows it to rollback to "good" states,
+before retrying computations, which makes its easier to understand the possible state transitions.
 
 ### Use Cases ###
 Petra is well suited to back-end processing, including but not limited to,
@@ -179,7 +141,8 @@ public class PetraExample {
 ```
 ##### PGraph #####
 A PComputer must take as input a PGraph and the input to start with.
-A PGraph has a pre-condition and a post-condition.
+A PGraph has a pre-condition and a post-condition, or a number of kases, 
+each of which have both a pre-condition and a post-condition.
 The PGraph only starts if its pre-condition is met.
 A PGraph can also have multiple steps, where each step can be another PGraph or a PEdge.
 When a another PGraph or PEdge becomes a step of a higher-level PGraph,
@@ -189,7 +152,7 @@ public class AtoAGraph extends PGraph<A> {
     {
        type(A.class);
        pre(a->a.value.equals(""));
-       step(new AtoA());
+       step(a->a, new AtoA());
        post(a->a.value.equals("hello world."));
     }
 }
@@ -216,8 +179,7 @@ public class AtoA extends PEdge<A> {
 
 Petra's PCollection's are designed to have the same behaviour across, 
 sequential, parallel and distributed modes, without having to change the code.
-So far there are 3 PCollection types: ```PList``` , ```PSet``` and ```PMap```
-more collection types are coming soon.
+So far there are 3 PCollection types: ```PList``` , ```PSet``` and ```PMap```.
 
 You can also use Java collections or other library collections but without the guarantee 
 semantics will stay consistent over all the runtime modes (sequential, parallel and distributed).
@@ -232,8 +194,8 @@ public class SeqGraph extends PGraph<X> {
             {
                 type(X.class);
                 pre(x->x.isAB());
-                step(new SeqEdge2());
-                step(new SeqEdge1());
+                step(x->x, new SeqEdge2());
+                step(x->x, new SeqEdge1());
                 post(x->x.isC());
             }
         }
@@ -268,21 +230,6 @@ Petra includes several construction checks which are on by default.
 These checks prevent a Petra system from running if one of the checks fail.
 The checks enforce the semantics of the Petra system to provide safety guarantees.
 If there are multiple issues that prevent start-up all of these are logged to the console.
-Some checks cannot be run unless critical checks pass e.g. all steps must have
-pre/post conditions. With out these it is impossible to perform the other checks.
-
-Some example checks are explained below.
-
-###### Type Predicate bindings ######
-Petra pre/post conditions use Java class and interface types to match instances of the defined type.
-Further to this once if the instance matches the defined type a predicate of the same same is evaluated on the 
-instance which provides a more refined/stronger check on the instance.
-In order to ensure the same type is not used with multiple predicates Petra has a system for checking this upfront,
-and will cause the startup to fail so the issue can be fixed.
-
-###### Construction Check documentation ######
-This is not complete but needs to be completed as a priority so new users
-can better understand why start-up is being prevented.
 
 ##### JVM language support #####
 
@@ -290,10 +237,23 @@ can better understand why start-up is being prevented.
 Petra has been written in Java 8 as an embedded DSL and therefore
 Java 8 support is native to Petra.
 
-###### Kotlin ######
-Kotlin works seamlessly with Petra for the same reason as above.
-A petra-kotlin library will be released soon which will further 
-improve the convenience of using Kotlin with Petra.
+### Future Work ###
+
+#### Distributed Deployment Architecture ####
+
+Petra aims to be deployed against any Hazelcast cluster hosted on-site or on in the cloud or directly on Hazelcast Cloud for convenience.
+Petra worker nodes can run on any Java 8 environment. When Petra worker nodes start they compete to become the master node.
+There can only be one master node, all other nodes will be workers. 
+The master node owns the root level Petra iteration loop. If the master goes down one of the other worker nodes
+will try to become the master in order to own and execute the root iteration loop.
+When an Petra application starts the root iteration loop causes tasks to be added to Petra's task ring buffer.
+All nodes are able to process tasks from the ring buffer. During processing of a task more tasks can be added to the ring buffer.
+Tasks are never removed from the ring buffer but they are marked as complete once successfully completed.
+
+Below is a simple diagram showing the distributed deployment architecture. 
+
+![Alt text](https://g.gravizo.com/svg?digraph%20PetraArchitecture%20{rankdir=LR;%22Petra%20worker%20node%201%20(Master)%22-%3E%22Hazelcast%20IMDG%20/%20JET%20cluster%22%22Petra%20worker%20node%202%22-%3E%22Hazelcast%20IMDG%20/%20JET%20cluster%22%22Petra%20worker%20node%203%22-%3E%22Hazelcast%20IMDG%20/%20JET%20cluster%22%22Petra%20worker%20node%20n%20...%22-%3E%22Hazelcast%20IMDG%20/%20JET%20cluster%22})
+     
 
 ### Who do I talk to? ###
 
@@ -301,7 +261,7 @@ The idea of Petra was originally thought up by Aran Hakki in 2011.
 Since then he has been researching and developing the system.
 
 Aran originally read MEng Systems Engineering at Warwick University 
-and has been a software engineer for about 10 years now.
+and has been a software engineer for over 10 years.
 He started a PhD in Computer Science at the University of Southampton 
 in May 2020 and the main research topics are those surrounding the Petra programming system.
 
