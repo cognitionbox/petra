@@ -259,4 +259,20 @@ public class Petra {
         return collection.stream().filter(predicate).collect(Collectors.toCollection(supplier));
     }
 
+    public static boolean greatThan(int a, int b) {
+        return a>b;
+    }
+
+    public static boolean lessThan(int a, int b) {
+        return a<b;
+    }
+
+    public static boolean greatThan(double a, double b) {
+        return a>b;
+    }
+
+    public static boolean lessThan(double a, double b) {
+        return a<b;
+    }
+
 }
