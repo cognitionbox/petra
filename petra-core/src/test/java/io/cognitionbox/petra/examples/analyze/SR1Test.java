@@ -34,7 +34,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AnalyzeImageTest {
+public class SR1Test {
 
     @Test
     public void test() {
