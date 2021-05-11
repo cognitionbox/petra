@@ -6,7 +6,9 @@ import io.cognitionbox.petra.lang.PEdge;
 public class AverageIntensity extends PEdge<ImageData> {
 	{
 		type(ImageData.class);
-		kase(imageData -> imageData.hasTotalIntensity() && imageData.notHasAverageIntensity(), imageData -> imageData.hasAverageIntensity() );
+		kase(
+				imageData -> imageData.hasTotalIntensity() && imageData.notHasAverageIntensity(),
+				imageData -> imageData.hasAverageIntensity() );
 		func(imageData -> {
 			imageData.averageIntensity = imageData.totalIntensity / imageData.noOfpixels;
 		});

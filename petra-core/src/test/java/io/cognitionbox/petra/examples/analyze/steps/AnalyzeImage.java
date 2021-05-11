@@ -8,7 +8,9 @@ import static io.cognitionbox.petra.util.Petra.*;
 public class AnalyzeImage extends PGraph<ImageData> {
 	{
 		type(ImageData.class);
-		kase(imageData-> greatThan(imageData.noOfpixels,0) , imageData-> lessThan(1,imageData.averageIntensity) && lessThan(imageData.averageIntensity,100) );
+		kase(
+				imageData-> imageData.noOfpixels > 0 ,
+				imageData-> isBetweenExclusive(1,imageData.averageIntensity,100) );
 		begin();
 		step(seq(),imageData->imageData, AggregateIntensityLoop.class);
 		step(seq(),imageData->imageData, AverageIntensity.class);

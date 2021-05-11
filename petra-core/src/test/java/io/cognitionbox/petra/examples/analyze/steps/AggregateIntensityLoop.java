@@ -10,7 +10,9 @@ public class AggregateIntensityLoop extends PGraph<ImageData> {
 	{
 		type(ImageData.class);
 		iterations(imageData -> imageData.noOfpixels);
-		kase(imageData-> greatThan(imageData.noOfpixels,0), imageData -> imageData.hasTotalIntensity() );
+		kase(
+				imageData-> imageData.noOfpixels > 0,
+				imageData -> imageData.hasTotalIntensity() );
 		invariant(imageData -> imageData.notHasTotalIntensity() ^ greatThan(imageData.totalIntensity,0));
 		begin();
 		step(imageData->imageData, AggregateIntensity.class);

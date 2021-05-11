@@ -22,7 +22,8 @@ import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.config.PetraConfig;
 import io.cognitionbox.petra.examples.analyze.objects.ImageData;
 import io.cognitionbox.petra.examples.analyze.objects.Pixel;
-import io.cognitionbox.petra.examples.analyze.steps.AnalyzeImage;
+import io.cognitionbox.petra.examples.analyze.objects.SunlightData;
+import io.cognitionbox.petra.examples.analyze.steps.SR1;
 import io.cognitionbox.petra.factory.PetraParallelComponentsFactory;
 import io.cognitionbox.petra.factory.PetraSequentialComponentsFactory;
 import io.cognitionbox.petra.lang.PComputer;
@@ -51,15 +52,15 @@ public class AnalyzeImageTest {
 
         PComputer.setConfig(config);
 
-        PComputer<ImageData> computer = new PComputer();
+        PComputer<SunlightData> computer = new PComputer();
         List<Pixel> pixels = new ArrayList<>();
         pixels.add(new Pixel(2));
         pixels.add(new Pixel(2));
         pixels.add(new Pixel(2));
         pixels.add(new Pixel(2));
         ImageData imageData = new ImageData(pixels);
-
-        ImageData output = computer.eval(new AnalyzeImage(), imageData);
-        assertThat(output.averageIntensity).isEqualTo(2);
+        SunlightData sunlightData = new SunlightData(imageData);
+        SunlightData output = computer.eval(new SR1(), sunlightData);
+        assertThat(output.validated==true).isTrue();
     }
 }

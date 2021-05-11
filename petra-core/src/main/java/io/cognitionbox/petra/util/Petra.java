@@ -275,4 +275,12 @@ public class Petra {
         return a<b;
     }
 
+    public static boolean isBetweenExclusive(double a, double b, double c) {
+        return lessThan(a,b) && lessThan(b,c);
+    }
+
+    public static boolean equal(boolean a, boolean b) {
+        return a==b;
+    }
+
 }
