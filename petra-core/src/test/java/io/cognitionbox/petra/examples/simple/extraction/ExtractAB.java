@@ -25,11 +25,10 @@ import io.cognitionbox.petra.lang.PGraph;
 public class ExtractAB extends PGraph<AB> {
     {
         type(AB.class);
-        pre(x -> loopIteration() == 0);
-        begin();
+        kase(x -> loopIteration() == 0, x -> loopIteration() == 1);
+
         step(x -> x.getA(), new PrintA());
         step(x -> x.getB(), new PrintB());
-        end();
-        post(x -> loopIteration() == 1);
+        esak();
     }
 }

@@ -31,7 +31,7 @@ public class AtoAStepTest extends StepTest<A> {
     public void testSimple1() {
         RGraphComputer.getConfig().setConstructionGuaranteeChecks(false);
         setInput(new A(1));
-        setExpectation(x -> x.value == 3);
+        setExpectation(x -> x.value == 2);
     }
 
     @Test

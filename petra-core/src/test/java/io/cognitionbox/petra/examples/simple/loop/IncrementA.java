@@ -26,12 +26,11 @@ import io.cognitionbox.petra.lang.annotations.Feedback;
 public class IncrementA extends PEdge<A> implements IRollback<A> {
     {
         type(A.class);
-        pre(a -> a.value >= 0 && a.value < 10);
+        kase(a -> a.value >= 0 && a.value < 10, a -> a.value >= 0 && a.value <= 10);
         func(a -> {
             a.value++;
             System.out.println("A=" + a.value);
         });
-        post(a -> a.value >= 0 && a.value <= 10);
     }
 
     @Override

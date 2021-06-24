@@ -18,7 +18,6 @@ package io.cognitionbox.petra.lang.impls;
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.PGraph;
-import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -62,52 +61,55 @@ public class PGraphSingleHandledThrowableFlowTest extends BaseExecutionModesTest
     public static class MainLoop extends PGraph<X> {
         {
             type(X.class);
-            pre(x -> x.value == 0);
-            begin();
+            kase(x -> x.value == 0, x -> x.value == 3);
+
             step(new Nesting());
-            end();
-            post(x -> x.value == 3);
+            esak();
         }
     }
 
     public static class Nesting extends PGraph<X> {
         {
             type(X.class);
-            pre(x -> x.value == 0);
-            begin();
+            kase(
+                    x -> x.value == 0,
+                    x -> x.value == 1 || x.value == 3);
+
             step(new PlusOne());
-            end();
-            post(x -> x.value == 1 || x.value == 3);
+            esak();
         }
     }
 
     public static class MainLoopWithDirectStepHandledThrowable extends PGraph<X> {
         {
             type(X.class);
-            pre(x -> x.value == 0);
-            begin();
+            kase(
+                    x -> x.value == 0,
+                    x -> x.value == 3);
+
             step(new NestingWithDirectStepHandledThrowable());
-            end();
-            post(x -> x.value == 3);
+            esak();
         }
     }
 
     public static class NestingWithDirectStepHandledThrowable extends PGraph<X> {
         {
             type(X.class);
-            pre(x -> x.value == 0);
-            begin();
-            step(new PlusOne());
-            end();
-            post(x -> x.value == 3);
+            kase(
+                    x -> x.value == 0,
+                    x -> x.value == 3);
 
+            step(new PlusOne());
+            esak();
         }
     }
 
     public static class PlusOne extends PEdge<X> {
         {
             type(X.class);
-            pre(x -> x.value == 0);
+            kase(
+                    x -> x.value == 0,
+                    x -> x.value == 1 || x.value == 3);
             func(x -> {
                 try {
                     int y = 1 / 0;
@@ -115,7 +117,6 @@ public class PGraphSingleHandledThrowableFlowTest extends BaseExecutionModesTest
                     x.value = 3;
                 }
             });
-            post(x -> x.value == 1 || x.value == 3);
         }
     }
 }

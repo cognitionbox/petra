@@ -42,14 +42,8 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.AnnotatedType;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -81,9 +75,21 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
     private List<StateTransformerStep> seqTransformerSteps = new ArrayList<>();
     private List<StateIterableTransformerStep> seqIterableTransformerSteps = new ArrayList<>();
     private List<Pair<ExecMode, List<TransformerStep>>> allSteps;
+    private Map<Kase,List<Pair<ExecMode, List<TransformerStep>>>> kaseSteps = new ConcurrentHashMap<>();
     private ExecMode lastExecMode = null;
     private List<TransformerStep> currentSteps;
     private AtomicInteger matches = new AtomicInteger(0);
+
+    public void kase(IPredicate<X> pre, IPredicate<X> post) {
+        super.kase(pre,post);
+        allSteps = new ArrayList<>();
+        currentSteps = new ArrayList<>();
+        kaseSteps.put(kases.get(kases.size()-1),allSteps);
+    }
+
+    private List<Pair<ExecMode, List<TransformerStep>>> getActiveSteps(){
+        return kaseSteps.get(getActiveKase());
+    }
 
     //    public void step(IStep<? super I> computation) {
 //        addParallizable(computation);
@@ -282,9 +288,6 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
     }
 
     public <P> void inits(ExecMode execMode, IFunction<X, Iterable<P>> transformer, Class<? extends IStep<? extends P>> step) {
-        if (execMode.isCHOICE()) {
-            throw new UnsupportedOperationException("cannot have choice in an init step, please perform choice at a deeper level.");
-        }
         AbstractStep abstractStep = (AbstractStep) Petra.createStep(step);
         abstractStep.setInitStep(true);
         steps(execMode, transformer, abstractStep);
@@ -348,10 +351,6 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
         step(ExecMode.SEQ, transformer, (IStep<P>) abstractStep);
     }
 
-    public <P> void choiceSkip() {
-        skip(ExecMode.CHOICE);
-    }
-
     public <P> void skip(ExecMode execMode) {
         if (execMode.isPAR() || execMode.isDIS()) {
             throw new UnsupportedOperationException("skips can only be sequential or choices.");
@@ -376,9 +375,6 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
     }
 
     public <P> void init(ExecMode execMode, IFunction<X, P> transformer, Class<? extends IStep<? extends P>> step) {
-        if (execMode.isCHOICE()) {
-            throw new UnsupportedOperationException("cannot have choice in an init step, please perform choice at a deeper level.");
-        }
         AbstractStep abstractStep = (AbstractStep) Petra.createStep(step);
         abstractStep.setInitStep(true);
         step(execMode, transformer, abstractStep);
@@ -430,16 +426,12 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
         lastExecMode = execMode;
     }
 
-    public void begin() {
-        allSteps = new ArrayList<>();
-    }
-
-    public void end() {
+    public void esak() {
         if (allSteps == null) {
             throw new UnsupportedOperationException("end but no begin.");
         }
         allSteps.add(Pair.with(lastExecMode, currentSteps));
-        endAsBeenCalled = true;
+        //endAsBeenCalled = true;
     }
 
     private void executeSeqStep(StateTransformerStep f, ExecMode execMode) {
@@ -465,9 +457,6 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
             } else {
                 if (f.getStep() instanceof Skip && this.matches.get() == 0) {
                     this.matches.incrementAndGet();
-                }
-                if (!f.getStep().isInitStep() && !execMode.isCHOICE()) {
-                    throw new GraphException(f.getStep(), getInput().getValue(), getInput().getValue(), Arrays.asList(new PreConditionFailure("non init step not matched.")));
                 }
             }
         } catch (Exception e) {
@@ -595,23 +584,17 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
     }
 
     private void executeAllSteps() {
-        for (Pair<ExecMode, List<TransformerStep>> step : allSteps) {
+        for (Pair<ExecMode, List<TransformerStep>> step : getActiveSteps()) {
             if (step.getValue1() == null || step.getValue0() == null) {
                 continue;
             }
-            if (step.getValue0().isCHOICE()) {
-                this.matches.set(0);
-            }
-            if (step.getValue0().isSEQ() || step.getValue0().isCHOICE()) {
+            if (step.getValue0().isSEQ()) {
                 for (TransformerStep ts : step.getValue1()) {
                     if (ts instanceof StateTransformerStep) {
                         executeSeqStep((StateTransformerStep) ts, step.getValue0());
                     } else if (ts instanceof StateIterableTransformerStep) {
                         executeSeqStepForall((StateIterableTransformerStep) ts, step.getValue0());
                     }
-                }
-                if (step.getValue0().isCHOICE() && this.matches.get() != 1) {
-                    throw new GraphException(this, getInput().getValue(), getInput().getValue(), Arrays.asList(new PreConditionFailure("choice steps not matched exactly once.")));
                 }
             } else if (step.getValue0().isPAR()) {
                 List<StepCallable> callables = new ArrayList<>();
@@ -1019,6 +1002,7 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
         copy.allSteps = allSteps;
         copy.currentSteps = currentSteps;
         copy.lastExecMode = lastExecMode;
+        copy.kaseSteps = kaseSteps;
 
         copy.setElseStep(isElseStep());
         copy.setInitStep(isInitStep());
@@ -1066,11 +1050,11 @@ public class RGraph<X extends D, D> extends AbstractStep<X> implements IGraph<X>
         setP(p);
     }
 
-    public void pre(IPredicate<X> predicate) {
+    void pre(IPredicate<X> predicate) {
         setP(new GuardWrite(getType(), predicate));
     }
 
-    public void post(GuardReturn<X> q) {
+    void post(GuardReturn<X> q) {
         setQ(q);
     }
 

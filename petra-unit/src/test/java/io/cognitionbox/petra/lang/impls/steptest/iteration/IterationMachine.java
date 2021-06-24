@@ -6,10 +6,9 @@ public class IterationMachine extends PGraph<Foo> {
     {
         type(Foo.class);
         iterations(i->3);
-        pre(foo -> foo.result == 0);
-        begin();
+        kase(foo -> foo.result == 0, foo -> foo.result==3);
+
         step(foo -> foo, Increment.class);
-        end();
-        post(foo -> foo.result==3);
+        esak();
     }
 }

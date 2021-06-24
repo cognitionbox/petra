@@ -5,10 +5,11 @@ import io.cognitionbox.petra.lang.PEdge;
 public class SeqEdge extends PEdge<Y> {
     {
         type(Y.class);
-        pre(y -> y.isA() ^ y.isB());
+        kase(
+                y -> y.isA() ^ y.isB(),
+                y -> y.isB() ^ y.isC());
         func(y -> {
             y.state(State.values()[y.state().ordinal() + 1]);
         });
-        post(y -> y.isB() ^ y.isC());
     }
 }

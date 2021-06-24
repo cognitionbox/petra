@@ -29,8 +29,8 @@ public class XtoXStepTest extends StepTest<X> {
     public void testSimple1() {
         RGraphComputer.getConfig().setConstructionGuaranteeChecks(false);
         List<A> list = new ArrayList<>();
-        list.add(new B(0));
-        list.add(new C(0));
+        list.add(new A(0));
+        list.add(new A(0));
         setInput(new X(list));
         setExpectation(x -> x.aList.stream().allMatch(a -> a.value == 1));
     }

@@ -8,10 +8,9 @@ public class SeqGraph extends PGraph<X> {
     {
         type(X.class);
         iterations(x->2);
-        pre(x -> forAll(Y.class, x.ys(), y -> y.isAB()));
-        begin();
+        kase(x -> forAll(Y.class, x.ys(), y -> y.isAB()), x -> forAll(Y.class, x.ys(), y -> y.isC()));
+
         steps(x -> x.ys(), new SeqEdge());
-        end();
-        post(x -> forAll(Y.class, x.ys(), y -> y.isC()));
+        esak();
     }
 }

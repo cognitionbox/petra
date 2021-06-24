@@ -9,10 +9,10 @@ public class HawkeyeGraph2 extends PGraph<X> {
     {
         type(X.class);
         kase(x -> x.isOne(), x ->  x.isEight());
-        begin();
+
         step(seq(),x->x,new OneToTwo());
         step(seq(),x->x,new TwoToFour());
         step(seq(),x->x,new FourToEight());
-        end();
+        esak();
     }
 }

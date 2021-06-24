@@ -5,10 +5,9 @@ import io.cognitionbox.petra.lang.PEdge;
 public class Increment extends PEdge<Foo> {
     {
         type(Foo.class);
-        pre(foo -> true);
+        kase(foo -> true, foo -> true);
         func(foo -> {
             foo.result++;
         });
-        post(foo -> true);
     }
 }

@@ -11,9 +11,9 @@ public class AnalyzeImage extends PGraph<ImageData> {
 		kase(
 				imageData-> imageData.noOfpixels > 0 ,
 				imageData-> isBetweenExclusive(1,imageData.averageIntensity,100) );
-		begin();
+
 		step(seq(),imageData->imageData, AggregateIntensityLoop.class);
 		step(seq(),imageData->imageData, AverageIntensity.class);
-		end();
+		esak();
 	}
 }

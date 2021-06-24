@@ -26,10 +26,9 @@ import io.cognitionbox.petra.lang.PEdge;
 public class PrintB extends PEdge<B> {
     {
         type(B.class);
-        pre(b -> true);
+        kase(b -> true, b -> true);
         func(b -> {
             System.out.println(b.getClass().getSimpleName());
         });
-        post(b -> true);
     }
 }

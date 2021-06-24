@@ -12,8 +12,8 @@ public class FlashingLights extends PGraph<Lights> {
         iterations(x->3);
         variant((i,x)->x.colour.get()==Lights.Colour.values()[i]);
         kase(lights -> lights.colour.get()== Lights.Colour.RED, lights -> lights.colour.get()== Lights.Colour.RED);
-        begin();
+
         step(seq(),lights -> lights, new ChangeColour());
-        end();
+        esak();
     }
 }

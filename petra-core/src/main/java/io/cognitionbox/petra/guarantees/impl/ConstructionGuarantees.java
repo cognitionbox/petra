@@ -49,7 +49,7 @@ public class ConstructionGuarantees {
     }
 
     public void initAllChecks() {
-        addCheck(new StepMustHaveValidPreAndPostCondition());
+        //addCheck(new StepMustHaveValidPreAndPostCondition());
 
         initAllChecksExceptForThoseNotCompatibleWithGraphsGeneratedByReachabilityCheck();
 

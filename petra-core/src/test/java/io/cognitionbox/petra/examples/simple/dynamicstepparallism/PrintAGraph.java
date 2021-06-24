@@ -26,11 +26,10 @@ import io.cognitionbox.petra.lang.PGraph;
 public class PrintAGraph extends PGraph<X> {
     {
         type(X.class);
-        pre(x -> loopIteration() == 0);
-        begin();
+        kase(x -> loopIteration() == 0, x -> loopIteration() == 1);
+
         step(x -> x.getA1(), new PrintA());
         step(x -> x.getA2(), new PrintA());
-        end();
-        post(x -> loopIteration() == 1);
+        esak();
     }
 }

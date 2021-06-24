@@ -2,20 +2,25 @@ package io.cognitionbox.petra.lang.impls.steptest.choice;
 
 import io.cognitionbox.petra.lang.PGraph;
 
-import static io.cognitionbox.petra.util.Petra.choice;
+import static io.cognitionbox.petra.util.Petra.seq;
 
 public class ChoiceMachine extends PGraph<Foo> {
     {
         type(Foo.class);
-        pre(foo -> foo.choices == null);
-        begin();
-        step(foo -> foo, MakeChoice.class);
-        step(choice(), ActOnA.class);
-        step(choice(), ActOnB.class);
-        step(choice(), ActOnC.class);
-        end();
-        post(foo -> (foo.choices == Choices.A && foo.result == 1) ^
-                (foo.choices == Choices.B && foo.result == 2) ^
-                (foo.choices == Choices.C && foo.result == 3));
+
+        kase(foo -> foo.choices == Choices.A, foo -> (foo.choices == Choices.A && foo.result == 1));
+
+        step(seq(), ActOnA.class);
+        esak();
+
+        kase(foo -> foo.choices == Choices.B, foo -> (foo.choices == Choices.B && foo.result == 2));
+
+        step(seq(), ActOnB.class);
+        esak();
+
+        kase(foo -> foo.choices == Choices.C, foo -> (foo.choices == Choices.C && foo.result == 3));
+
+        step(seq(), ActOnC.class);
+        esak();
     }
 }

@@ -55,21 +55,19 @@ public class Sequence2Test extends BaseExecutionModesTest {
         class SeqEdge1 extends PEdge<X> {
             {
                 type(X.class);
-                pre(x -> x.isA());
+                kase(x -> x.isA(), x -> x.isB());
                 func(x -> {
                     x.state(State.B);
                 });
-                post(x -> x.isB());
             }
         }
         class SeqEdge2 extends PEdge<X> {
             {
                 type(X.class);
-                pre(x -> x.isB());
+                kase(x -> x.isB(), x -> x.isC());
                 func(x -> {
                     x.state(State.C);
                 });
-                post(x -> x.isC());
             }
         }
 
@@ -77,12 +75,11 @@ public class Sequence2Test extends BaseExecutionModesTest {
             {
                 type(X.class);
                 iterations(x->2);
-                pre(x -> x.isAB());
-                begin();
+                kase(x -> x.isAB(), x -> x.isC());
+
                 step(new SeqEdge2());
                 step(new SeqEdge1());
-                end();
-                post(x -> x.isC());
+                esak();
             }
         }
 

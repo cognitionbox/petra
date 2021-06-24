@@ -28,10 +28,10 @@ import static io.cognitionbox.petra.util.Petra.forAll;
 public class CollectExposure extends PEdge<State> {
     {
         type(State.class);
-        pre(state -> state.getDecisionStore().hasDecisions());
+        kase(state -> state.getDecisionStore().hasDecisions(),
+                state -> state.getDecisionStore().hasDecisions() &&
+                        state.getExposureStore().hasExposures() &&
+                        forAll(Trader.class, state.traders(), trader -> trader.hasEqZeroDecisions()));
         func(state -> state.updateExposure());
-        post(state -> state.getDecisionStore().hasDecisions() &&
-                state.getExposureStore().hasExposures() &&
-                forAll(Trader.class, state.traders(), trader -> trader.hasEqZeroDecisions()));
     }
 }

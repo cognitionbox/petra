@@ -19,7 +19,6 @@ package io.cognitionbox.petra.lang.impls;
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.PGraph;
-import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -58,22 +57,20 @@ public class SimpleTest extends BaseExecutionModesTest {
     public static class AtoA extends PEdge<A> {
         {
             type(A.class);
-            pre(a -> a.value == 1);
+            kase(a -> a.value == 1, a -> a.value == 222);
             func(a -> {
                 a.value = 222;
             });
-            post(a -> a.value == 222);
         }
     }
 
     public static class g extends PGraph<A> {
         {
             type(A.class);
-            pre(a -> a.value == 1);
-            begin();
+            kase(a -> a.value == 1, a -> a.value == 222);
+
             step(new AtoA());
-            end();
-            post(a -> a.value == 222);
+            esak();
         }
     }
 

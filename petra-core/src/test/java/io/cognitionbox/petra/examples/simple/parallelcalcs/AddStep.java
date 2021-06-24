@@ -7,7 +7,7 @@ import java.time.LocalTime;
 public class AddStep extends PEdge<AddPositiveNumbers> {
     {
         type(AddPositiveNumbers.class);
-        pre(x->true);
+        kase(x->true, x->true);
         func(x->{
             try {
                 Thread.sleep(300);
@@ -17,6 +17,5 @@ public class AddStep extends PEdge<AddPositiveNumbers> {
             x.result.set(x.a + x.b);
            System.out.println(x.result+" "+ LocalTime.now()+" "+Thread.currentThread());
         });
-        post(x->true);
     }
 }

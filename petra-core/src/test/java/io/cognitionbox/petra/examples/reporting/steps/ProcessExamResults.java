@@ -6,11 +6,10 @@ import io.cognitionbox.petra.lang.PGraph;
 public class ProcessExamResults extends PGraph<Pupil> {
     {
         type(Pupil.class);
-        pre(p -> p.takenExams());
-        begin();
+        kase(p -> p.takenExams(), p -> p.hasAverage());
+
         steps(p -> p.getExams(), MarkExam.class);
         step(p -> p, AverageScores.class);
-        end();
-        post(p -> p.hasAverage());
+        esak();
     }
 }

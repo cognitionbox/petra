@@ -18,7 +18,6 @@ package io.cognitionbox.petra.lang.impls;
 import io.cognitionbox.petra.config.ExecMode;
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.PGraph;
-import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -53,9 +52,8 @@ public class StaticsDetectionTest extends BaseExecutionModesTest {
     public static class AtoA extends PEdge<A> {
         {
             type(A.class);
-            pre(a -> true);
+            kase(a -> true, a -> true);
             func(a -> new A(222));
-            post(a -> true);
         }
     }
 
@@ -63,11 +61,10 @@ public class StaticsDetectionTest extends BaseExecutionModesTest {
     public static class g extends PGraph<A> {
         {
             type(A.class);
-            pre(a -> true);
-            begin();
+            kase(a -> true, a -> true);
+
             step(AtoA.class);
-            end();
-            post(a -> true);
+            esak();
         }
     }
 

@@ -10,11 +10,14 @@ import static io.cognitionbox.petra.util.Petra.seq;
 public class CollectData extends PGraph<State> {
     {
         type(State.class);
-        pre(state -> forAll(Trader.class, state.traders(), trader -> trader.hasGtZeroDecisions()));
+        kase(
+            state -> forAll(Trader.class, state.traders(), trader -> trader.hasGtZeroDecisions()),
+            state -> state.hasDecisions() &&
+                    forAll(Trader.class, state.traders(), trader -> trader.hasEqZeroDecisions()) &&
+                    state.getExposureStore().hasExposures());
+
         step(seq(), state -> state, new CollectionDecisions());
         step(seq(), state -> state, new CollectExposure());
-        post(state -> state.hasDecisions() &&
-                forAll(Trader.class, state.traders(), trader -> trader.hasEqZeroDecisions()) &&
-                state.getExposureStore().hasExposures());
+        esak();
     }
 }

@@ -20,7 +20,6 @@ import io.cognitionbox.petra.lang.PComputer;
 import io.cognitionbox.petra.lang.PEdge;
 import io.cognitionbox.petra.lang.PGraph;
 import io.cognitionbox.petra.lang.annotations.Extract;
-import io.cognitionbox.petra.lang.impls.BaseExecutionModesTest;
 import io.cognitionbox.petra.util.impl.PList;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -93,20 +92,18 @@ public class BackReferencesDetectionTest extends BaseExecutionModesTest {
     public static class AtoA extends PEdge<A> {
         {
             type(A.class);
-            pre(x -> true);
+            kase(x -> true, x -> true);
             func(a -> new A(222));
-            post(x -> true);
         }
     }
 
     public static class g extends PGraph<A> {
         {
             type(A.class);
-            begin();
-            pre(x -> true);
+
+            kase(x -> true, x -> true);
             step(AtoA.class);
-            end();
-            post(x -> true);
+            esak();
         }
     }
 

@@ -5,11 +5,10 @@ import io.cognitionbox.petra.lang.PEdge;
 public class AtoA2 extends PEdge<A> {
     {
         type(A.class);
-        pre(a -> a.value == 2); // disjoint pre-conditions
+        kase(a -> a.value == 2, a -> a.value == 4);
         func(a -> {
             a.value = a.value * 2;
         });
-        post(a -> a.value == 4); // disjoint post-conditions
     }
 
     // All conditions must be in disjunctive normal form AND

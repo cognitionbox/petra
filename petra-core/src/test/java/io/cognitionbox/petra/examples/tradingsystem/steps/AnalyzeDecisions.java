@@ -6,8 +6,7 @@ import io.cognitionbox.petra.lang.PEdge;
 public class AnalyzeDecisions extends PEdge<DecisionsStore> {
     {
         type(DecisionsStore.class);
-        pre(decisionsStore -> decisionsStore.hasDecisions());
+        kase(decisionsStore -> decisionsStore.hasDecisions(), decisionsStore -> decisionsStore.hasAvgLimitPrice());
         func(decisionsStore -> decisionsStore.analyzeDecisions());
-        post(decisionsStore -> decisionsStore.hasAvgLimitPrice());
     }
 }

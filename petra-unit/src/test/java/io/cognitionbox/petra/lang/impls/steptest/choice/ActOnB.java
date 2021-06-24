@@ -5,10 +5,9 @@ import io.cognitionbox.petra.lang.PEdge;
 public class ActOnB extends PEdge<Foo> {
     {
         type(Foo.class);
-        pre(foo -> foo.choices == Choices.B);
+        kase(foo -> foo.choices == Choices.B, foo -> foo.result == 2);
         func(foo -> {
             foo.result = 2;
         });
-        post(foo -> foo.result == 2);
     }
 }

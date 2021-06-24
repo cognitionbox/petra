@@ -7,10 +7,9 @@ import static io.cognitionbox.petra.util.Petra.par;
 public class AtoA extends PGraph<A> {
     {
         type(A.class);
-        pre(a -> a.value == 1);
-        begin();
+        kase(a -> a.value == 1, a -> a.value == 222);
+
         step(par(), x -> x, AtoAEdge.class);
-        end();
-        post(a -> a.value == 222);
+        esak();
     }
 }

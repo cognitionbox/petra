@@ -11,9 +11,9 @@ public class SR1 extends PGraph<SunlightData> {
 		kase(
 				sunlightData->  sunlightData.isGathered() ,
 				sunlightData-> sunlightData.validated == isBetweenExclusive(1, sunlightData.imageData.averageIntensity,100) );
-		begin();
+
 		step(seq(), sunlightData -> sunlightData.imageData, AnalyzeImage.class);
 		step(seq(), sunlightData -> sunlightData, Validate.class);
-		end();
+		esak();
 	}
 }

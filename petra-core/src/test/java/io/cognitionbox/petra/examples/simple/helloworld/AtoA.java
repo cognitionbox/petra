@@ -25,10 +25,9 @@ import io.cognitionbox.petra.lang.PEdge;
 public class AtoA extends PEdge<A> {
     {
         type(A.class);
-        pre(a -> a.value.equals(""));
+        kase(a -> a.value.equals(""), a -> a.value.equals("hello world."));
         func(a -> {
             a.value = "hello world.";
         });
-        post(a -> a.value.equals("hello world."));
     }
 }

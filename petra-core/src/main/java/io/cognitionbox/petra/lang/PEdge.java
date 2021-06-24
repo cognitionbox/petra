@@ -217,7 +217,7 @@ public class PEdge<X> extends AbstractStep<X> implements Serializable {
         return false;
     }
 
-    public void pre(GuardInput<X> p) {
+    void pre(GuardInput<X> p) {
         setP(p);
     }
 

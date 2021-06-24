@@ -16,7 +16,7 @@
 package io.cognitionbox.petra.config;
 
 public enum ExecMode {
-    DIS, PAR, SEQ, CHOICE;
+    DIS, PAR, SEQ;
 
     public boolean isSEQ() {
         return this.equals(ExecMode.SEQ);
@@ -28,9 +28,5 @@ public enum ExecMode {
 
     public boolean isDIS() {
         return this.equals(ExecMode.DIS);
-    }
-
-    public boolean isCHOICE() {
-        return this.equals(ExecMode.CHOICE);
     }
 }

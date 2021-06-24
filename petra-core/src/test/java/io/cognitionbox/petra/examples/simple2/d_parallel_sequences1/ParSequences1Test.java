@@ -36,31 +36,18 @@ public class ParSequences1Test extends BaseExecutionModesTest {
         super(execMode);
     }
 
-    /*
-     * Laws:
-     *
-     * Only for the Graphs:
-     *
-     * POST => PRE
-     * LC => PRE
-     * POST <=> ¬LC
-     *
-     *
-     * Only for Edges:
-     *
-     * PRE </=> POST
-     */
     @Test
     public void test() {
 
         class SeqEdge extends PEdge<Y> {
             {
                 type(Y.class);
-                pre(y -> y.isA() ^ y.isB());
+                kase(
+                        y -> y.isA() ^ y.isB(),
+                        y -> y.isB() ^ y.isC());
                 func(y -> {
                     y.state(State.values()[y.state().ordinal() + 1]);
                 });
-                post(y -> y.isB() ^ y.isC());
             }
         }
 
@@ -68,12 +55,12 @@ public class ParSequences1Test extends BaseExecutionModesTest {
             {
                 type(X.class);
                 iterations(x->2);
-                pre(x -> (x.y1().isA() ^ x.y1().isB()) && (x.y2().isA() ^ x.y2().isB()));
-                begin();
+                kase(
+                        x -> (x.y1().isA() ^ x.y1().isB()) && (x.y2().isA() ^ x.y2().isB()),
+                        x -> x.y1().isC() && x.y2().isC());
                 step(x -> x.y1(), new SeqEdge());
                 step(x -> x.y2(), new SeqEdge());
-                end();
-                post(x -> x.y1().isC() && x.y2().isC());
+                esak();
             }
         }
 

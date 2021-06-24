@@ -5,10 +5,9 @@ import io.cognitionbox.petra.lang.PEdge;
 public class AtoBEdge extends PEdge<Value> {
     {
         type(Value.class);
-        pre(x -> x.value == "A");
+        kase(x -> x.value == "A", x -> x.value == "B");
         func(x -> {
             x.value = "B";
         });
-        post(x -> x.value == "B");
     }
 }

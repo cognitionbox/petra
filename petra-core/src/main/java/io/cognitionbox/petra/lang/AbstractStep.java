@@ -235,11 +235,11 @@ public abstract class AbstractStep<X> extends Identifyable implements ICallable<
         this.kases = kases;
     }
 
-    public void pre(IPredicate<X> predicate) {
+    void pre(IPredicate<X> predicate) {
         setP(new Guard(type, predicate));
     }
     protected boolean endAsBeenCalled = false;
-    public void post(IPredicate<X> predicate) {
+    void post(IPredicate<X> predicate) {
         if (!endAsBeenCalled) {
             throw new UnsupportedOperationException("end has not been called");
         }

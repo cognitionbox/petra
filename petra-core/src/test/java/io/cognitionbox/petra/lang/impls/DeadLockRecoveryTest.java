@@ -69,7 +69,7 @@ public class DeadLockRecoveryTest extends BaseExecutionModesTest {
     public static class AtoA extends PEdge<A> {
         {
             type(A.class);
-            pre(a -> a.value == 1);
+            kase(a -> a.value == 1, a -> a.value == 222);
             func(a -> {
                 if (Math.random() > 0.1) {
                     ThreadDemo1 T1 = new ThreadDemo1();
@@ -85,15 +85,13 @@ public class DeadLockRecoveryTest extends BaseExecutionModesTest {
                 }
                 a.value = 222;
             });
-            post(a -> a.value == 222);
         }
     }
 
     public static class g extends PGraph<A> {
         {
             type(A.class);
-            pre(a -> a.value == 1);
-            post(a -> a.value == 222);
+            kase(a -> a.value == 1, a -> a.value == 222);
             step(AtoA.class);
         }
     }
