@@ -26,8 +26,7 @@ import java.lang.reflect.Modifier;
 public class AllFieldsMustBeSerializableUnlessTransient implements StepCheck {
     @Override
     public boolean test(IStep<?> step) {
-        return checkClassFields((step.getType())) &&
-                checkClassFields((step.q().getTypeClass()));
+        return checkClassFields((step.getType()));
     }
 
     private boolean checkClassFields(Class<?> clazz) {

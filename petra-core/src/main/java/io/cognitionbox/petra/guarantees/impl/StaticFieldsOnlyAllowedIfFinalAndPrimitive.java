@@ -25,17 +25,7 @@ import java.lang.reflect.Modifier;
 public class StaticFieldsOnlyAllowedIfFinalAndPrimitive implements StepCheck {
     @Override
     public boolean test(IStep<?> step) {
-        if (step.p() == null) {
-            return true;
-        }
-        Class<?> preType = step.getType();
-
-        if (step.q() == null) {
-            return true;
-        }
-        Class<?> postType = step.q().getTypeClass();
-
-        return checkTypeRecursively(preType) && checkTypeRecursively(postType);
+        return checkTypeRecursively(step.getType());
     }
 
     private boolean checkTypeRecursively(Class<?> type) {
