@@ -151,9 +151,10 @@ they all become children of that PGraph, and thus this PGraph is the parent of t
 public class AtoAGraph extends PGraph<A> {
     {
        type(A.class);
-       pre(a->a.value.equals(""));
-       step(a->a, new AtoA());
-       post(a->a.value.equals("hello world."));
+       kase(a->a.value.equals(""), 
+            a->a.value.equals("hello world."));
+            step(a->a, new AtoA());
+       esak();
     }
 }
 ```
@@ -166,11 +167,11 @@ they cannot be composed of any other Petra components.
 public class AtoA extends PEdge<A> {
     {
        type(A.class);
-       pre(a->a.value.equals(""));
+       kase(a->a.value.equals(""), 
+            a->a.value.equals("hello world."));
        func(a->{
            a.value = "hello world.";
        });
-       post(a->a.value.equals("hello world."));
     }
 }
 ```
@@ -193,10 +194,11 @@ A PGraph can have any number of steps which are either themselves PGraphs or PEd
 public class SeqGraph extends PGraph<X> {
             {
                 type(X.class);
-                pre(x->x.isAB());
-                step(x->x, new SeqEdge2());
-                step(x->x, new SeqEdge1());
-                post(x->x.isC());
+                kase(x->x.isAB(), 
+                     x->x.isC());
+                     step(x->x, new SeqEdge2());
+                     step(x->x, new SeqEdge1());
+                esak();
             }
         }
 ```
