@@ -98,7 +98,7 @@ however Petra has been constructed in a way that will allow for distributed mode
 Petra's two kinds of computation steps: PGraph, PEdge (see below).
 PGraphs can contain other PGraphs or PEdges. 
 PEdges contain Java code which mutates state.
-These steps have 'pre/post' conditions or 'kases' 
+These steps have 'kases' which contain 'pre/post' conditions. 
 which provide a contract for describing how the state is mutated.
 This allow complex system to be composed of a hierarchy of steps, 
 whilst being able to mutate state in a safe.
@@ -141,9 +141,8 @@ public class PetraExample {
 ```
 ##### PGraph #####
 A PComputer must take as input a PGraph and the input to start with.
-A PGraph has a pre-condition and a post-condition, or a number of kases, 
-each of which have both a pre-condition and a post-condition.
-The PGraph only starts if its pre-condition is met.
+A PGraph has a number of kases, each of which have both a pre-condition and a post-condition.
+The PGraph only starts if one of the kase pre-conditions is satisfied. 
 A PGraph can also have multiple steps, where each step can be another PGraph or a PEdge.
 When a another PGraph or PEdge becomes a step of a higher-level PGraph,
 they all become children of that PGraph, and thus this PGraph is the parent of these children.
