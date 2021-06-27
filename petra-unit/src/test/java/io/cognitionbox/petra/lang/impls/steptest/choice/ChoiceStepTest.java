@@ -12,7 +12,19 @@ public class ChoiceStepTest extends StepTest<Foo> {
 
     @Test
     public void test1() {
-        setInput(new Foo());
-        setExpectation(foo -> true);
+        setInput(new Foo(Choices.A));
+        setExpectation(foo -> foo.result==1);
+    }
+
+    @Test
+    public void test2() {
+        setInput(new Foo(Choices.B));
+        setExpectation(foo -> foo.result==2);
+    }
+
+    @Test
+    public void test3() {
+        setInput(new Foo(Choices.C));
+        setExpectation(foo -> foo.result==3);
     }
 }
